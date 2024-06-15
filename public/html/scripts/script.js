@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
   });
   
+  
   function displayArticles(articles) {
     const articlesList = document.getElementById('articles-list');
     
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         <h2>${article.Title}</h2>
         <p><strong>Author:</strong> ${article.Author}</p>
         <p><strong>Publisher:</strong> ${article.Publisher}</p>
+        <p><strong>Country:</strong> ${article.Country}</p>
         <p><strong>Sector:</strong> ${article.Sector}</p>
         <p><strong>Published Date:</strong> ${new Date(article.publishDateTime).toLocaleDateString()}</p>
         <p><strong>Tags:</strong> ${article.Tags}</p>

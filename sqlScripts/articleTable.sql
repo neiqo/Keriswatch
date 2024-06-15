@@ -4,6 +4,7 @@ create table Articles (
 	articleId INT PRIMARY KEY IDENTITY(1,1),
 	Author VARCHAR(255),
 	Publisher VARCHAR(255),
+	Country Varchar(255) NOT NULL CHECK (Country IN ('Philippines','Singapore', 'Cambodia', 'Brunei', 'Myanmar', 'Thailand', 'Malaysia', 'Vietnam', 'Indonesia', 'Laos')),
     Sector VARCHAR(255) NOT NULL CHECK (Sector IN ('Manufacture', 'Services', 'Agriculture')),
 	Title VARCHAR(255) not null,
 	Body TEXT not null,
