@@ -1,53 +1,39 @@
-document.addEventListener("DOMContentLoaded", async function() {
-    try {
-      const response = await fetch('/articles');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const articles = await response.json();
-      displayArticles(articles);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      alert('Error fetching articles. Please try again later.');
-    }
-  });
-  
-  
-  function displayArticles(articles) {
-    const articlesList = document.getElementById('articles-list');
+document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
     
-    articles.forEach(article => {
-      const articleElement = document.createElement('div');
-      articleElement.classList.add('article');
+    const formData = new FormData(this); // Get form data
+    const searchParams = new URLSearchParams(formData); // Convert to URL-encoded string
     
-      const imagePath = `../media/images/articles/article-${article.articleID}/`;
+    fetch('/search?' + searchParams.toString()) // Send GET request to /search endpoint
+        .then(response => response.json()) // Parse JSON response
+        .then(data => {
+            // Handle response data
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = ''; // Clear previous results
+            
+            if (!data || data.length === 0) {
+                resultsDiv.innerHTML = '<p>No articles found.</p>';
+            } else {
+                data.forEach(article => {
+                    const articleDiv = document.createElement('div');
+                    articleDiv.innerHTML = `
+                        <img src="../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}">
+                        <h3>${article.Title}</h3>
+                        <p><strong>Author:</strong> ${article.Author}</p>
+                        <p><strong>Country:</strong> ${article.Country}</p>
+                        <p><strong>Publisher:</strong> ${article.Publisher}</p>
+                        <p><strong>Sector:</strong> ${article.Sector}</p>
+                        <p><strong>Tags:</strong> ${article.Tags}</p>
+                        <hr>
+                    `;
 
-      articleElement.innerHTML = `
-        <h2>${article.Title}</h2>
-        <p><strong>Author:</strong> ${article.Author}</p>
-        <p><strong>Publisher:</strong> ${article.Publisher}</p>
-        <p><strong>Country:</strong> ${article.Country}</p>
-        <p><strong>Sector:</strong> ${article.Sector}</p>
-        <p><strong>Published Date:</strong> ${new Date(article.publishDateTime).toLocaleDateString()}</p>
-        <p><strong>Tags:</strong> ${article.Tags}</p>
-        <p>${article.Body}</p>
-      `;
-  
-      // append images to the page if have
-      if (article.imageFileNames && article.imageFileNames.length > 0) {
-        const imagesDiv = document.createElement('div');
-        imagesDiv.classList.add('article-images');
-        article.imageFileNames.forEach(imageFileName => {
-          const img = document.createElement('img');
-          img.src = `${imagePath}${imageFileName}`;
-          img.alt = 'Article Image';
-          imagesDiv.appendChild(img);
+                    resultsDiv.appendChild(articleDiv);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching articles:', error);
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '<p>Error fetching articles. Please try again later.</p>';
         });
-        articleElement.appendChild(imagesDiv);
-      }
-  
-      articlesList.appendChild(articleElement);
-    });
-
-  }
-  
+});
