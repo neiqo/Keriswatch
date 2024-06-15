@@ -1,11 +1,17 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
+const fs = require("fs");
+const util = require("util");
+
+// Promisify the fs.mkdir function for easier async handling
+const mkdirAsync = util.promisify(fs.mkdir);
 
 class Article {
   constructor(
     articleID,
     Author,
     Publisher,
+    Country,
     Sector,
     Title,
     Body,
@@ -16,6 +22,7 @@ class Article {
     this.articleID = articleID;
     this.Author = Author;
     this.Publisher = Publisher;
+    this.Country = Country;
     this.Sector = Sector;
     this.Title = Title;
     this.Body = Body;
@@ -32,6 +39,7 @@ class Article {
             a.articleID,
             a.Author,
             a.Publisher,
+            a.Country,
             a.Sector,
             a.Title,
             a.Body,
@@ -56,6 +64,7 @@ class Article {
             articleID,
             Author,
             Publisher,
+            Country,
             Sector,
             Title,
             Body,
@@ -70,6 +79,7 @@ class Article {
                 articleID,
                 Author,
                 Publisher,
+                Country,
                 Sector,
                 Title,
                 Body,
@@ -91,6 +101,7 @@ class Article {
             articleData.articleID,
             articleData.Author,
             articleData.Publisher,
+            articleData.Country,
             articleData.Sector,
             articleData.Title,
             articleData.Body,
@@ -100,8 +111,29 @@ class Article {
         )
     );
 
+    // Create image folders for each article
+    await Promise.all(articles.map(article => article.createImageFolder()));
+
     return articles;
-}
+  }
+
+  async createImageFolder() {
+    const folderPath = `./public/html/media/images/article-${this.articleID}`;
+
+    try {
+      // Check if the folder already exists
+      await fs.promises.access(folderPath, fs.constants.F_OK);
+      console.log(`Folder already exists for article ${this.articleID}`);
+    } catch (err) {
+      // Folder does not exist, create it
+      try {
+        await mkdirAsync(folderPath);
+        console.log(`Created folder for article ${this.articleID}: ${folderPath}`);
+      } catch (error) {
+        console.error(`Error creating folder for article ${this.articleID}:`, error);
+      }
+    }
+  }
 }
 
 module.exports = Article;
