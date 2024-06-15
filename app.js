@@ -14,7 +14,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 app.use(staticMiddleware); // Mount the static middleware
 
+// CONTROLLERS
+const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
+
 // CONTROLLER ROUTINGS
+// ARTICLE ROUTES
+app.get("/articles", articlesController.getAllArticles);
 
 // DATABASE CONNECTION
 app.listen(port, async () => {
