@@ -3,7 +3,6 @@ const dbConfig = require("../dbConfig");
 const fs = require("fs");
 const util = require("util");
 
-// Promisify the fs.mkdir function for easier async handling
 const mkdirAsync = util.promisify(fs.mkdir);
 
 class Article {
@@ -17,7 +16,7 @@ class Article {
     Body,
     publishDateTime,
     Tags,
-    imageFileNames // Include imageFileNames in constructor
+    imageFileNames
   ) {
     this.articleID = articleID;
     this.Author = Author;
@@ -28,7 +27,7 @@ class Article {
     this.Body = Body;
     this.publishDateTime = publishDateTime;
     this.Tags = Tags;
-    this.imageFileNames = imageFileNames; // Assign imageFileNames to instance property
+    this.imageFileNames = imageFileNames;
   }
 
   static async getAllArticles() {
@@ -55,10 +54,10 @@ class Article {
 
     connection.close();
 
-    // Initialize map to store articles with the images grouped by their article ID
+    // init map to store articles with the images grouped by their article ID
     const articlesMap = new Map();
 
-    // Process each row from the query result
+    // go through every row from query result
     result.recordset.forEach((row) => {
         const {
             articleID,
@@ -85,17 +84,17 @@ class Article {
                 Body,
                 publishDateTime,
                 Tags,
-                imageFileNames: [] // Initialize empty array for imageFileNames
+                imageFileNames: []
             });
         }
 
-        // Push ImageFileName to imageFileNames array if it exists
+        // push imagefilename to imagefilenames array if exist
         if (ImageFileName) {
             articlesMap.get(articleID).imageFileNames.push(ImageFileName);
         }
     });
 
-    // Convert map values to array of Article instances
+    // convert map values to array of Article instances
     const articles = Array.from(articlesMap.values()).map(
         (articleData) => new Article(
             articleData.articleID,
@@ -107,28 +106,26 @@ class Article {
             articleData.Body,
             articleData.publishDateTime,
             articleData.Tags,
-            articleData.imageFileNames // Include imageFileNames in Article constructor
+            articleData.imageFileNames
         )
     );
 
-    // Create image folders for each article
+    // create image folders for each article
     await Promise.all(articles.map(article => article.createImageFolder()));
 
     return articles;
   }
 
   async createImageFolder() {
-    const folderPath = `./public/html/media/images/article-${this.articleID}`;
+    const folderPath = `./public/html/media/images/articles/article-${this.articleID}`;
 
     try {
-      // Check if the folder already exists
+      // check if the folder exists
       await fs.promises.access(folderPath, fs.constants.F_OK);
-      console.log(`Folder already exists for article ${this.articleID}`);
     } catch (err) {
-      // Folder does not exist, create it
+      // create folder if does not exist
       try {
         await mkdirAsync(folderPath);
-        console.log(`Created folder for article ${this.articleID}: ${folderPath}`);
       } catch (error) {
         console.error(`Error creating folder for article ${this.articleID}:`, error);
       }

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       const articleElement = document.createElement('div');
       articleElement.classList.add('article');
     
-      const imagePath = `../media/images/article-${article.articleID}/`;
+      const imagePath = `../media/images/articles/article-${article.articleID}/`;
 
       articleElement.innerHTML = `
         <h2>${article.Title}</h2>
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         <p>${article.Body}</p>
       `;
   
-      // Append images if available
+      // append images to the page if have
       if (article.imageFileNames && article.imageFileNames.length > 0) {
         const imagesDiv = document.createElement('div');
         imagesDiv.classList.add('article-images');
