@@ -47,7 +47,7 @@ class Article {
 
     connection.close();
 
-    // Initialize map to store articles grouped by articleID
+    // Initialize map to store articles with the images grouped by their article ID
     const articlesMap = new Map();
 
     // Process each row from the query result
