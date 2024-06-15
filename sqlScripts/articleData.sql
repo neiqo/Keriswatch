@@ -10,7 +10,7 @@ INSERT INTO ArticleImages (ArticleID, ImageFileName)
 VALUES
 (1, 'image1.jpg'),
 (2, 'image2.jpg'),
-(3, 'image3.jpg');
+(3, 'farm-stay-philippines1.jpg');
 
 -- Inserting data for Singapore
 INSERT INTO Articles (Author, Publisher, Country, Sector, Title, Body, publishDateTime, Tags)
@@ -134,6 +134,6 @@ VALUES
 INSERT INTO ArticleImages (ArticleID, ImageFileName)
 VALUES
 (27, 'image27.jpg'),
-(28, 'image28.jpg');
+(28, 'image28.jpg'),
 (29, 'image29.jpg');
 
