@@ -19,8 +19,10 @@ app.use(staticMiddleware); // Mount the static middleware
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
 
+
 // CONTROLLER ROUTINGS
 // ARTICLE ROUTES
+app.get("/search", articlesController.searchArticles); // route for searching articles
 app.get("/articles", articlesController.getAllArticles);
 
 // DATABASE CONNECTION
