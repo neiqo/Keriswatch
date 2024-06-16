@@ -13,60 +13,39 @@ const getAllArticles = async (req, res) => {
 };
 
 async function searchArticles(req, res) {
-  const { tags, country, author, publisher, title, sector } = req.query;
+  const { query } = req.query;
 
   try {
     const connection = await sql.connect(dbConfig);
     let sqlQuery = `
-                    SELECT 
-                        a.articleID,
-                        a.Author,
-                        a.Publisher,
-                        a.Country,
-                        a.Sector,
-                        a.Title,
-                        a.Body,
-                        a.publishDateTime,
-                        a.Tags,
-                        i.ImageFileName AS imageFileNames
-                    FROM Articles a
-                    LEFT JOIN ArticleImages i ON a.articleID = i.ArticleID
-                    WHERE 1 = 1
-                  `;    
-    const params = [];
-
-    if (tags) {
-      params.push(tags);
-      sqlQuery += ` AND Tags LIKE '%' + @p${params.length} + '%'`;
-    }
-    if (country) {
-      params.push(country);
-      sqlQuery += ` AND Country = @p${params.length}`;
-    }
-    if (author) {
-      params.push(author);
-      sqlQuery += ` AND Author = @p${params.length}`;
-    }
-    if (publisher) {
-      params.push(publisher);
-      sqlQuery += ` AND Publisher = @p${params.length}`;
-    }
-    if (title) {
-      params.push(title);
-      sqlQuery += ` AND Title LIKE '%' + @p${params.length} + '%'`;
-    }
-    if (sector) {
-      params.push(sector);
-      sqlQuery += ` AND Sector = @p${params.length}`;
-    }
+                  SELECT 
+                      a.articleID,
+                      a.Author,
+                      a.Publisher,
+                      a.Country,
+                      a.Sector,
+                      a.Title,
+                      a.Body,
+                      a.publishDateTime,
+                      a.Tags,
+                      i.ImageFileName AS imageFileNames
+                  FROM Articles a
+                  LEFT JOIN ArticleImages i ON a.articleID = i.ArticleID
+                  WHERE 
+                      a.Author LIKE '%' + @query + '%' OR
+                      a.Publisher LIKE '%' + @query + '%' OR
+                      a.Country LIKE '%' + @query + '%' OR
+                      a.Sector LIKE '%' + @query + '%' OR
+                      a.Title LIKE '%' + @query + '%' OR
+                      a.Body LIKE '%' + @query + '%' OR
+                      a.Tags LIKE '%' + @query + '%'
+                `;
 
     const request = connection.request();
-    params.forEach((param, index) => {
-      request.input(`p${index + 1}`, param);
-    });
+    request.input('query', sql.VarChar, query);
 
     const result = await request.query(sqlQuery);
-    
+
     // Aggregating image filenames into arrays by articleID
     const articlesMap = {};
     result.recordset.forEach(row => {

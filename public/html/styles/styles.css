@@ -1,24 +1,43 @@
-/* styles.css */
-
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
 }
 
-.article {
+.article-container {
+    position: relative;
+    border: 2px solid black;
+    margin-bottom: 15px;
+    width: 309px;
+    height: 256px;
+    background-size: cover; /* Ensures the background image covers the container */
+    background-position: center; /* Centers the background image */
+    color: black; /* Makes text white to contrast with the image */
+    padding: 10px; /* Adds padding inside the container */
+}
+
+.article-title,
+.article-author,
+.article-country,
+.article-publisher,
+.article-sector,
+.article-tags {
+    position: relative;
+    z-index: 1; /* Ensures text is above the background image */
+}
+
+.article-title {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+.article-author,
+.article-country,
+.article-publisher,
+.article-sector,
+.article-tags {
+    margin: 5px 0;
+}
+
+hr {
     border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-.image-container {
-    display: flex;
-    gap: 10px; /* Adjust as needed */
-    margin-top: 10px;
-}
-
-.article-image {
-    max-width: 100px; /* Adjust dimensions as needed */
-    max-height: 100px;
-    object-fit: cover; /* Ensure images maintain aspect ratio */
+    margin: 10px 0;
 }

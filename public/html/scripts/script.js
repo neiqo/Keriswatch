@@ -16,15 +16,15 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
             } else {
                 data.forEach(article => {
                     const articleDiv = document.createElement('div');
+                    articleDiv.className = "article-container";
+                    articleDiv.style.backgroundImage = `url('../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
                     articleDiv.innerHTML = `
-                        <img src="../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}">
-                        <h3>${article.Title}</h3>
-                        <p><strong>Author:</strong> ${article.Author}</p>
-                        <p><strong>Country:</strong> ${article.Country}</p>
-                        <p><strong>Publisher:</strong> ${article.Publisher}</p>
-                        <p><strong>Sector:</strong> ${article.Sector}</p>
-                        <p><strong>Tags:</strong> ${article.Tags}</p>
-                        <hr>
+                        <h3 class="article-title">${article.Title}</h3>
+                        <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
+                        <p class="article-country"><strong>Country:</strong> ${article.Country}</p>
+                        <p class="article-publisher"><strong>Publisher:</strong> ${article.Publisher}</p>
+                        <p class="article-sector"><strong>Sector:</strong> ${article.Sector}</p>
+                        <p class="article-tags"><strong>Tags:</strong> ${article.Tags}</p>
                     `;
 
                     resultsDiv.appendChild(articleDiv);
