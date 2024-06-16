@@ -48,7 +48,6 @@ async function searchArticles(req, res) {
 
     const result = await request.query(sqlQuery);
 
-    // Aggregating image filenames into arrays by articleID
     const articlesMap = {};
     result.recordset.forEach(row => {
       if (!articlesMap[row.articleID]) {
@@ -81,28 +80,24 @@ async function searchArticles(req, res) {
 
 const addArticle = async (req, res) => {
   try {
-    const newArticleData = req.body; // get article data from the request body
-    const imageFileNames = req.files ? req.files.map(file => file.filename) : []; // extract image filenames from uploaded files
-    
-    // make sure atleast have 1 image file
+    const newArticleData = req.body; 
+    const imageFileNames = req.files ? req.files.map(file => file.filename) : []; 
+
     if (imageFileNames.length === 0) {
       return res.status(400).json({ error: "At least one image is required to create an article." });
     }
 
-    // create a new article and put it into the database
     const articleID = await Article.createArticle(newArticleData, imageFileNames);
 
-    // after the article image folder is created, move the uploaded images from the temp folder to the associated article img folder
     for (const imageFileName of imageFileNames) {
-      const oldPath = path.join(__dirname, '../uploads/temp', imageFileName); // temp folder
-      const newDir = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`); // associated article image folder
-      const newPath = path.join(newDir, imageFileName); // final place of the image
+      const oldPath = path.join(__dirname, '../uploads/temp', imageFileName); 
+      const newDir = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`); 
+      const newPath = path.join(newDir, imageFileName); 
 
-      // create the newDir folder if it doesnt exist
       if (!fs.existsSync(newDir)) {
         fs.mkdirSync(newDir, { recursive: true });
       }
-      fs.renameSync(oldPath, newPath); // finally move the image from the temp folder to its final place
+      fs.renameSync(oldPath, newPath); 
     }
 
     res.status(201).json({ message: "Article created successfully", articleID });
@@ -110,10 +105,24 @@ const addArticle = async (req, res) => {
     console.error("Error creating article:", error);
     res.status(500).json({ error: "Error creating article" });
   }
-}
+};
+
+const removeArticle = async (req, res) => {
+  const { articleID } = req.params;
+
+  try {
+    console.log(`Attempting to delete article with ID: ${articleID}`);
+    await Article.deleteArticle(articleID);
+    res.status(200).json({ message: "Article deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting article:", error);
+    res.status(500).json({ error: "Error deleting article" });
+  }
+};
 
 module.exports = {
   getAllArticles,
   searchArticles,
-  addArticle
+  addArticle,
+  removeArticle
 };

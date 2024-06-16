@@ -112,11 +112,12 @@ class Article {
     );
 
     // Create image folders for each article
-    await Promise.all(articles.map(article => article.createImageFolder()));
+     await Promise.all(articles.map(article => article.createImageFolder()));
 
     return articles;
   }
 
+  
   async createImageFolder() {
     const folderPath = `./public/html/media/images/articles/article-${this.articleID}`;
 
@@ -158,11 +159,11 @@ class Article {
       request.input('publishDateTime', sql.DateTime, new Date(newArticleData.publishDateTime));
       request.input('Tags', sql.NVarChar, newArticleData.Tags);
 
-      // Insert new article but no image filename yet
+      // insert new article but no image filename yet
       const result = await request.query(insertArticleQuery);
       const newArticleID = result.recordset[0].articleID;
 
-        // Loop through each image file name in the imageFileNames array
+        // loop through each image file name in the imageFileNames array
         for (const imageFileName of imageFileNames) {
         const insertImageRequest = new sql.Request(transaction); // make new sql request for each image insert
         
@@ -189,6 +190,67 @@ class Article {
     }
   }
 
+  static async deleteArticle(articleID) {
+    const connection = await sql.connect(dbConfig);
+    const transaction = new sql.Transaction(connection);
+  
+    try {
+      await transaction.begin();
+  
+      const request = new sql.Request(transaction);
+  
+      // Get image filenames to delete from files
+      const getImageFilenamesQuery = `SELECT ImageFileName FROM ArticleImages WHERE ArticleID = @ArticleID`;
+      request.input('ArticleID', sql.Int, articleID);
+      const result = await request.query(getImageFilenamesQuery);
+  
+      const imageFileNames = result.recordset.map(row => row.ImageFileName);
+  
+      console.log('Image filenames to delete:', imageFileNames);
+  
+      // Delete images from ArticleImages table first
+      const deleteImagesQuery = `DELETE FROM ArticleImages WHERE ArticleID = @ArticleID`;
+      await request.query(deleteImagesQuery);
+  
+      // Finally delete article from Articles table
+      const deleteArticleQuery = `DELETE FROM Articles WHERE articleID = @ArticleID`;
+      const deleteResult = await request.query(deleteArticleQuery);
+  
+      console.log('Delete article result:', deleteResult);
+  
+      if (deleteResult.rowsAffected[0] === 0) {
+        throw new Error(`Article with ID ${articleID} not found`);
+      }
+  
+      await transaction.commit();
+  
+      // Delete image files from the filesystem
+      const articleImageFolderPath = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`);
+  
+      if (fs.existsSync(articleImageFolderPath)) {
+        imageFileNames.forEach(imageFileName => {
+          const imagePath = path.join(articleImageFolderPath, imageFileName);
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
+        });
+        // Remove article image folder if empty
+        if (fs.readdirSync(articleImageFolderPath).length === 0) {
+          fs.rmdirSync(articleImageFolderPath);
+        }
+      }
+  
+      return true;
+    } catch (error) {
+      console.error("Error deleting article: ", error);
+      await transaction.rollback();
+      throw error;
+    } finally {
+      connection.close();
+    }
+  }
+  
+  
 }
 
 module.exports = Article;
