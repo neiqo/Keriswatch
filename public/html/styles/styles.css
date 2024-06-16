@@ -19,7 +19,8 @@ body {
 .article-country,
 .article-publisher,
 .article-sector,
-.article-tags {
+.article-tags,
+.article-body {
     position: relative;
     z-index: 1; /* Ensures text is above the background image */
 }
@@ -33,7 +34,8 @@ body {
 .article-country,
 .article-publisher,
 .article-sector,
-.article-tags {
+.article-tags,
+.article-body {
     margin: 5px 0;
 }
 

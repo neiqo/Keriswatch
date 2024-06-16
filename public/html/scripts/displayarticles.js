@@ -19,20 +19,21 @@ document.addEventListener("DOMContentLoaded", async function() {
     articles.forEach(article => {
       const articleElement = document.createElement('div');
       articleElement.classList.add('article');
-    
-      const imagePath = `../media/images/articles/article-${article.articleID}/`;
+      articleElement.className = "article-container";
+      articleElement.style.backgroundImage = `url('../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
+
+      //const imagePath = `../media/images/articles/article-${article.articleID}/`;
 
       articleElement.innerHTML = `
-        <h2>${article.Title}</h2>
-        <p><strong>Author:</strong> ${article.Author}</p>
-        <p><strong>Publisher:</strong> ${article.Publisher}</p>
-        <p><strong>Country:</strong> ${article.Country}</p>
-        <p><strong>Sector:</strong> ${article.Sector}</p>
-        <p><strong>Published Date:</strong> ${new Date(article.publishDateTime).toLocaleDateString()}</p>
-        <p><strong>Tags:</strong> ${article.Tags}</p>
-        <p>${article.Body}</p>
+        <h3 class="article-title">${article.Title}</h3>
+        <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
+        <p class="article-country"><strong>Country:</strong> ${article.Country}</p>
+        <p class="article-publisher"><strong>Publisher:</strong> ${article.Publisher}</p>
+        <p class="article-sector"><strong>Sector:</strong> ${article.Sector}</p>
+        <p class="article-tags"><strong>Tags:</strong> ${article.Tags}</p>
+        <p class="article-body">${article.Body}</p>
       `;
-  
+      /*
       // append images to the page if have
       if (article.imageFileNames && article.imageFileNames.length > 0) {
         const imagesDiv = document.createElement('div');
@@ -44,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function() {
           imagesDiv.appendChild(img);
         });
         articleElement.appendChild(imagesDiv);
-      }
+      }*/
   
       articlesList.appendChild(articleElement);
     });
