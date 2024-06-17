@@ -88,11 +88,7 @@ const addArticle = async (req, res) => {
       return res.status(400).json({ error: "At least one image is required to create an article." });
     }
 
-    let articleID;
-
     try {
-      // Start a transaction to ensure atomicity
-      const connection = await sql.connect(dbConfig);
       await transaction.begin();
 
       // Create article in the database
@@ -108,7 +104,8 @@ const addArticle = async (req, res) => {
       // Commit transaction
       await transaction.commit();
 
-      // Move files after committing the transaction
+      // move files from temp to its appropriate folder if theres no error
+      // because its after the transaction is commited where it will be rolled back if theres an error
       for (const imageFileName of imageFileNames) {
         const oldPath = path.join(__dirname, '../uploads/temp', imageFileName);
         const newDir = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`);

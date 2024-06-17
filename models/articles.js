@@ -178,7 +178,7 @@ class Article {
           VALUES (@ArticleID, @ImageFileName)
         `;
 
-        // insert the associated articleid and image filename
+        // insert the associated articleid and image filename to the ArticleImages table
         insertImageRequest.input('ArticleID', sql.Int, newArticleID);
         insertImageRequest.input('ImageFileName', sql.NVarChar, imageFileName);
         await insertImageRequest.query(insertImageQuery);
