@@ -1,3 +1,4 @@
+
 # Keriswatch
 
 Keriswatch is ---
@@ -9,8 +10,11 @@ Keriswatch is ---
 3.  Joi
 4.  MSSQL
 5.  fs
+		- module for interacting with file system
 6.  util
+		- module for debugging and logging
 7.  multer
+		- module for uploading files
 
 ## Notes
 
