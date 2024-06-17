@@ -79,33 +79,69 @@ async function searchArticles(req, res) {
 }
 
 const addArticle = async (req, res) => {
+  const transaction = new sql.Transaction();
   try {
-    const newArticleData = req.body; 
-    const imageFileNames = req.files ? req.files.map(file => file.filename) : []; 
+    const newArticleData = req.body;
+    const imageFileNames = req.files ? req.files.map(file => file.filename) : [];
 
     if (imageFileNames.length === 0) {
       return res.status(400).json({ error: "At least one image is required to create an article." });
     }
 
-    const articleID = await Article.createArticle(newArticleData, imageFileNames);
+    let articleID;
 
-    for (const imageFileName of imageFileNames) {
-      const oldPath = path.join(__dirname, '../uploads/temp', imageFileName); 
-      const newDir = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`); 
-      const newPath = path.join(newDir, imageFileName); 
+    try {
+      // Start a transaction to ensure atomicity
+      const connection = await sql.connect(dbConfig);
+      await transaction.begin();
 
-      if (!fs.existsSync(newDir)) {
-        fs.mkdirSync(newDir, { recursive: true });
+      // Create article in the database
+      const articleID = await Article.createArticle(newArticleData, imageFileNames, transaction);
+
+
+      if (!articleID) {
+        throw new Error("Article ID not returned from createArticle function");
       }
-      fs.renameSync(oldPath, newPath); 
-    }
 
-    res.status(201).json({ message: "Article created successfully", articleID });
+      console.log(`New Article ID: ${articleID}`);
+
+      // Commit transaction
+      await transaction.commit();
+
+      // Move files after committing the transaction
+      for (const imageFileName of imageFileNames) {
+        const oldPath = path.join(__dirname, '../uploads/temp', imageFileName);
+        const newDir = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`);
+        const newPath = path.join(newDir, imageFileName);
+
+        if (!fs.existsSync(newDir)) {
+          fs.mkdirSync(newDir, { recursive: true });
+        }
+        fs.renameSync(oldPath, newPath);
+      }
+
+      res.status(201).json({ message: "Article created successfully", articleID });
+    } catch (error) {
+      // Rollback transaction in case of error
+      await transaction.rollback();
+
+      // Cleanup uploaded files in case of error
+      imageFileNames.forEach(fileName => {
+        const filePath = path.join(__dirname, '../uploads/temp', fileName);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      });
+
+      console.error("Error creating article:", error);
+      return res.status(500).json({ error: "Error creating article" });
+    }
   } catch (error) {
-    console.error("Error creating article:", error);
-    res.status(500).json({ error: "Error creating article" });
+    console.error("Unexpected error:", error);
+    res.status(500).json({ error: "Unexpected error occurred while creating article" });
   }
 };
+
 
 const removeArticle = async (req, res) => {
   const { articleID } = req.params;

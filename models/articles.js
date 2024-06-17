@@ -134,6 +134,11 @@ class Article {
     }
   }
 
+  // CREATE ARTICLE
+  // 1. get the new article data from the input (from a form on the page)
+  // 2. insert the new article into the Articles table first
+  // 3. go through all the filenames of the images that has been uploaded and get it
+  // 4. insert the image filename into the ArticleImages that has been processed by the multer config
   static async createArticle(newArticleData, imageFileNames) {
     const connection = await sql.connect(dbConfig);
     const transaction = new sql.Transaction(connection);
@@ -190,6 +195,13 @@ class Article {
     }
   }
 
+  // DELETE ARTICLE
+  // 1. get image filenames for the article want to delete using the articleID
+  // 2. delete the image filenames in ArticleImages table first beacuse of the foreign key relation
+  // 3. then delete the article form the Articles table
+  // 4. go into the folder that holds the images associating with the article
+  // 5. clear the whole folder
+  // 6. if it is clear then remove the folder from the system
   static async deleteArticle(articleID) {
     const connection = await sql.connect(dbConfig);
     const transaction = new sql.Transaction(connection);
@@ -205,14 +217,12 @@ class Article {
       const result = await request.query(getImageFilenamesQuery);
   
       const imageFileNames = result.recordset.map(row => row.ImageFileName);
-  
-      console.log('Image filenames to delete:', imageFileNames);
-  
-      // Delete images from ArticleImages table first
+    
+      // delete images filenames from ArticleImages table first
       const deleteImagesQuery = `DELETE FROM ArticleImages WHERE ArticleID = @ArticleID`;
       await request.query(deleteImagesQuery);
   
-      // Finally delete article from Articles table
+      // finally delete article from Articles table
       const deleteArticleQuery = `DELETE FROM Articles WHERE articleID = @ArticleID`;
       const deleteResult = await request.query(deleteArticleQuery);
   
