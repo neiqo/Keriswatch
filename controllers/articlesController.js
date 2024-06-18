@@ -153,9 +153,25 @@ const removeArticle = async (req, res) => {
   }
 };
 
+const getArticleByID = async (req, res) => {
+  const { articleID } = req.params;
+
+  try {
+    const article = await Article.getArticleByID(articleID);
+    if (!article) {
+      return res.status(404).send("Article not found");
+    }
+    res.json(article);
+  } catch (error) {
+    console.error("Error retrieving article:", error);
+    res.status(500).send("Error retrieving article");
+  }
+};
+
 module.exports = {
   getAllArticles,
   searchArticles,
   addArticle,
-  removeArticle
+  removeArticle,
+  getArticleByID
 };

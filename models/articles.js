@@ -259,8 +259,69 @@ class Article {
       connection.close();
     }
   }
+
+  static async getArticleByID(articleID) {
+    const connection = await sql.connect(dbConfig);
+    
+    const sqlQuery = `
+      SELECT 
+        a.articleID,
+        a.Author,
+        a.Publisher,
+        a.Country,
+        a.Sector,
+        a.Title,
+        a.Body,
+        a.publishDateTime,
+        a.Tags,
+        i.ImageFileName
+      FROM Articles a
+      LEFT JOIN ArticleImages i ON a.articleID = i.ArticleID
+      WHERE a.articleID = @articleID
+    `;
   
+    const request = connection.request();
+    request.input('articleID', sql.Int, articleID);
+    const result = await request.query(sqlQuery);
   
+    connection.close();
+  
+    if (result.recordset.length === 0) {
+      return null;
+    }
+  
+    const articleData = {
+      articleID: result.recordset[0].articleID,
+      Author: result.recordset[0].Author,
+      Publisher: result.recordset[0].Publisher,
+      Country: result.recordset[0].Country,
+      Sector: result.recordset[0].Sector,
+      Title: result.recordset[0].Title,
+      Body: result.recordset[0].Body,
+      publishDateTime: result.recordset[0].publishDateTime,
+      Tags: result.recordset[0].Tags,
+      imageFileNames: []
+    };
+  
+    result.recordset.forEach(row => {
+      if (row.ImageFileName) {
+        articleData.imageFileNames.push(row.ImageFileName);
+      }
+    });
+  
+    return new Article(
+      articleData.articleID,
+      articleData.Author,
+      articleData.Publisher,
+      articleData.Country,
+      articleData.Sector,
+      articleData.Title,
+      articleData.Body,
+      articleData.publishDateTime,
+      articleData.Tags,
+      articleData.imageFileNames
+    );
+  }    
 }
 
 module.exports = Article;
