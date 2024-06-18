@@ -18,8 +18,8 @@ Keriswatch is ---
 
 ## Notes
 
-If editing any JS files, turn off Prettier extension
+If editing any JS files, turn off Prettier extension because the formatting will remove some things and make things not work, a bit annoying
 
 Articles have 3 images, first image will be the cover image or main image while other 2 will be in the body of the article
 
-When making a login, remove password expiration in Server (SQLEXPRESS) Properties > Security
+When making a login, remove password expiration in Server (SQLEXPRESS) Properties > Security so that life is easier
