@@ -168,10 +168,24 @@ const getArticleByID = async (req, res) => {
   }
 };
 
+const editTags = async (req, res) => {
+  const { articleID } = req.params;
+  const { newTags } = req.body;
+
+  try {
+    await Article.editTags(articleID, newTags);
+    res.status(200).json({ message: "Tags updated successfully" });
+  } catch (error) {
+    console.error("Error updating tags:", error);
+    res.status(500).json({ error: "Error updating tags" });
+  }
+};
+
 module.exports = {
   getAllArticles,
   searchArticles,
   addArticle,
   removeArticle,
-  getArticleByID
+  getArticleByID,
+  editTags
 };

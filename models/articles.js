@@ -321,7 +321,43 @@ class Article {
       articleData.Tags,
       articleData.imageFileNames
     );
-  }    
+  } 
+  
+  static async editTags(articleID, newTags) {
+    const connection = await sql.connect(dbConfig);
+    const transaction = new sql.Transaction(connection);
+
+    try {
+      await transaction.begin();
+
+      const request = new sql.Request(transaction);
+
+      const updateTagsQuery = `
+        UPDATE Articles
+        SET Tags = @Tags
+        WHERE articleID = @ArticleID
+      `;
+
+      request.input('Tags', sql.NVarChar, newTags);
+      request.input('ArticleID', sql.Int, articleID);
+
+      const result = await request.query(updateTagsQuery);
+
+      if (result.rowsAffected[0] === 0) {
+        throw new Error(`Article with ID ${articleID} not found`);
+      }
+
+      await transaction.commit();
+
+      return true;
+    } catch (error) {
+      console.error('Error updating tags:', error);
+      await transaction.rollback();
+      throw error;
+    } finally {
+      connection.close();
+    }
+  }
 }
 
 module.exports = Article;
