@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- <link href="boostrap/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- Custom styles for this template -->
+    <!-- <link href="styles/starter-template.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="styles/eventCreation.css" />
+
+  </head>
+
+  <body>
+
+    <!-- <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">News</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Events</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <a class="dropdown-item" href="#">Articles</a>
+              <a class="dropdown-item" href="#">Users</a>
+              <a class="dropdown-item" href="#">Organisations</a>
+            </div>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav> -->
+
+    <main role="main" class="event-details">
+
+      <!-- <div class="starter-template">
+        <h1>Bootstrap starter template</h1>
+        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+      </div> -->
+
+      <div class="event-general">
+        <!--<i</div>mg src="..." class="rounded float-left" alt="...">-->
+        <div class="event-information">
+            <textarea id="name" placeholder="Name"></textarea>
+            <textarea id="startdate" placeholder="Start Date"></textarea>
+            <textarea id="enddate" placeholder="End Date"></textarea>
+            <textarea id="type" placeholder="Type"></textarea>
+            <!-- <textarea id="location" placeholder="Location"></textarea> -->
+        </div>
+      </div>
+
+      <div class="event-about">
+        <textarea id="description" placeholder="Description of Event (500 Words)"></textarea>
+
+        <div class="event-specifications">
+          <!-- comment this out first later then put -->
+          <!-- <div class="specific-container">
+            <span>Entry Fee:</span>
+            <textarea placeholder="Entry Fee:"></textarea>
+          </div>
+
+          <div class="specific-container">
+            <span>Event Type:</span>
+            <textarea id="type" placeholder="Event Type:"></textarea>
+          </div>
+
+          <div class="specific-container">
+            <span>Timings:</span>
+            <textarea placeholder="Timings:"></textarea>
+          </div> -->
+        </div>
+      </div>
+
+      <button id="CreateButton" onclick="getValue()">Create</button>
+      <a href="index.html">
+        <button id="CancelButton" onclick="cancel()">Cancel</button>
+      </a>
+    </main><!-- /.container -->    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="boostrap/jquery-slim.min.js"><\/script>')</script>
+    <script src="boostrap/popper.min.js"></script>
+    <script src="boostrap/bootstrap.min.js"></script>
+    <script src="scripts/eventCreation.js"></script>
+  </body>
+</html>
+

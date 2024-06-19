@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <title>Create Event</title>
+    <link rel="stylesheet" href="styles/eventCreation.css" />
+
+  </head>
+
+  <body>
+    <form id="event-form">
+        <main role="main" class="event-details">
+          <div class="event-general">
+            <div class="event-information">
+              <label for="image">Select a file:</label>
+              <input type="file" id="image" name="image">
+                <label for="name">Name:</label>
+                <textarea id="name" name="name" placeholder="Name"></textarea>
+                <!-- <label for="type">Type:</label>
+                <textarea id="type" name="type" placeholder="Type"></textarea> -->
+                <label for="startdate">Start Date:</label>
+                <input type="date" id="startdate" name="startdate" placeholder="Start Date">
+                <label for="enddate">End Date:</label>
+                <input type="date" id="enddate" name="enddate" placeholder="End Date">
+            </div>
+          </div>
+      
+          <div class="event-about">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" placeholder="Description of Event (500 Words)"></textarea>
+      
+            <div class="event-specifications">
+              <!-- comment this out first later then put -->
+                <div class="specific-container">
+                <span>Entry Fee:</span>
+                <textarea name="entryFee" placeholder="Entry Fee:"></textarea>
+              </div>
+      
+              <div class="specific-container">
+                <span>Event Type:</span>
+                <textarea id="type" placeholder="Event Type:"></textarea>
+              </div>
+    
+              <div class="specific-container">
+                <span>Timings:</span>
+                <textarea placeholder="Timings:"></textarea>
+              </div>
+            </div>
+          </div>
+        </main>
+        <input type="submit" value="Submit">
+        <input id="CancelButton" type="button" value="Cancel">
+    </form>
+
+
+    <script src="scripts/eventCreation.js"></script>
+  </body>
+</html>
+
