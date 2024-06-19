@@ -30,7 +30,7 @@ app.get('/events/:id', (req, res) => {
 //changed to /api for front end
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);
-app.get("/api/events/search", eventsController.searchEvents);
+//app.get("/api/events/search", eventsController.searchEvents);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
 app.post("/api/events/with-users", eventsController.addUsertoEvent);
 app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
@@ -42,7 +42,7 @@ app.post("/api/events", eventsController.createEvent); // POST for creating book
 app.put("/api/events/:id", eventsController.updateEvent);
 app.delete("/api/events/:id", eventsController.deleteEvent);
 app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);  
-app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
+//app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
 app.listen(PORT, async() => {
     try {

@@ -84,21 +84,6 @@ const deleteEventandUser = async (req, res) => {
   }
 }
 
-//To delete user from eventuser table and user table
-const deleteUserandEvent = async (req, res) => {
-  const EventId = parseInt(req.params.id);
-
-  try {
-    const success = await Event.deleteUserandEvent(EventId);
-    if (!success) {
-      return res.status(404).send("Event not found");
-    }
-    res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error deleting event");
-  }
-}
 
 //For pagination
 const getEvents = async (req, res) => {
@@ -114,19 +99,6 @@ const getEvents = async (req, res) => {
     res.status(500).send('Error retrieving events');
   }
 }
-
-//Search for Events
-async function searchEvents(req, res) {
-  const searchTerm = req.query.searchTerm; // Extract search term from query params
-
-  try {    
-    const users = await Event.searchEvents(searchTerm);
-    res.json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error searching events" });
-  }
-};
 
 async function getEventswithUsers(req, res) {
   try {
@@ -193,9 +165,9 @@ module.exports = {
   updateEvent,
   deleteEvent,
   deleteEventandUser,
-  deleteUserandEvent,
+  //deleteUserandEvent,
   getEvents,
-  searchEvents,
+  //searchEvents,
   getEventswithUsers,
   getSpecificEventwithUsers,
   addUsertoEvent,

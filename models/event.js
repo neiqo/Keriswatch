@@ -174,20 +174,6 @@ class Event {
       return result.rowsAffected > 0;
     }
 
-    static async deleteUserandEvent(id) {
-      const connection = await sql.connect(dbConfig);
-
-      const sqlQuery = `DELETE FROM EventUsers WHERE user_id = @id;
-                        DELETE FROM Users WHERE id = @id;`; // Parameterized query
-
-      const request = connection.request();
-      request.input("id", id);
-      const result = await request.query(sqlQuery);
-
-      connection.close();
-      return result.rowsAffected > 0;
-    }
-    
     //Total number of events
     static async totalCount() {
         const connection = await sql.connect(dbConfig);
@@ -195,27 +181,6 @@ class Event {
         const query = `SELECT COUNT(*) FROM Events`;
         const result = connection.request().query(query);
         return result;
-    }
-
-    // Search for events
-    static async searchEvents(searchTerm) {
-        const connection = await sql.connect(dbConfig);
-
-        try {
-            const query = `
-            SELECT *
-            FROM Events
-            WHERE EventName LIKE '%${searchTerm}%'
-                OR EventType LIKE '%${searchTerm}%'
-            `;
-
-            const result = await connection.request().query(query);
-            return result.recordset;
-        } catch (error) {
-            throw new Error("Error searching events"); // Or handle error differently
-        } finally {
-            await connection.close(); // Close connection even on errors
-        }
     }
 
     //get list of users who joined the events
