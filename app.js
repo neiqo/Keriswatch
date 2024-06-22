@@ -13,7 +13,7 @@ const app = express();
 const staticMiddleware = express.static("public/html");
 const port = process.env.PORT || 3000; // Use environment variable or default port
 
-// SERVE STATIC FILESS
+// SERVE STATIC FILES
 
 // MIDDLEWARE CONFIGURATION
 app.use(bodyParser.json());
