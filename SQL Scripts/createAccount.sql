@@ -5,7 +5,8 @@ CREATE TABLE Users (
     email VARCHAR(255) NOT NULL UNIQUE,
     role VARCHAR(30) NOT NULL CHECK (role IN ('Organisation', 'Admin', 'NormalUser'))
 );
-
+\
+/* do i need username,password and email in Admin if it is already in Users? */
 CREATE TABLE Admin (
 	id INT PRIMARY KEY IDENTITY,
 	user_id INT FOREIGN KEY REFERENCES Users(id),
