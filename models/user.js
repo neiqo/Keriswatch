@@ -23,13 +23,20 @@ class User {
         const result = await request.query(sqlQuery);
         connection.close();
 
-        return result.recordset[0]
-        ? new User(
-            result.recordset[0].username,
-            result.recordset[0].password,
-            result.recordest[0].email,
-          )
-        : null;
+        const user = result.recordset[0];
+
+        if (!user) return null; // if no user found, return null
+
+        switch (user.role) {
+            case 'NormalUser':
+                return await NormalUser.getNormalUserByUsername(username);
+            case 'Admin':
+                return new Admin(user.username, user.password, user.email);
+            case 'Organisation':
+                return await Organisation.getOrganisationByUsername(username);
+            default:
+                return new User(user.username, user.password, user.email);
+        }
     }
 
     static async getUserByUsername(username) {
@@ -42,13 +49,20 @@ class User {
         const result = await request.query(sqlQuery);
         connection.close();
 
-        return result.recordset[0]
-        ? new User(
-            result.recordset[0].username,
-            result.recordset[0].password,
-            result.recordest[0].email,
-          )
-        : null;
+        const user = result.recordset[0];
+
+        if (!user) return null; // if no user found, return null
+
+        switch (user.role) {
+            case 'NormalUser':
+                return await NormalUser.getNormalUserByUsername(username);
+            case 'Admin':
+                return new Admin(user.username, user.password, user.email);
+            case 'Organisation':
+                return await Organisation.getOrganisationByUsername(username);
+            default:
+                throw new Error('Error identifying user role');
+        }
     }
 }
 
@@ -64,7 +78,7 @@ class NormalUser extends User {
         const connection = await sql.connect(dbConfig);
 
         // if username already exists, throw error
-        if (await this.getUserByUsername(user.username) != null) {
+        if (await this.getNormalUserByUsername(user.username) != null) {
             connection.close();
             throw new Error('User already exists');
         }
@@ -88,7 +102,7 @@ class NormalUser extends User {
             const userId = userResult.recordset[0].user_id;
 
             // Insert into NormalUsers table
-            const insertNormalUserQuery = `INSERT INTO NormalUsers (user_id, username, password, email, country)
+            const insertNormalUserQuery = `INSERT INTO NormalUser (user_id, username, password, email, country)
                                            VALUES (@UserId, @Username, @Password, @Email, @Country)`;
             request.input('UserId', sql.Int, userId);
             await request.query(insertNormalUserQuery);
@@ -96,39 +110,17 @@ class NormalUser extends User {
             await transaction.commit();
             connection.close();
 
-            return this.getUserByUsername(user.username);
+            return this.getNormalUserByUsername(user.username);
         } catch (err) {
             await transaction.rollback();
             connection.close();
             throw new Error('Error creating account: ' + err.message);
         }
     }
-    
-    // override login method
-    static async loginUser(email, password) {
+
+    static async getNormalUserByUsername(username) {
         const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE email = @Email AND password = @Password`;
-
-        const request = connection.request();
-        request.input('Email', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
-        request.input('Password', sql.VarChar, password); // specify data type varchar to avoid system misinterpretation
-
-        const result = await request.query(sqlQuery);
-        connection.close();
-
-        return result.recordset[0]
-        ? new NormalUser(
-            result.recordset[0].username,
-            result.recordset[0].password,
-            result.recordset[0].email,
-            result.recordset[0].country
-          )
-        : null;
-    }
-
-    static async getUserByUsername(username) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE username = @Username`;
+        const sqlQuery = `SELECT * FROM NormalUser WHERE username = @Username`;
 
         const request = connection.request();
         request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
@@ -145,6 +137,49 @@ class NormalUser extends User {
           )
         : null;
     }
+
+    static async updateAccountDetails(user) {
+        const connection = await sql.connect(dbConfig);
+
+        // if username does not exist, throw error
+        if (await this.getNormalUserByUsername(user.username) == null) {
+            connection.close();
+            throw new Error('User does not exist');
+        }
+
+        try {
+            // Transaction is used incase one of the 2 insert queries fails, and we want to rollback the entire transaction
+            const transaction = new sql.Transaction(connection);
+            await transaction.begin();
+
+            const request = new sql.Request(transaction);
+            request.input('Username', sql.VarChar, user.username);
+            request.input('Password', sql.VarChar, user.password);
+            request.input('Email', sql.VarChar, user.email);
+            request.input('Country', sql.VarChar, user.country);
+
+            // Update Users table
+            const updateUserQuery = `UPDATE Users
+                                     SET password = @Password, email = @Email
+                                     WHERE username = @Username`;
+            await request.query(updateUserQuery);
+
+            // Update NormalUsers table
+            const updateNormalUserQuery = `UPDATE NormalUser
+                                           SET password = @Password, email = @Email, country = @Country
+                                           WHERE username = @Username`;
+            await request.query(updateNormalUserQuery);
+
+            await transaction.commit();
+            connection.close();
+
+            return this.getNormalUserByUsername(user.username);
+        } catch (err) {
+            await transaction.rollback();
+            connection.close();
+            throw new Error('Error updating account: ' + err.message);
+        }
+    }
 }
 
 // Admin class
@@ -155,25 +190,45 @@ class Admin extends User {
 
     // Admin-specific methods
     
-    // override login method
-    static async loginUser(email, password) {
+    // to be used for viewing all profiles as admin
+    static async getAllUsers() {
         const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE email = @Email AND password = @Password`;
+        const sqlQuery = `SELECT * FROM Users WHERE role = 'NormalUser' OR role = 'Organisation'`;
 
         const request = connection.request();
-        request.input('Email', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
-        request.input('Password', sql.VarChar, password); // specify data type varchar to avoid system misinterpretation
+        const result = await request.query(sqlQuery);
+        connection.close();
+
+        return result.recordset.map (user => {
+            return user.role == 'NormalUser'
+            ? new NormalUser(
+                user.username,
+                user.password,
+                user.email,
+                user.country
+              )
+            : new Organisation(
+                user.username,
+                user.password,
+                user.email,
+                user.orgNumber
+              );
+        });
+    
+    }
+
+    // to be used for deleting a normal user or organisation as admin
+    static async deleteUser(username) {
+        const connection = await sql.connect(dbConfig);
+        const sqlQuery = `DELETE FROM Users WHERE username = @Username`;
+
+        const request = connection.request();
+        request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
 
         const result = await request.query(sqlQuery);
         connection.close();
 
-        return result.recordset[0]
-        ? new Admin(
-            result.recordset[0].username,
-            result.recordset[0].password,
-            result.recordest[0].email,
-          )
-        : null;
+        return result.rowsAffected[0] > 0; // if successful, returns true, else false
     }
 }
 
@@ -185,36 +240,13 @@ class Organisation extends User {
     }
 
     // Organisation-specific methods
-    static async createAccount(username, password, email, orgNumber) {
-        const connection = await sql.connect(dbConfig);
-
-        // if username already exists, throw error
-        if (await this.checkUserExists(username) > 0) {
-            connection.close();
-            // do i throw new error or console.log the issue then return?
-            throw new Error('Organisation name already exists');
-        }
-
-        const sqlQuery = `INSERT INTO Users (username, password)
-                        VALUES ('${username}', '${password}'); 
-                        INSERT INTO Organisations (username, password, email, orgNumber) 
-                        VALUES ('${username}', '${password}', '${email}', '${orgNumber}')`;
-
-        const request = connection.request();
-        const result = await request.query(sqlQuery);
-        
-        connection.close();
-        
-        return result;
-    } 
-
     static async createAccount(user) {
         const connection = await sql.connect(dbConfig);
 
         // if username already exists, throw error
-        if (await this.getUserByUsername(user.username) != null) {
+        if (await this.getOrganisationByUsername(user.username) != null) {
             connection.close();
-            throw new Error('User already exists');
+            throw new Error('Organisation already exists');
         }
 
         try {
@@ -236,7 +268,7 @@ class Organisation extends User {
             const userId = userResult.recordset[0].user_id;
 
             // Insert into Organisations table
-            const insertOrganisationQuery = `INSERT INTO Organiastions (user_id, username, password, email, orgNumber)
+            const insertOrganisationQuery = `INSERT INTO Organisation (user_id, username, password, email, orgNumber)
                                            VALUES (@UserId, @Username, @Password, @Email, @OrgNumber)`;
             request.input('UserId', sql.Int, userId);
             await request.query(insertOrganisationQuery);
@@ -244,17 +276,17 @@ class Organisation extends User {
             await transaction.commit();
             connection.close();
 
-            return this.getUserByUsername(user.username);
+            return this.getOrganisationByUsername(user.username);
         } catch (err) {
-            await transaction.rollback(); // at least one of the queries failed, so rollback
+            await transaction.rollback(); // at least one of the queries failed, so discard changes
             connection.close();
             throw new Error('Error creating account: ' + err.message);
         }
     }    
 
-    static async getUserByUsername(username) {
+    static async getOrganisationByUsername(username) {
         const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE username = @Username`;
+        const sqlQuery = `SELECT * FROM Organisation WHERE username = @Username`;
 
         const request = connection.request();
         request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
@@ -270,6 +302,49 @@ class Organisation extends User {
             result.recordset[0].orgNumber
           )
         : null;
+    }
+
+    static async updateAccountDetails(user) {
+        const connection = await sql.connect(dbConfig);
+
+        // if username does not exist, throw error
+        if (await this.getOrganisationByUsername(user.username) == null) {
+            connection.close();
+            throw new Error('Organisation does not exist');
+        }
+
+        try {
+            // Transaction is used incase one of the 2 insert queries fails, and we want to rollback the entire transaction
+            const transaction = new sql.Transaction(connection);
+            await transaction.begin();
+
+            const request = new sql.Request(transaction);
+            request.input('Username', sql.VarChar, user.username);
+            request.input('Password', sql.VarChar, user.password);
+            request.input('Email', sql.VarChar, user.email);
+            request.input('OrgNumber', sql.Int, user.orgNumber);
+
+            // Update Users table
+            const updateUserQuery = `UPDATE Users
+                                     SET password = @Password, email = @Email
+                                     WHERE username = @Username`;
+            await request.query(updateUserQuery);
+
+            // Update NormalUsers table
+            const updateOrganisationQuery = `UPDATE Organisation
+                                           SET password = @Password, email = @Email, orgNumber = @OrgNumber
+                                           WHERE username = @Username`;
+            await request.query(updateOrganisationQuery);
+
+            await transaction.commit();
+            connection.close();
+
+            return this.getOrganisationByUsername(user.username);
+        } catch (err) {
+            await transaction.rollback();
+            connection.close();
+            throw new Error('Error updating account: ' + err.message);
+        }
     }
 }
 
