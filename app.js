@@ -12,8 +12,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 app.use(staticMiddleware); // Mount the static middleware
 
-// Routes for requests
+// Controllers
+const statisticsController = require("./controllers/statisticsController");
 
+// Routes for requests
+app.get('/statistics/:country/:year', statisticsController.getStatisticsByCountryAndYear);
 
 // For database connection
 app.listen(port, async () => {
