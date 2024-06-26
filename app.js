@@ -15,8 +15,9 @@ app.use(staticMiddleware); // Mount the static middleware
 // Controllers
 const statisticsController = require("./controllers/statisticsController");
 
-// Routes for requests
-app.get('/statistics/:country/:year', statisticsController.getStatisticsByCountryAndYear);
+// GET request routes
+app.get("/statistics", statisticsController.getAllStatistics);
+app.get("/statistics/:country", statisticsController.getStatisticsByCountry);
 
 // For database connection
 app.listen(port, async () => {

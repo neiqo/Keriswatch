@@ -1,9 +1,8 @@
 document.getElementById('statistics-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const country = document.getElementById('country').value;
-    const year = document.getElementById('year').value;
     
-    const response = await fetch(`/statistics/${country}/${year}`);
+    const response = await fetch(`/statistics/${country}`);
     const data = await response.json();
     
     const categories = {
@@ -24,10 +23,9 @@ document.getElementById('statistics-form').addEventListener('submit', async (e) 
 document.getElementById('statistics-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const country = document.getElementById('country').value;
-    const year = document.getElementById('year').value;
     
     try {
-        const response = await fetch(`/keriswatch/${country}/${year}`);
+        const response = await fetch(`/keriswatch/${country}`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }

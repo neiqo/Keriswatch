@@ -1,6 +1,6 @@
 module.exports = {
-    user: "trial",
-    password: "password",
+    user: "booksapi_user",
+    password: "booksapi_user",
     server: "localhost",
     database: "bed_db",
     trustServerCertificate: true,
