@@ -1,16 +1,16 @@
-INSERT INTO CountryStatistics(Country, Category, Year, Percentage)
+INSERT INTO CountryStatistics(country, category, year, percentage)
 VALUES
-('Brunei Darussalam', 'Agriculture', 2020, 1.21750283610591),
-('Brunei Darussalam', 'Agriculture', 2021, 1.25629022275081),
-('Brunei Darussalam', 'Agriculture', 2022, 1.09616028876241),
+('Brunei', 'Agriculture', 2020, 1.21750283610591),
+('Brunei', 'Agriculture', 2021, 1.25629022275081),
+('Brunei', 'Agriculture', 2022, 1.09616028876241),
 
-('Brunei Darussalam', 'Services', 2020, 57.3561114159878),
-('Brunei Darussalam', 'Services', 2021, 80.1689108084537),
-('Brunei Darussalam', 'Services', 2022, 86.3893567977832),
+('Brunei', 'Services', 2020, 57.3561114159878),
+('Brunei', 'Services', 2021, 80.1689108084537),
+('Brunei', 'Services', 2022, 86.3893567977832),
 
-('Brunei Darussalam', 'Industry', 2020, 59.1336302400797),
-('Brunei Darussalam', 'Industry', 2021, 62.7015642235623),
-('Brunei Darussalam', 'Industry', 2022, 67.9255854192344),
+('Brunei', 'Industry', 2020, 59.1336302400797),
+('Brunei', 'Industry', 2021, 62.7015642235623),
+('Brunei', 'Industry', 2022, 67.9255854192344),
 
 ('Cambodia', 'Agriculture', 2020, 22.6963952064534),
 ('Cambodia', 'Agriculture', 2021, 22.8475000571716),
@@ -36,17 +36,17 @@ VALUES
 ('Indonesia', 'Industry', 2021, 39.844959654917),
 ('Indonesia', 'Industry', 2022, 41.4292959518952),
 
-('Lao PDR', 'Agriculture', 2020, 16.3377623592616),
-('Lao PDR', 'Agriculture', 2021, 16.0676970155401),
-('Lao PDR', 'Agriculture', 2022, 14.8688822282276),
+('Laos', 'Agriculture', 2020, 16.3377623592616),
+('Laos', 'Agriculture', 2021, 16.0676970155401),
+('Laos', 'Agriculture', 2022, 14.8688822282276),
 
-('Lao PDR', 'Services', 2020, NULL), -- Replace with actual value if available
-('Lao PDR', 'Services', 2021, NULL), -- Replace with actual value if available
-('Lao PDR', 'Services', 2022, NULL), -- Replace with actual value if available
+('Laos', 'Services', 2020, NULL), -- Replace with actual value if available
+('Laos', 'Services', 2021, NULL), -- Replace with actual value if available
+('Laos', 'Services', 2022, NULL), -- Replace with actual value if available
 
-('Lao PDR', 'Industry', 2020, 32.4163678323352),
-('Lao PDR', 'Industry', 2021, 34.1299777246213),
-('Lao PDR', 'Industry', 2022, 34.1089797342112),
+('Laos', 'Industry', 2020, 32.4163678323352),
+('Laos', 'Industry', 2021, 34.1299777246213),
+('Laos', 'Industry', 2022, 34.1089797342112),
 
 ('Malaysia', 'Agriculture', 2020, 8.16600227056372),
 ('Malaysia', 'Agriculture', 2021, 9.57461350764324),
@@ -108,15 +108,15 @@ VALUES
 ('Thailand', 'Industry', 2021, 34.9873383990459),
 ('Thailand', 'Industry', 2022, 34.9962429986559),
 
-('Viet Nam', 'Agriculture', 2020, 12.6554035685555),
-('Viet Nam', 'Agriculture', 2021, 12.5603701365009),
-('Viet Nam', 'Agriculture', 2022, 11.8771079380377),
+('Vietnam', 'Agriculture', 2020, 12.6554035685555),
+('Vietnam', 'Agriculture', 2021, 12.5603701365009),
+('Vietnam', 'Agriculture', 2022, 11.8771079380377),
 
-('Viet Nam', 'Services', 2020, 84.3815976487244),
-('Viet Nam', 'Services', 2021, 93.2523928859702),
-('Viet Nam', 'Services', 2022, 93.9863687204707),
+('Vietnam', 'Services', 2020, 84.3815976487244),
+('Vietnam', 'Services', 2021, 93.2523928859702),
+('Vietnam', 'Services', 2022, 93.9863687204707),
 
-('Viet Nam', 'Industry', 2020, 36.7437132938798),
-('Viet Nam', 'Industry', 2021, 37.4762351784079),
-('Viet Nam', 'Industry', 2022, 38.2592736277217);
+('Vietnam', 'Industry', 2020, 36.7437132938798),
+('Vietnam', 'Industry', 2021, 37.4762351784079),
+('Vietnam', 'Industry', 2022, 38.2592736277217);
 
