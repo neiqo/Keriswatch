@@ -1,3 +1,7 @@
+let agricultureChart;
+let servicesChart;
+let industryChart;
+
 document.getElementById('countryForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const country = document.getElementById('country').value;
@@ -24,16 +28,23 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
             }
         });
 
-        createChart('agricultureChart', 'Agriculture', agricultureData);
-        createChart('servicesChart', 'Services', servicesData);
-        createChart('industryChart', 'Industry', industryData);
+        updateChart('agricultureChart', 'Agriculture', agricultureData, agricultureChart, newChart => agricultureChart = newChart);
+        updateChart('servicesChart', 'Services', servicesData, servicesChart, newChart => servicesChart = newChart);
+        updateChart('industryChart', 'Industry', industryData, industryChart, newChart => industryChart = newChart);
     })
     .catch(error => console.error('Error:', error));
 });
 
-function createChart(canvasId, label, data) {
+function updateChart(canvasId, label, data, existingChart, updateChartReference) {
     const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
+
+    // Destroy existing chart if it exists
+    if (existingChart) {
+        existingChart.destroy();
+    }
+
+    // Create new chart
+    const newChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['2022'],
@@ -53,5 +64,8 @@ function createChart(canvasId, label, data) {
             }
         }
     });
+
+    // Update the chart reference
+    updateChartReference(newChart);
 }
 
