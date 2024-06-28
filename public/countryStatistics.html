@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Statistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="scripts/countryStatistics.js"></script>
+</head>
+<body>
+    <h1>Country Statistics</h1>
+    <form id="countryForm">
+        <label for="country">Select Country:</label>
+        <select id="country" name="country">
+            <option value="Philippines">Philippines</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Cambodia">Cambodia</option>
+            <option value="Brunei">Brunei</option>
+            <option value="Myanmar">Myanmar</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Vietnam">Vietnam</option>
+            <option value="Indonesia">Indonesia</option>
+            <option value="Laos">Laos</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+    <canvas id="agricultureChart"></canvas>
+    <canvas id="servicesChart"></canvas>
+    <canvas id="industryChart"></canvas>
+
+    <script src="./scripts/countryStatistics.js"></script>
+</body>
+</html>

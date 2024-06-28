@@ -4,7 +4,7 @@ const dbConfig = require("./dbConfig");
 const bodyParser = require("body-parser");
 
 const app = express();
-const staticMiddleware = express.static("public");
+const staticMiddleware = express.static("public"); // Path to the public folder
 const port = process.env.PORT || 3000;
 
 // Middleware to handle JSON data
