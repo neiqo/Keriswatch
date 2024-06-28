@@ -1,6 +1,4 @@
-let agricultureChart;
-let servicesChart;
-let industryChart;
+let combinedChart;
 
 document.getElementById('countryForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -28,44 +26,69 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
             }
         });
 
-        updateChart('agricultureChart', 'Agriculture', agricultureData, agricultureChart, newChart => agricultureChart = newChart);
-        updateChart('servicesChart', 'Services', servicesData, servicesChart, newChart => servicesChart = newChart);
-        updateChart('industryChart', 'Industry', industryData, industryChart, newChart => industryChart = newChart);
+        updateCombinedChart('combinedChart', {
+            agriculture: agricultureData[0], 
+            services: servicesData[0], 
+            industry: industryData[0]
+        });
     })
     .catch(error => console.error('Error:', error));
 });
 
-function updateChart(canvasId, label, data, existingChart, updateChartReference) {
+function updateCombinedChart(canvasId, data) {
     const ctx = document.getElementById(canvasId).getContext('2d');
 
     // Destroy existing chart if it exists
-    if (existingChart) {
-        existingChart.destroy();
+    if (combinedChart) {
+        combinedChart.destroy();
     }
 
     // Create new chart
-    const newChart = new Chart(ctx, {
+    combinedChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['2022'],
-            datasets: [{
-                label: label,
-                data: data,
-                backgroundColor: ['rgba(75, 192, 192, 0.2)'],
-                borderColor: ['rgba(75, 192, 192, 1)'],
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: 'Agriculture',
+                    data: [data.agriculture],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    barThickness: 30
+                },
+                {
+                    label: 'Services',
+                    data: [data.services],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1,
+                    barThickness: 30
+                },
+                {
+                    label: 'Industry',
+                    data: [data.industry],
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1,
+                    barThickness: 30
+                }
+            ]
         },
         options: {
+            indexAxis: 'y', // This makes the chart horizontal
             scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100 // This sets the max value to 100, making it look like a progress bar
+                },
                 y: {
                     beginAtZero: true
                 }
             }
         }
     });
-
-    // Update the chart reference
-    updateChartReference(newChart);
 }
+
+
 
