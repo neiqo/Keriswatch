@@ -10,7 +10,7 @@ const upload = require("./middlewares/multerConfig"); // Import the multer confi
 
 // APPLICATION SETUP
 const app = express();
-const staticMiddleware = express.static("public/html");
+const staticMiddleware = express.static("public");
 const port = process.env.PORT || 3000; // Use environment variable or default port
 
 // SERVE STATIC FILES
@@ -22,7 +22,7 @@ app.use(staticMiddleware); // Mount the static middleware
 
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
-
+const bookmarkController = require("./controllers/bookmarksController");
 
 // CONTROLLER ROUTINGS
 // ARTICLE ROUTES
@@ -32,6 +32,10 @@ app.put("/articles/:articleID/editTags", articlesController.editTags); // route 
 app.delete("/articles/:articleID", articlesController.removeArticle); // route for deleting article
 app.get("/articles", articlesController.getAllArticles); // basic route for getting all articles in the db
 app.post("/addArticle", upload.array('images', 3), articlesController.addArticle); // route for adding articles with max 3 images
+// BOOKMARK ROUTES
+app.get("/bookmarks/:userId", bookmarkController.getAllBookmarkedArticles);
+app.post("/bookmarks/:userId/:articleId", bookmarkController.addBookmark);
+app.delete("/bookmarks/:userId/:articleId", bookmarkController.deleteBookmark);
 
 // DATABASE CONNECTION
 app.listen(port, async () => {
