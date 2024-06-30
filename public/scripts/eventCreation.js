@@ -11,29 +11,32 @@ function getValue() {
     let startdateValue = form.elements['startdate'].value;
     let enddateValue = form.elements['enddate'].value;
 
+    let imagefile = form.elements['image'].files[0];
+
+
     console.log(nameValue);
     console.log(descriptionValue);
     console.log(typeValue);
     console.log(startdateValue);
     console.log(enddateValue);
-    createEvent(nameValue, descriptionValue, typeValue, startdateValue, enddateValue);
+    console.log(imagefile);
+    createEvent(nameValue, descriptionValue, typeValue, startdateValue, enddateValue, imagefile);
 }
 
-async function createEvent(name, description, type, startdate, enddate) {
-    const data = {
-        name: name,
-        description: description,
-        type: type,
-        startDate: startdate,
-        endDate: enddate
-    }
+async function createEvent(name, description, type, startdate, enddate, imagefile) {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("type", type);
+    formData.append("startDate", startdate);
+    formData.append("endDate", enddate);
+    formData.append("image", imagefile); // Assuming imageFile is the File object
 
-    const response = await fetch(`/events`, {
+    console.log('Sending event data:', formData); // Log the FormData being sent
+
+    const response = await fetch(`/api/events`, {
         method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data)
+        body: formData
     });
     
     if (!response.ok) {
@@ -41,7 +44,7 @@ async function createEvent(name, description, type, startdate, enddate) {
     }
 
     //Do i need to keep it?
-    const createdEvent = await response.json();
+    //const createdEvent = await response.json();
 };
 
 function cancel() {

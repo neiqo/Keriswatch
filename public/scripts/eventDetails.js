@@ -1,5 +1,6 @@
 //let event = document.getElementById("event-information");
 
+let image = document.getElementById("image");
 let name = document.getElementById("name");
 let startDate = document.getElementById("startDate");
 let endDate = document.getElementById("endDate");
@@ -19,7 +20,9 @@ async function getEventDetails(eventId) {
     });
     const data = await response.json();
     
-
+    console.log(data);
+    image.src = data.imagepath;
+    console.log(data.imagepath);
     name.textContent = data.name;
     startDate.textContent = data.startDate;
     endDate.textContent = data.endDate;
@@ -27,3 +30,7 @@ async function getEventDetails(eventId) {
 }
 
 getEventDetails(getEventIdFromUrl());
+
+
+// function delete event
+let deleteButton = document.getElementById("deleteButton");

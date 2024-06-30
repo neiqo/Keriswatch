@@ -1,6 +1,7 @@
 // Initialising libraries
 const eventsController = require("./controllers/eventsController");
 const validateEvent = require("./middlewares/validateEvent");
+const upload = require("./middlewares/validateEventImage");
 const express = require("express");
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
@@ -38,7 +39,7 @@ app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
 
 app.get("/api/events/:id", eventsController.getEventById);
 app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
-app.post("/api/events", eventsController.createEvent); // POST for creating books (can handle JSON data)
+app.post("/api/events", upload.single("image"), validateEvent, eventsController.createEvent); // POST for creating books (can handle JSON data)
 app.put("/api/events/:id", eventsController.updateEvent);
 app.delete("/api/events/:id", eventsController.deleteEvent);
 app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);  
