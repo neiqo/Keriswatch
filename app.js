@@ -33,7 +33,7 @@ app.post('/signup/organisation', authUser.validateOrganisation, UserController.c
 app.put('/update/normal', authUser.validateUpdateNormalUser, UserController.updateNormalUser);
 app.put('/update/organisation', authUser.validateUpdateOrganisation, UserController.updateOrganisation); 
 
-// All users route
+// Get all users except admin route
 app.get('/users', UserController.getAllUsers); 
 
 app.listen(port, async () => {

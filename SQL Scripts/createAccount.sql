@@ -9,7 +9,7 @@ CREATE TABLE Users (
 /* do i need username,password and email in Admin if it is already in Users? */
 CREATE TABLE Admin (
 	id INT PRIMARY KEY IDENTITY,
-	user_id INT FOREIGN KEY REFERENCES Users(id),
+	user_id INT FOREIGN KEY REFERENCES Users(id) NOT NULL,
 	username VARCHAR(255) NOT NULL UNIQUE,
 	password VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL UNIQUE
@@ -17,7 +17,7 @@ CREATE TABLE Admin (
 
 CREATE TABLE Organisation ( 
 	id INT PRIMARY KEY IDENTITY,
-	user_id INT FOREIGN KEY REFERENCES Users(id),
+	user_id INT FOREIGN KEY REFERENCES Users(id) NOT NULL,
 	username VARCHAR(255) NOT NULL UNIQUE,	
 	password VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL UNIQUE,
@@ -26,7 +26,7 @@ CREATE TABLE Organisation (
 
 CREATE TABLE NormalUser (
 	id INT PRIMARY KEY IDENTITY,
-	user_id INT FOREIGN KEY REFERENCES Users(id),
+	user_id INT FOREIGN KEY REFERENCES Users(id) NOT NULL,
 	username VARCHAR(255) NOT NULL UNIQUE,
 	password VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL UNIQUE,
