@@ -46,8 +46,10 @@ const validateEvent = (req, res, next) => {
     // }
   
     if (req.file) {
-      req.body.imagePath = path.join("/images/events", req.file.originalname);
-      console.log("File path set in validateEvent", path.join(__dirname, "../public/images/events", req.file.originalname));
+      // Construct the image path
+      const imagePath = path.join("/images/events", `${req.file.originalname}`);
+      req.body.imagePath = imagePath; // Save the image path to the request body
+      req.file.path = path.join(__dirname, "../public", imagePath);
     } else {
       return res.status(400).json({ message: "Image is required." });
     }

@@ -1,9 +1,12 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 const moment = require('moment');
+const upload = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 class Event {
-    constructor(id, name, description, type, startDate, endDate, createddate, modifieddate) {
+    constructor(id, name, description, type, startDate, endDate, createddate, modifieddate, imagepath) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -12,8 +15,10 @@ class Event {
         this.endDate = endDate;
         this.createddate = createddate;
         this.modifieddate = modifieddate;
+        this.imagepath = imagepath;
     }
 
+    /* Get All Events */
     static async getAllEvents() {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM Events`;
@@ -23,16 +28,17 @@ class Event {
         connection.close();
         
         return result.recordset.map(
-            (row) => new Event(row.EventId, row.EventName, 
-                row.EventDescription, row.EventType, row.StartDate, row.EndDate,
-            row.CreatedDate, row.ModifiedDate)
+            (row) => new Event(row.id, row.name, 
+              row.description, row.type, row.startDate, row.endDate,
+          row.createdDate, row.modifiedDate, row.imagePath)
         );
     }
 
+    /* Get Event by ID */
     static async getEventById(id) {
         const connection = await sql.connect(dbConfig);
     
-        const sqlQuery = `SELECT * FROM Events WHERE EventId = @id`; // Parameterized query
+        const sqlQuery = `SELECT * FROM Events WHERE id = @id`; // Parameterized query
     
         const request = connection.request();
         request.input("id", id);
@@ -42,23 +48,25 @@ class Event {
     
         return result.recordset[0]
           ? new Event(
-              result.recordset[0].EventId,
-              result.recordset[0].EventName,
-              result.recordset[0].EventDescription,
-              result.recordset[0].EventType,
-              moment(result.recordset[0].StartDate).format('DD-MMM-YYYY'), // Format StartDate
-              moment(result.recordset[0].EndDate).format('DD-MMM-YYYY'),
-              result.recordset[0].CreatedDate,
-              result.recordset[0].ModifiedDate
+              result.recordset[0].id,
+              result.recordset[0].name,
+              result.recordset[0].description,
+              result.recordset[0].type,
+              moment(result.recordset[0].startDate).format('DD-MMM-YYYY'), // Format StartDate
+              moment(result.recordset[0].endDate).format('DD-MMM-YYYY'),
+              result.recordset[0].createdDate,
+              result.recordset[0].modifiedDate,
+              result.recordset[0].imagePath
             )
           : null; // Handle book not found
     }
 
+    /* Create Event */
     static async createEvent(newEventData) {
         const connection = await sql.connect(dbConfig);
     
-        const sqlQuery = `INSERT INTO Events (EventName, EventDescription, EventType, StartDate, EndDate, CreatedDate, ModifiedDate)
-         VALUES (@name, @description, @type, @startdate, @enddate, @createddate, @modifieddate); SELECT SCOPE_IDENTITY() AS EventId;`; // Retrieve ID of inserted record
+        const sqlQuery = `INSERT INTO Events (name, description, type, startDate, endDate, createdDate, modifiedDate, imagePath)
+     VALUES (@name, @description, @type, @startdate, @enddate, @createddate, @modifieddate, @imagepath); SELECT SCOPE_IDENTITY() AS EventId;`; // Retrieve ID of inserted record
     
         const request = connection.request();
         request.input("name", newEventData.name);
@@ -68,63 +76,90 @@ class Event {
         request.input("enddate", newEventData.endDate);
         request.input("createddate", new Date().toISOString().slice(0, 19));
         request.input("modifieddate", null);
+        request.input("imagepath", newEventData.imagePath);
 
         const result = await request.query(sqlQuery);
+        const eventId = result.recordset[0].EventId;
+
+        
+        // Check if an image was uploaded
+        if (newEventData.imagePath) {
+                const newFilePath = path.join("/images/events", `Image_${eventId}${newEventData.name}${path.extname(newEventData.imagePath)}`);
+                const oldFilePath = path.join(__dirname, "../public", newEventData.imagePath);
     
+                // Rename the file to include the event ID
+                fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
+    
+                // Update the event with the new file path
+                const updateQuery = `
+                    UPDATE Events
+                    SET imagePath = @imagepath
+                    WHERE id = @eventid`;
+                
+                const updateRequest = connection.request();
+                updateRequest.input("imagepath", newFilePath);
+                updateRequest.input("eventid", eventId);
+                await updateRequest.query(updateQuery);
+            }
+
         connection.close();
-    
         // Retrieve the newly created book using its ID
         return this.getEventById(result.recordset[0].EventId);
     }
 
+    /* Update Event */
     static async updateEvent(id, newEventData) {
-        const connection = await sql.connect(dbConfig);
+      const connection = await sql.connect(dbConfig);
     
-        const sqlQuery = `UPDATE Events SET EventName = @name, 
-                        EventDescription = @description,
-                        EventType = @type,
-                        StartDate = @startdate,
-                        EndDate = @enddate,
-                        ModifiedDate = @modifieddate
-                        WHERE EventId = @id`; // Parameterized query
-    
-        const request = connection.request();
-        request.input("id", id);
-        request.input("name", newEventData.name || null); // Handle optional fields
-        request.input("description", newEventData.description || null); // Handle optional fields
-        request.input("type", newEventData.type || null); // Handle optional fields
-        request.input("startdate", newEventData.startDate || null); // Handle optional fields
-        request.input("enddate", newEventData.endDate || null); // Handle optional fields
-        request.input("modifieddate", new Date().toISOString().slice(0, 19));
-        
-        await request.query(sqlQuery);
-    
-        connection.close();
-    
-        return this.getEventById(id); // returning the updated book data
+      // Extract fields and values from newEventData
+      const fields = Object.entries(newEventData);
+      const keys = fields.map(([key, value]) => key); // Extract keys from newEventData
+      const values = fields.map(([key, value]) => value); // Extract values from newEventData
+
+      // Update only fields that have values
+      const updatedFields = fields
+      .filter(([key, value]) => value !== undefined) // Filter out undefined values
+      .map(([key, value]) => `${key} = @${key}`);
+
+      const sqlQuery = `UPDATE Events SET ${updatedFields.join(', ')}
+                      WHERE id = @id`; // Parameterized query
+
+      const request = connection.request();
+
+      request.input("id", id);
+      request.input("name", newEventData.name || null); // Handle optional fields
+      request.input("description", newEventData.description || null); // Handle optional fields
+      request.input("type", newEventData.type || null); // Handle optional fields
+      request.input("startdate", newEventData.startDate || null); // Handle optional fields
+      request.input("enddate", newEventData.endDate || null); // Handle optional fields
+      request.input("modifieddate", new Date().toISOString().slice(0, 19));
+      
+      await request.query(sqlQuery);
+
+      connection.close();
+
+      return this.getEventById(id); // returning the updated book data
     }
 
     static async getEvents(page) {
         const connection = await sql.connect(dbConfig);
 
         try {
-            const perPage = 2; // Adjust perPage value as needed
+            const perPage = 2; // Events per page
 
-            // Calculate total number of events (assuming you have a `count` function)
-            //const totalCount = await Event.countEvents(); // Replace with your model's count logic (or direct SQL query)
-            //const pageCount = Math.ceil(totalCount / perPage);
-
+            // Get total number of events
             const pageCount = Math.ceil(Event.totalCount / perPage);
 
             if (page < 1 || page > pageCount) {
                 return res.status(400).send('Invalid page number'); // Handle invalid page requests
             }
 
+            // Calculate the offset
             const offset = (page - 1) * perPage;
 
             const query = `
             SELECT * FROM events 
-            ORDER BY EventId 
+            ORDER BY id 
             OFFSET ${offset} ROWS 
             FETCH NEXT ${perPage} ROWS ONLY;
             `;
@@ -132,11 +167,11 @@ class Event {
             
             const result = await connection.request().query(query);
             return result.recordset.map(
-                (row) => new Event(row.EventId, row.EventName, row.EventDescription,
-                    row.EventType, 
-                    moment(row.StartDate).format('DD-MMM-YYYY'), // Format StartDate
-                    moment(row.EndDate).format('DD-MMM-YYYY'), // Format End Date
-                    row.CreatedDate, row.ModifiedDate
+                (row) => new Event(row.id, row.name, row.description,
+                    row.type, 
+                    moment(row.startDate).format('DD-MMM-YYYY'), // Format StartDate
+                    moment(row.endDate).format('DD-MMM-YYYY'), // Format End Date
+                    row.createdDate, row.modifiedDate, row.imagePath
                 )
             );
         } catch (error) {
@@ -146,25 +181,11 @@ class Event {
         }
     };
 
+    //Delete Event
     static async deleteEvent(id) {
-        const connection = await sql.connect(dbConfig);
-    
-        const sqlQuery = `DELETE FROM Events WHERE EventId = @id`; // Parameterized query
-    
-        const request = connection.request();
-        request.input("id", id);
-        const result = await request.query(sqlQuery);
-    
-        connection.close();
-    
-        return result.rowsAffected > 0; 
-    }
-
-    static async deleteEventandUser(id) {
       const connection = await sql.connect(dbConfig);
 
-      const sqlQuery = `DELETE FROM EventUsers WHERE event_id = @id; 
-                        DELETE FROM Events WHERE EventId = @id;`; // Parameterized query
+      const sqlQuery = `DELETE FROM Events WHERE id = @id;`; // Parameterized query
 
       const request = connection.request();
       request.input("id", id);
@@ -174,6 +195,38 @@ class Event {
       return result.rowsAffected > 0;
     }
 
+    //Delete Event and User
+    static async deleteEventandUser(id) {
+      const connection = await sql.connect(dbConfig);
+
+      const sqlQuery = `DELETE FROM EventUsers WHERE event_id = @id; 
+                        DELETE FROM Events WHERE id = @id;`; // Parameterized query
+
+      const request = connection.request();
+      request.input("id", id);
+      const result = await request.query(sqlQuery);
+
+      connection.close();
+      // Check both elements of rowsAffected array
+      const rowsAffected = result.rowsAffected.reduce((a, b) => a + b, 0);
+      return rowsAffected > 0;
+    }
+
+    //Delete User and Event
+    static async deleteUserandEvent(id) {
+      const connection = await sql.connect(dbConfig);
+
+      const sqlQuery = `DELETE FROM EventUsers WHERE user_id = @id;
+                        DELETE FROM Users WHERE id = @id;`; // Parameterized query
+
+      const request = connection.request();
+      request.input("id", id);
+      const result = await request.query(sqlQuery);
+
+      connection.close();
+      return result.rowsAffected > 0;
+    }
+    
     //Total number of events
     static async totalCount() {
         const connection = await sql.connect(dbConfig);
@@ -183,17 +236,17 @@ class Event {
         return result;
     }
 
-    //get list of users who joined the events
+    //Get List of Events with Users
     static async getEventswithUsers() {
       const connection = await sql.connect(dbConfig);
 
       try {
         const query = `
-          SELECT e.EventId AS event_id, e.EventName, e.EventDescription, e.EventType, e.StartDate, e.EndDate, u.id AS user_id, u.username, u.email
+          SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.id AS user_id, u.username, u.email
           FROM Events e
-          LEFT JOIN EventUsers eu ON eu.event_id = e.EventId
+          INNER JOIN EventUsers eu ON eu.event_id = e.id
           LEFT JOIN Users u ON eu.user_id = u.id
-          ORDER BY e.EventId;
+          ORDER BY e.id;
         `;
 
         const result = await connection.request().query(query);
@@ -210,6 +263,7 @@ class Event {
               type: row.EventType,
               startdate: row.StartDate,
               enddate: row.EndDate,
+              imagepath: row.imagePath,
               users: [],
             };
           }
@@ -228,16 +282,17 @@ class Event {
       }
     } 
 
+    //Get Specific Event with Users
     static async getSpecificEventwithUsers(eventId) {
         const connection = await sql.connect(dbConfig);
 
         try {
           const query = `
-            SELECT e.EventId AS event_id, e.EventName, e.EventDescription, e.EventType, e.StartDate, e.EndDate, u.id AS user_id, u.username, u.email
+            SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.id AS user_id, u.username, u.email
             FROM Events e
-            LEFT JOIN EventUsers eu ON eu.event_id = e.EventId
+            INNER JOIN EventUsers eu ON eu.event_id = e.id
             LEFT JOIN Users u ON eu.user_id = u.id
-            WHERE e.EventId = @eventId;
+            WHERE e.id = @eventId;
           `;
     
           const request = await connection.request();
@@ -260,6 +315,7 @@ class Event {
                 type: row.EventType,
                 startdate: row.StartDate,
                 enddate: row.EndDate,
+                imagepath: row.imagePath,
                 users: [],
               };
             }
@@ -294,7 +350,7 @@ class Event {
                   VALUES (@eventId, @userId)
               END
             END;
-            SELECT SCOPE_IDENTITY() AS EventId;`    ;
+            SELECT SCOPE_IDENTITY() AS id;`    ;
       
             const request = await connection.request();
             request.input("eventId", eventId);
@@ -313,6 +369,7 @@ class Event {
         }
     }   
 
+    //Deleting user from an event and then displaying it using other functions
     static async deleteUserfromEvent(eventId, userId) {
         const connection = await sql.connect(dbConfig);
     
@@ -331,3 +388,4 @@ class Event {
 }
 
 module.exports = Event;
+

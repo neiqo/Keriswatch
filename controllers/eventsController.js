@@ -1,5 +1,6 @@
 const Event = require("../models/event");
 
+// Controller to get all events
 const getAllEvents = async (req, res) => {
     try {
         const events = await Event.getAllEvents();
@@ -11,6 +12,7 @@ const getAllEvents = async (req, res) => {
     }
 }
 
+// Controller to get event by id
 const getEventById = async (req, res) => {
     const eventId = parseInt(req.params.id);
     try {
@@ -25,6 +27,7 @@ const getEventById = async (req, res) => {
     }
 };
   
+// Controller to create event
 const createEvent = async (req, res) => {
   const newEvent = req.body;
   try {
@@ -36,7 +39,7 @@ const createEvent = async (req, res) => {
   }
 };
 
-  
+// Controller to update event
 const updateEvent = async (req, res) => {
   const eventId = parseInt(req.params.id);
   const newEventData = req.body;
@@ -53,6 +56,7 @@ const updateEvent = async (req, res) => {
   }
 };
 
+// Controller to delete event
 const deleteEvent = async (req, res) => {
   const EventId = parseInt(req.params.id);
 
@@ -89,7 +93,6 @@ const deleteEventandUser = async (req, res) => {
 const getEvents = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-    //const perPage = 4; // Adjust perPage value as needed
 
     // Execute the query (using a model or directly with SQL)
     const results = await Event.getEvents(page);// : await pool.request().query(query);
@@ -100,6 +103,7 @@ const getEvents = async (req, res) => {
   }
 }
 
+// Controller to get events with users
 async function getEventswithUsers(req, res) {
   try {
     const events = await Event.getEventswithUsers();
@@ -110,6 +114,7 @@ async function getEventswithUsers(req, res) {
   }
 };
 
+// Controller to get specific event with users
 async function getSpecificEventwithUsers(req, res) {
   const eventId = parseInt(req.params.eventId);
 
@@ -125,25 +130,27 @@ async function getSpecificEventwithUsers(req, res) {
   }
 };
 
-  async function addUsertoEvent(req, res) {
-    // for /events/:eventId/with-users/:userId
-    //const eventId = parseInt(req.params.eventId);
-    //const userId = parseInt(req.params.userId);
+// Controller to add user to event
+async function addUsertoEvent(req, res) {
+  // for /events/:eventId/with-users/:userId
+  //const eventId = parseInt(req.params.eventId);
+  //const userId = parseInt(req.params.userId);
 
-    // for /events/with-users?eventId=3&user_id=2
-    const eventId = req.query.eventId;
-    const userId = req.query.userId;
+  // for /events/with-users?eventId=3&user_id=2
+  const eventId = req.query.eventId;
+  const userId = req.query.userId;
 
-    try {
-      const event = await Event.addUsertoEvent(eventId, userId);
-      res.json(event);
-    }
-    catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error fetching events with users" });
-    }
-  };
+  try {
+    const event = await Event.addUsertoEvent(eventId, userId);
+    res.json(event);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching events with users" });
+  }
+};
 
+// Controller to delete user from event
 async function deleteUserfromEvent(req, res) {
   const eventId = req.query.eventId;
   const userId = req.query.userId;
@@ -163,7 +170,7 @@ module.exports = {
   getEventById,
   createEvent,
   updateEvent,
-  deleteEvent,
+  //deleteEvent,
   deleteEventandUser,
   //deleteUserandEvent,
   getEvents,
