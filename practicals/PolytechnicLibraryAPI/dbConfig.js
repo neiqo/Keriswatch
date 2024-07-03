@@ -1,11 +1,14 @@
+require('dotenv').config();
+
+
 module.exports = {
-    user: "booksapi_user", // Replace with your SQL Server login username
-    password: "booksapi_user", // Replace with your SQL Server login password
-    server: "localhost",
-    database: "bed_db",
+    user: process.env.DB_USER, // Replace with your SQL Server login username
+    password: process.env.DB_PASSWORD, // Replace with your SQL Server login password
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
     trustServerCertificate: true,
     options: {
-      port: 1433, // Default SQL Server port
+      port: parseInt(process.env.DB_PORT, 10), // Default SQL Server port
       connectionTimeout: 60000, // Connection timeout in milliseconds
     },
 };
