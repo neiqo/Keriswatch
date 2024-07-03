@@ -45,7 +45,7 @@ class Book {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM Books WHERE book_id = @id`;
         const request = connection.request();
-        request.input("id", id);
+        request.input("id", sql.Int, id);
         const result = await request.query(sqlQuery);
 
         connection.close();

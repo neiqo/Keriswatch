@@ -30,7 +30,7 @@ const updateBook = async (req, res) => {
 
 // Controller to get book by id
 const getBookById = async (req, res) => {
-    const bookId = parseInt(req.params.id);
+    const bookId = parseInt(req.params.bookid);
     try {
       const book = await Book.getBookById(bookId);
       if (!book) {
@@ -39,7 +39,7 @@ const getBookById = async (req, res) => {
       res.json(book);
     } catch (error) {
       console.error(error);
-      res.status(500).send("Error retrieving book");
+      res.status(500).send("Error retrieving book", error);
     }
 };
 
