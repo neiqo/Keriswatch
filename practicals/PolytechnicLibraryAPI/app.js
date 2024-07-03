@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 require('dotenv').config();
 
 const app = express();
-const port = process.env.APP_PORT; // Use environment variable or default port
+const port = process.env.APP_PORT; // Use environment variable port
 
 
 app.use(bodyParser.json());
@@ -19,8 +19,11 @@ const bookController = require("./controllers/bookController");
 const validateBook = require("./middlewares/validateBook");
 
 // Routes
+//    User Routes
 app.post("/register", userController.registerUser);
+app.get("/login", userController.userLogin);
 
+//    Book Routes
 app.get("/books", bookController.getAllBooks);
 app.get("/books/:bookid", bookController.getBookById);
 app.put("/books/:bookid/availability", validateBook, bookController.updateBook);

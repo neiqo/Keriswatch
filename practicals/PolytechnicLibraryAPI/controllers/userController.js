@@ -65,10 +65,11 @@ const userLogin = async (req,res) => {
     };
     
     // JWT token that expires after 1 hour that signed by the secret key
+    // new one is generated everytime a user logs in
     // server will verify the signature/token using the secret key
     const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "3600s"});
 
-    return res.status(200).json({ token }); // returns the JWT token
+    return res.status(200).json({ token }); // returns the JWT token to be used for future authentication
   }
   catch (err) {
     console.error(err);
