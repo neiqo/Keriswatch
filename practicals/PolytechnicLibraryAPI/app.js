@@ -10,7 +10,11 @@ const port = process.env.PORT || 3000; // Use environment variable or default po
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 
+// Controllers
+const userController = require("./controllers/userController");
 
+// GET request routes
+app.post("/register", userController.register);
 
 app.listen(port, async () => {
   try {
