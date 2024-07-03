@@ -1,7 +1,8 @@
 const express = require("express");
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
-const bodyParser = require("body-parser"); // Import body-parser
+const bodyParser = require("body-parser");
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000; // Use environment variable or default port
@@ -13,8 +14,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 // Controllers
 const userController = require("./controllers/userController");
 
-// GET request routes
-app.post("/register", userController.register);
+// Routes
+app.post("/register", userController.registerUser);
 
 app.listen(port, async () => {
   try {

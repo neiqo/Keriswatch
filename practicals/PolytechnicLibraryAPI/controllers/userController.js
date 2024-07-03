@@ -1,32 +1,37 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const userModel = require('../models/user.js');
-require('dotenv').config();
+const User = require('../models/user.js');
+require('dotenv').config(); // Load environment variables from a .env file
 
-const register = async (req, res) => {
+const registerUser = async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
+    // Validation code for user registration
     if (!['member', 'librarian'].includes(role)) {
       return res.status(400).json({ message: 'Invalid role' });
     }
 
-    const existingUser = await userModel.getUserByUsername(username);
+    // Validate username uniqueness
+    const existingUser = await User.getUserByUsername(username);
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
 
+    // Validate password strength (example: at least 8 characters)
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password should be at least 8 characters long' });
+    }
+
+    // Hashing password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const newUser = await userModel.registerUser(username, hashedPassword, role);
 
-    const token = jwt.sign({ userId: newUser.user_id, role: newUser.role }, process.env.SECRET_KEY, {
-      expiresIn: '1h',
-    });
+    // Register the new user in the database
+    const newUser = await User.registerUser(username, hashedPassword, role);
 
     res.status(201).json({
-      message: 'User registered successfully',
-      token,
+      message: 'User registered successfully'
     });
   } catch (error) {
     console.error(error);
@@ -35,5 +40,5 @@ const register = async (req, res) => {
 };
 
 module.exports = {
-  register,
+  registerUser,
 };

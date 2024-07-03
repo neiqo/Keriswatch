@@ -10,7 +10,7 @@ const registerUser = async (username, passwordHash, role) => {
       `;
       const result = await request.query(query);
       console.log('Register User Result:', result);
-      return result.recordset[0];
+      return result.recordset[0]; // Return the inserted user record
     } catch (error) {
       console.error('Error in registerUser:', error);
       throw error;
@@ -22,7 +22,7 @@ const registerUser = async (username, passwordHash, role) => {
       const request = new sql.Request();
       const result = await request.query(`SELECT * FROM Users WHERE username = '${username}'`);
       console.log('Get User By Username Result:', result);
-      return result.recordset[0]; // Ensure this does not cause an error if no results are returned
+      return result.recordset[0];
     } catch (error) {
       console.error('Error in getUserByUsername:', error);
       throw error;
