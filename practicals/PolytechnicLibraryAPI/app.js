@@ -13,9 +13,17 @@ app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 
 // Controllers
 const userController = require("./controllers/userController");
+const bookController = require("./controllers/bookController");
+
+// Middlewares
+const validateBook = require("./middlewares/validateBook");
 
 // Routes
 app.post("/register", userController.registerUser);
+
+app.get("/books", bookController.getAllBooks);
+app.get("/books/:bookid", bookController.getBookById);
+app.put("/books/:bookid/availability", validateBook, bookController.updateBook);
 
 app.listen(port, async () => {
   try {
