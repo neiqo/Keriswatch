@@ -1,5 +1,3 @@
-let combinedChart;
-
 document.getElementById('countryForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const country = document.getElementById('country').value;
@@ -26,7 +24,7 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
             }
         });
 
-        updateCombinedChart('combinedChart', {
+        updateCombinedChart('statisticsContainer', {
             agriculture: agricultureData[0], 
             services: servicesData[0], 
             manufacture: manufactureData[0]
@@ -35,60 +33,37 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
     .catch(error => console.error('Error:', error));
 });
 
-function updateCombinedChart(canvasId, data) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
+function updateCombinedChart(containerId, data) {
+    const container = document.getElementById(containerId);
 
-    // Destroy existing chart if it exists
-    if (combinedChart) {
-        combinedChart.destroy();
-    }
+    // Clear previous content
+    container.innerHTML = '';
 
-    // Create new chart
-    combinedChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['2022'],
-            datasets: [
-                {
-                    label: 'Agriculture',
-                    data: [data.agriculture],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    barThickness: 30
-                },
-                {
-                    label: 'Services',
-                    data: [data.services],
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    borderWidth: 1,
-                    barThickness: 30
-                },
-                {
-                    label: 'Manufacture',
-                    data: [data.manufacture],
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 1,
-                    barThickness: 30
-                }
-            ]
-        },
-        options: {
-            indexAxis: 'y', // This makes the chart horizontal
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    max: 100 // This sets the max value to 100, making it look like a progress bar
-                },
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    // Create skill bars
+    createSkillBar(container, 'Agriculture', data.agriculture, 'agriculture');
+    createSkillBar(container, 'Services', data.services, 'services');
+    createSkillBar(container, 'Manufacture', data.manufacture, 'manufacture');
 }
 
+function createSkillBar(container, label, percentage, className) {
+    const skillContainer = document.createElement('div');
+    skillContainer.className = 'skill-container';
 
+    const skillLabel = document.createElement('div');
+    skillLabel.className = 'skill-label';
+    skillLabel.textContent = label;
 
+    const skillBarContainer = document.createElement('div');
+    skillBarContainer.className = 'skill-bar-container';
+
+    const skillBar = document.createElement('div');
+    skillBar.className = `skill-bar ${className}`;
+    const roundedPercentage = Math.round(percentage) || 0;
+    skillBar.style.width = `${roundedPercentage}%`;
+    skillBar.textContent = `${roundedPercentage}%`;
+
+    skillBarContainer.appendChild(skillBar);
+    skillContainer.appendChild(skillLabel);
+    skillContainer.appendChild(skillBarContainer);
+    container.appendChild(skillContainer);
+}
