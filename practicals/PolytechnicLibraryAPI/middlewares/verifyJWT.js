@@ -5,8 +5,7 @@ const secretKey = process.env.JWT_SECRET; // Retrieve the secret key for signing
 
 const verifyJWT = (req, res, next) => {
   // Extract the token from the Authorization header if it exists
-  console.log(token);
-  const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
+  const token = req.headers.authorization;
 
   // If no token is provided, return an Unauthorised error response
   if (!token) {
@@ -33,17 +32,14 @@ const verifyJWT = (req, res, next) => {
     // Check if the user's role is authorised to access the requested endpoint
     const authorisedRole = Object.entries(authorisedRoles).find(
       ([endpoint, roles]) => {
-        console.log(endpoint, roles);
         // Convert the endpoint to a regex pattern
         // $ is used to assert the end of the URL (string)
-        const regex = new RegExp(`${endpoint}$`); 
+        const regex = new RegExp(`^${endpoint}$`); 
         // Check if the pattern matches the requested endpoint and the role is authorised
         return regex.test(requestedEndpoint) && roles.includes(userRole);
       }
     );
 
-    console.log(authorisedRole);
-    
     // If no authorised role is found, return a Forbidden error response
     if (!authorisedRole) {
       return res.status(403).json({ message: "Forbidden" });
