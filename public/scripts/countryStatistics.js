@@ -14,22 +14,22 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
     .then(data => {
         const agricultureData = [];
         const servicesData = [];
-        const industryData = [];
+        const manufactureData = [];
 
         data.forEach(item => {
             if (item.category === 'Agriculture') {
                 agricultureData.push(item.percentage);
             } else if (item.category === 'Services') {
                 servicesData.push(item.percentage);
-            } else if (item.category === 'Industry') {
-                industryData.push(item.percentage);
+            } else if (item.category === 'Manufacture') {
+                manufactureData.push(item.percentage);
             }
         });
 
         updateCombinedChart('combinedChart', {
             agriculture: agricultureData[0], 
             services: servicesData[0], 
-            industry: industryData[0]
+            manufacture: manufactureData[0]
         });
     })
     .catch(error => console.error('Error:', error));
@@ -66,8 +66,8 @@ function updateCombinedChart(canvasId, data) {
                     barThickness: 30
                 },
                 {
-                    label: 'Industry',
-                    data: [data.industry],
+                    label: 'Manufacture',
+                    data: [data.manufacture],
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1,
