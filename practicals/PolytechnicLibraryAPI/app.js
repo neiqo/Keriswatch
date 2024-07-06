@@ -17,6 +17,7 @@ const bookController = require("./controllers/bookController");
 
 // Middlewares
 const validateBook = require("./middlewares/validateBook");
+const verifyJWT = require("./middlewares/verifyJWT");
 
 // Routes
 //    User Routes
@@ -24,9 +25,9 @@ app.post("/register", userController.registerUser);
 app.get("/login", userController.userLogin);
 
 //    Book Routes
-app.get("/books", bookController.getAllBooks);
+app.get("/books", verifyJWT, bookController.getAllBooks);
 app.get("/books/:bookid", bookController.getBookById);
-app.put("/books/:bookid/availability", validateBook, bookController.updateBook);
+app.put("/books/:bookid/availability", validateBook, verifyJWT, bookController.updateBook);
 
 app.listen(port, async () => {
   try {

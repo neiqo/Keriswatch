@@ -1,0 +1,16 @@
+## .env file is confidential and every dev should have their own one that is configured themselves
+## use process.env.{whatever attribute u add in the js script}
+## must have require('dotenv').config(); in the file if you calling something from here
+
+# JWT Secret Key
+JWT_SECRET="5013307a913470f6c933e8c443c9ac30b62d736f0d814c3ce17da640b138f86c"
+
+# Database Config
+DB_USER="booksapi_user"
+DB_PASSWORD="booksapi_user"
+DB_SERVER="localhost"
+DB_DATABASE="bed_db"
+DB_PORT=1433
+
+# Express App Config
+APP_PORT=3000
