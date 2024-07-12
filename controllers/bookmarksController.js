@@ -4,7 +4,11 @@ const dbConfig = require("../dbConfig");
 const path = require("path");
 
 const getAllBookmarkedArticles = async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.query.userId; // Extract userId from the query parameters
+
+  if (!userId) {
+    return res.status(400).send("Missing userId parameter");
+  }
 
   try {
     const bookmarkedArticles = await Bookmark.getAllBookmarkedArticles(userId);
@@ -15,8 +19,10 @@ const getAllBookmarkedArticles = async (req, res) => {
   }
 };
 
+
 const addBookmark = async (req, res) => {
-  const { userId, articleId } = req.params; // Destructure from URL path parameters
+  const { userId } = req.body; // Extract userId from the request body
+  const { articleId } = req.params;
 
   // Convert userId and articleId to integers
   const userIdInt = parseInt(userId, 10);
@@ -37,7 +43,8 @@ const addBookmark = async (req, res) => {
 };
 
 const deleteBookmark = async (req, res) => {
-  const { userId, articleId } = req.params; // Destructure from URL path parameters
+  const { userId } = req.body; // Extract userId from the request body
+  const { articleId } = req.params;
 
   // Convert userId and articleId to integers
   const userIdInt = parseInt(userId, 10);
