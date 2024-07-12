@@ -1,4 +1,4 @@
-const sql = require("mssql");
+const sql = require('mssql');
 const dbConfig = require("../dbConfig");
 const moment = require('moment');
 const upload = require('multer');

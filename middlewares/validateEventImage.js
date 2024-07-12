@@ -18,4 +18,28 @@ const storage = multer.diskStorage({
 // Init upload
 const upload = multer({ storage: storage });
 
+//for validate image type
+// // File filter for validating image types
+// const fileFilter = (req, file, cb) => {
+//   // Allowed ext
+//   const filetypes = /jpeg|jpg|png|gif/;
+//   // Check ext
+//   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+//   // Check mime
+//   const mimetype = filetypes.test(file.mimetype);
+
+//   if(mimetype && extname){
+//       return cb(null, true);
+//   } else {
+//       cb('Error: Images Only!');
+//   }
+// };
+
+// // Init upload with fileFilter
+// const upload = multer({ 
+//   storage: storage,
+//   fileFilter: fileFilter,
+//   limits: { fileSize: 1024 * 1024 * 5 } // for example, limit file size to 5MB
+// });
+
 module.exports = upload;
