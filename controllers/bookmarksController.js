@@ -21,8 +21,8 @@ const getAllBookmarkedArticles = async (req, res) => {
 
 
 const addBookmark = async (req, res) => {
-  const { userId } = req.body; // Extract userId from the request body
-  const { articleId } = req.params;
+  const { userId } = req.body; // Extract from request body
+  const articleId = req.params.articleId; // Extract from URL path parameters
 
   // Convert userId and articleId to integers
   const userIdInt = parseInt(userId, 10);
@@ -43,8 +43,8 @@ const addBookmark = async (req, res) => {
 };
 
 const deleteBookmark = async (req, res) => {
-  const { userId } = req.body; // Extract userId from the request body
-  const { articleId } = req.params;
+  const { userId } = req.body; // Extract from request body
+  const articleId = req.params.articleId; // Extract from URL path parameters
 
   // Convert userId and articleId to integers
   const userIdInt = parseInt(userId, 10);
