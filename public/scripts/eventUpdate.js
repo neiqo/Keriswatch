@@ -1,5 +1,7 @@
 // // Purpose: To create a new event and send it to the server
 
+// const { func } = require("joi");
+
 
 // // Example starter JavaScript for disabling form submissions if there are invalid fields
 // (function() {
@@ -180,6 +182,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // const updateButton = document.getElementById('SubmitButton');
     const cancelButton = document.getElementById('CancelButton');
+    const deleteButton = document.getElementById('DeleteButton');
     const form = document.getElementById('event-form');
 
     // Get event details when the page loads
@@ -191,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners
     form.addEventListener('submit', handleUpdateClick);
     cancelButton.addEventListener('click', handleCancelClick);
+    deleteButton.addEventListener('click', handleDeleteClick);
 
     // Fetch event ID from URL
     function getEventIdFromUrl() {
@@ -354,20 +358,26 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         getValue();
-        // const formData = new FormData(form);
-        // try {
-        //     const response = await fetch(`/api/events/${eventId}`, {
-        //         method: 'PUT',
-        //         body: formData
-        //     });
-        //     if (!response.ok) {
-        //         throw new Error('Error updating event');
-        //     }
-        //     console.log('Event updated successfully');
-        //     // Redirect or show success message
-        // } catch (error) {
-        //     console.error(error);
-        // }
+    }
+
+    async function deleteEvent() {
+        const eventId = getEventIdFromUrl();
+        if (!eventId) {
+            console.error('Invalid event ID');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`/api/events/${eventId}/with-users`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                throw new Error('Error deleting event');
+            }
+            window.location.href = '/events'; // Redirect to events page
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     // Handle cancel button click
@@ -375,6 +385,12 @@ document.addEventListener('DOMContentLoaded', function() {
         form.reset();
         window.history.back();
     }
+
+    function handleDeleteClick() {
+        // Handle delete event
+        deleteEvent();
+        console.log('Delete button clicked');
+    }   
 });
 
 // Function to preview selected image
@@ -395,3 +411,4 @@ function previewImage(event) {
         imagePreview.style.display = 'none';
     }
 }
+
