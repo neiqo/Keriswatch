@@ -2,6 +2,7 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const country = document.getElementById('country').value;
 
+    // Fetching through the route
     fetch(`/statistics/${country}`, {
         method: 'GET',
         headers: {
@@ -13,7 +14,7 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
         const agricultureData = [];
         const servicesData = [];
         const manufactureData = [];
-
+        
         data.forEach(item => {
             if (item.category === 'Agriculture') {
                 agricultureData.push(item.percentage);
