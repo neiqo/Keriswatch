@@ -42,7 +42,22 @@ const createEvent = async (req, res) => {
 // Controller to update event
 const updateEvent = async (req, res) => {
   const eventId = parseInt(req.params.id);
-  const newEventData = req.body;
+  console.log(eventId);
+  
+  const newEventData = {
+    name: req.body.name,
+    description: req.body.description,
+    type: req.body.type,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate
+  };
+
+  // If an image is uploaded, include it in newEventData
+  if (req.file) {
+    newEventData.imagePath = req.file.path; // Assuming imagePath is the field to store the image path
+  }
+
+  console.log(newEventData);
 
   try {
     const updatedEvent = await Event.updateEvent(eventId, newEventData);

@@ -1,6 +1,7 @@
 // Initialising libraries
 const eventsController = require("./controllers/eventsController");
 const validateEvent = require("./middlewares/validateEvent");
+const validateUpdateEvent = require("./middlewares/validateUpdateEvent");
 const upload = require("./middlewares/validateEventImage");
 const express = require("express");
 const sql = require("mssql");
@@ -18,16 +19,23 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.use(staticMiddleware); // Mount the static middleware
 
 //for front end
+
+
 app.get('/events', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    console.log(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/events/:id', (req, res) => {
+app.get("/events/:id", (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'eventDetails.html'));
 });
 
+app.get('/events/:id/update', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'eventUpdate.html'));
+});
 
-//changed to /api for front end
+
+
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);
 //app.get("/api/events/search", eventsController.searchEvents);
@@ -43,8 +51,13 @@ app.post("/api/events", upload.single("image"), validateEvent, eventsController.
     console.log(req.body);
     res.status(200).send('Event created successfully');
   }); // POST for creating books (can handle JSON data)
-app.put("/api/events/:id", eventsController.updateEvent);
-// app.delete("/api/events/:id", eventsController.deleteEvent);
+app.put('/api/events/:id', upload.single("image"), (req, res, next) => {
+console.log('Passed multer middleware');
+next();
+}, validateUpdateEvent, (req, res, next) => {
+console.log('Passed validateUpdateEvent middleware');
+next();
+}, eventsController.updateEvent);// app.delete("/api/events/:id", eventsController.deleteEvent);
 app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);  
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 

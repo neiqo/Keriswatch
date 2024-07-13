@@ -5,11 +5,25 @@ let name = document.getElementById("name");
 let startDate = document.getElementById("startDate");
 let endDate = document.getElementById("endDate");
 let description = document.getElementById("description");
+let type = document.getElementById("type");
+
+// function getEventIdFromUrl() {
+//     const path = window.location.pathname;
+//     const pathParts = path.split('/'); // Split the path into parts
+//     const eventId = pathParts[pathParts.length - 1]; // Get the last part which should be the eventId
+//     return eventId ? parseInt(eventId) : null;
+// }
 
 function getEventIdFromUrl() {
-    const path = window.location.pathname;
-    const pathParts = path.split('/'); // Split the path into parts
-    const eventId = pathParts[pathParts.length - 1]; // Get the last part which should be the eventId
+    const urlParams = new URLSearchParams(window.location.search);
+    let eventId = urlParams.get('id');
+    
+    if (!eventId) {
+        const path = window.location.pathname;
+        const pathParts = path.split('/');
+        eventId = pathParts[pathParts.length - 1];
+    }
+    console.log(eventId);
     return eventId ? parseInt(eventId) : null;
 }
 
@@ -27,6 +41,7 @@ async function getEventDetails(eventId) {
     startDate.textContent = data.startDate;
     endDate.textContent = data.endDate;
     description.textContent = data.description;
+    type.textContent = data.type;
 }
 
 getEventDetails(getEventIdFromUrl());

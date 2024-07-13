@@ -84,9 +84,9 @@ class Event {
         
         // Check if an image was uploaded
         if (newEventData.imagePath) {
-                const newFilePath = path.join("/images/events", `Image_${eventId}${newEventData.name}${path.extname(newEventData.imagePath)}`);
+                const newFilePath = path.join("/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
                 const oldFilePath = path.join(__dirname, "../public", newEventData.imagePath);
-    
+                //console.log("imagepath", newEventData.imagePath);
                 // Rename the file to include the event ID
                 fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
     
@@ -109,36 +109,181 @@ class Event {
 
     /* Update Event */
     static async updateEvent(id, newEventData) {
-      const connection = await sql.connect(dbConfig);
-    
-      // Extract fields and values from newEventData
-      const fields = Object.entries(newEventData);
-      const keys = fields.map(([key, value]) => key); // Extract keys from newEventData
-      const values = fields.map(([key, value]) => value); // Extract values from newEventData
+      let transaction;
+    let connection;
 
-      // Update only fields that have values
+    try {
+      // Establish the connection
+      connection = await sql.connect(dbConfig);
+
+      // Begin transaction
+      transaction = new sql.Transaction(connection);
+      await transaction.begin();
+
+      // Query for the old image path
+      const request = new sql.Request(transaction);
+      const oldImageQuery = `SELECT imagePath FROM Events WHERE id = @id`;
+      request.input('id', sql.Int, id);
+      const result = await request.query(oldImageQuery);
+
+      let oldImagePath;
+      if (result.recordset.length > 0) {
+          oldImagePath = result.recordset[0].imagePath;
+      }
+
+      // Prepare the update query with dynamic fields
+      const fields = Object.entries(newEventData);
       const updatedFields = fields
-      .filter(([key, value]) => value !== undefined) // Filter out undefined values
-      .map(([key, value]) => `${key} = @${key}`);
+          .filter(([key, value]) => value !== undefined && key !== 'imagePath') // Filter out undefined values and imagePath
+          .map(([key, value]) => `${key} = @${key}`);
+
+      // Add the imagePath field to the query if a new image is provided
+      let relativeImagePath;
+      let newImagePath;
+      if (newEventData.imagePath) {
+          // Make sure to use the relative path for the new image
+          relativeImagePath = `\\images\\events\\Image_${id}${path.extname(newEventData.imagePath)}`;
+          console.log("relativeImagePath", relativeImagePath);
+          newImagePath = newEventData.imagePath; // Store the original path
+          updatedFields.push(`imagePath = @imagePath`);
+      }
+
+      console.log("newimagepath", newImagePath);
 
       const sqlQuery = `UPDATE Events SET ${updatedFields.join(', ')}
-                      WHERE id = @id`; // Parameterized query
+                        WHERE id = @eventId`; // Parameterized query
 
-      const request = connection.request();
+      // Bind the parameters to the request
+      fields.forEach(([key, value]) => {
+          if (key !== 'imagePath') {
+              request.input(key, value || null);
+          }
+      });
 
-      request.input("id", id);
-      request.input("name", newEventData.name || null); // Handle optional fields
-      request.input("description", newEventData.description || null); // Handle optional fields
-      request.input("type", newEventData.type || null); // Handle optional fields
-      request.input("startdate", newEventData.startDate || null); // Handle optional fields
-      request.input("enddate", newEventData.endDate || null); // Handle optional fields
-      request.input("modifieddate", new Date().toISOString().slice(0, 19));
-      
+      if (relativeImagePath) {
+          request.input('imagePath', relativeImagePath);
+      }
+
+      request.input("eventId", sql.Int, id);
       await request.query(sqlQuery);
 
-      connection.close();
+      // Save the new file
+      if (newEventData.imagePath) {
+          const newFilePath = path.join(__dirname, "..", "public", relativeImagePath);
+          console.log("newFilePath", newFilePath);
 
-      return this.getEventById(id); // returning the updated book data
+          // Ensure the destination directory exists
+          const destDir = path.dirname(newFilePath);
+          if (!fs.existsSync(destDir)) {
+              fs.mkdirSync(destDir, { recursive: true });
+          }
+
+          // Use the original path directly if it's absolute
+          let sourceFilePath = newImagePath;
+          if (!path.isAbsolute(newImagePath)) {
+              sourceFilePath = path.join(__dirname, "..", "public", newImagePath);
+          }
+
+          console.log("sourceFilePath", sourceFilePath);
+          if (!fs.existsSync(sourceFilePath)) {
+              throw new Error(`Source file does not exist: ${sourceFilePath}`);
+          }
+
+          // Rename the new file first
+          fs.renameSync(sourceFilePath, newFilePath);
+          console.log(`File renamed from ${sourceFilePath} to ${newFilePath}`);
+
+      }
+
+      // Commit transaction
+      await transaction.commit();
+      console.log("Event updated successfully.");
+
+      return await this.getEventById(id);
+
+    } catch (err) {
+        console.error("Error updating event:", err);
+        // Rollback transaction in case of error
+        if (transaction) {
+            await transaction.rollback();
+        }
+    } finally {
+        if (connection) {
+            connection.close();
+        }
+    }
+      
+      // const connection = await sql.connect(dbConfig);
+    
+      // if (newEventData.imagePath) {
+      //   // Delete the old file if it exists
+      //   const oldFilePath = path.join(__dirname, "../public/images/events", `Image_${id}${path.extname(newEventData.imagePath)}`);
+      //   if (fs.existsSync(oldFilePath)) {
+      //     fs.unlink(oldFilePath, (err) => {
+      //         if (err) {
+      //             console.error("Error deleting the old file:", err);
+      //         } else {
+      //             console.log("Old file deleted successfully.");
+      //         }
+      //     });
+      //   }
+
+      //   // Save the new file
+      //   fs.rename(newEventData.imagePath, oldFilePath, (err) => {
+      //     if (err) {
+      //         return res.status(500).send('Error saving the new file.');
+      //     }
+
+      //   });
+      // }
+      // // Extract fields and values from newEventData
+      // const fields = Object.entries(newEventData);
+      // const keys = fields.map(([key, value]) => key); // Extract keys from newEventData
+      // const values = fields.map(([key, value]) => value); // Extract values from newEventData
+
+      // // Update only fields that have values
+      // const updatedFields = fields
+      // .filter(([key, value]) => value !== undefined) // Filter out undefined values
+      // .map(([key, value]) => `${key} = @${key}`);
+
+      // // Check if there are fields to update
+      // if (updatedFields.length === 0) {
+      //   throw new Error('No fields to update');
+      // }
+
+      // // Include modifieddate in the SQL query
+      // updatedFields.push('modifieddate = @modifieddate');
+
+      // const sqlQuery = `UPDATE Events SET ${updatedFields.join(', ')}
+      //                 WHERE id = @id`; // Parameterized query
+
+      // const request = connection.request();
+
+      // request.input("id", id);
+      // // request.input("name", newEventData.name || null); // Handle optional fields
+      // // request.input("description", newEventData.description || null); // Handle optional fields
+      // // request.input("type", newEventData.type || null); // Handle optional fields
+      // // request.input("startdate", newEventData.startDate || null); // Handle optional fields
+      // // request.input("enddate", newEventData.endDate || null); // Handle optional fields
+      // // request.input("imagepath", newEventData.imagePath || null); // Handle optional fields
+      // // request.input("modifieddate", new Date().toISOString().slice(0, 19));
+      // fields.forEach(([key, value]) => {
+      //   request.input(key, value || null);
+      // });
+      //   // Always set the modified date
+      // request.input("modifieddate", new Date().toISOString().slice(0, 19).replace('T', ' '));
+
+      // const result = await request.query(sqlQuery);
+
+      // console.log("Update result:", result);
+
+      // connection.close();
+
+      // if (result.rowsAffected[0] === 0) {
+      //   return null; // No rows updated
+      // }
+
+      // return this.getEventById(id); // returning the updated book data
     }
 
     static async getEvents(page) {

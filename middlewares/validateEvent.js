@@ -23,19 +23,19 @@ const validateEvent = (req, res, next) => {
       const errors = validation.error.details.map((error) => error.message);
       res.status(400).json({ message: "Validation error", errors });
       // Remove the uploaded file
-      fs.unlinkSync(req.file.path);
+      // fs.unlinkSync(req.file.path);
       return; // Terminate middleware execution on validation error
     }  
     else if (startDate < today) {
       res.status(400).json({ message: "Start date must be later than today." });
       // Remove the uploaded file
-      fs.unlinkSync(req.file.path);
+      // fs.unlinkSync(req.file.path);
       return;
     } 
     else if (endDate < startDate) {
       res.status(400).json({ message: "End date must be later than start date." });
       // Remove the uploaded file
-      fs.unlinkSync(req.file.path);
+      // fs.unlinkSync(req.file.path);
       return;
     }
     //This will replace the json of displaying event.

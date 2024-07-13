@@ -53,7 +53,7 @@ async function fetchEvents(pageNumber) {
                 // Handle event click
                 // Redirect to event details page or show a modal
                 console.log(`Clicked event: ${event.id}`);
-                window.location.href = `http://localhost:3000/events/${event.id}`; // Example URL
+                window.location.href = `/events/${event.id}`; // Example URL
             });
 
             fragment.appendChild(eventItem);
@@ -93,7 +93,7 @@ function updateButton(dataLength) {
 }
 
 const prevButton = document.getElementById("prev-page");
-const nextButton = document.getElementById("next-page");
+const nextButton = document.    getElementById("next-page");
 
 prevButton.addEventListener("click", () => {
   // Handle previous page click

@@ -111,7 +111,7 @@ async function createEvent(name, description, type, startdate, enddate, imagefil
 
     console.log('Sending event data:', formData); // Log the FormData being sent
 
-    const response = await fetch(`http://localhost:3000/api/events`, {
+    const response = await fetch(`/api/events`, {
         method: 'POST',
         body: formData
     });
