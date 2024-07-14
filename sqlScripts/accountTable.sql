@@ -1,3 +1,5 @@
+use bed_db;
+
 IF OBJECT_ID('dbo.NormalUser', 'U') IS NOT NULL
     DROP TABLE dbo.NormalUser;
 
@@ -11,7 +13,7 @@ IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
     DROP TABLE dbo.Users;
 
 CREATE TABLE Users (
-    userId INT PRIMARY KEY IDENTITY,
+    userId INT IDENTITY(1,1) PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -20,19 +22,22 @@ CREATE TABLE Users (
 
 CREATE TABLE Admin (
     id INT PRIMARY KEY IDENTITY,
-    userId INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(userId)
+    userId INT NOT NULL UNIQUE,
+    CONSTRAINT FK_Admin_User FOREIGN KEY (userId) REFERENCES Users(userId)
     -- Add any Admin-specific columns here if needed
 );
 
 CREATE TABLE Organisation (
     id INT PRIMARY KEY IDENTITY,
-    userId INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(userId),
-    orgNumber INT NOT NULL UNIQUE
+    userId INT NOT NULL UNIQUE,
+    orgNumber INT NOT NULL UNIQUE,
+    CONSTRAINT FK_Organisation_User FOREIGN KEY (userId) REFERENCES Users(userId)
     -- Add any Org-specific columns here if needed
 );
 
 CREATE TABLE NormalUser (
     id INT PRIMARY KEY IDENTITY,
-    userId INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(userId)
+    userId INT NOT NULL UNIQUE,
+    CONSTRAINT FK_NormalUser_User FOREIGN KEY (userId) REFERENCES Users(userId)
     -- Add any NormalUser-specific columns here if needed
 );
