@@ -35,8 +35,8 @@ const articlesController = require("./controllers/articlesController"); // ARTIC
 
 
 app.get('/events', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/html', 'index.html'));
-  console.log(path.join(__dirname, 'public/html', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public/html', 'events.html'));
+  console.log(path.join(__dirname, 'public/html', 'events.html'));
 });
 
 app.get("/events/:id", (req, res) => {
@@ -99,20 +99,6 @@ app.listen(port, async () => {
   console.log(`Server listening on port ${port}`);
 });
 
-// DATABASE CONNECTION
-app.listen(port, async () => {
-  try {
-    // Connect to the database
-    await sql.connect(dbConfig);
-    console.log("Database connection established successfully");
-  } catch (err) {
-    console.error("Database connection error:", err);
-    // Terminate the application with an error code (optional)
-    process.exit(1); // Exit with code 1 indicating an error
-  }
-
-  console.log(`Server listening on port ${port}`);
-});
 
 // APP SHUTDOWN
 // Close the connection pool on SIGINT signal
