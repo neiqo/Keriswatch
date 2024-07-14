@@ -5,14 +5,6 @@ const dbConfig = require("./dbConfig");
 const bodyParser = require("body-parser"); // Import body-parser
 const path = require("path");
 const fs = require("fs");
-const upload = require("./middlewares/multerConfig"); // Import the multer configuration
-
-const eventsController = require("./controllers/eventsController");
-const validateEvent = require("./middlewares/validateEvent");
-const validateUpdateEvent = require("./middlewares/validateUpdateEvent");
-const uploadEventImage = require("./middlewares/validateEventImage");
-
-
 
 // APPLICATION SETUP
 const app = express();
@@ -26,14 +18,36 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 app.use(staticMiddleware); // Mount the static middleware
 
+const upload = require("./middlewares/multerConfig"); // Import the multer configuration
+const authUser = require('./middlewares/authUser');
+const validateEvent = require("./middlewares/validateEvent");
+const validateUpdateEvent = require("./middlewares/validateUpdateEvent");
+const uploadEventImage = require("./middlewares/validateEventImage");
+
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
+const UserController = require('./controllers/userController');
+const eventsController = require("./controllers/eventsController");
 
 // CONTROLLER ROUTINGS
+// LOGIN ROUTES
+app.post('/login', authUser.validateLogin, UserController.login);
+
+// Specific-user routes
+app.get('/users/:username', UserController.getUserByUsername);
+app.delete('/users/:username', UserController.deleteUser); 
+
+// User creation and update routes
+app.post('/signup/normal', authUser.validateNormalUser, UserController.createNormalUser); 
+app.post('/signup/organisation', authUser.validateOrganisation, UserController.createOrganisation);
+app.put('/update/normal', authUser.validateUpdateNormalUser, UserController.updateNormalUser);
+app.put('/update/organisation', authUser.validateUpdateOrganisation, UserController.updateOrganisation); 
+
+// Get all users except admin route
+app.get('/users', UserController.getAllUsers); 
+
 // EVENT ROUTES
-
-
 app.get('/events', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/html', 'events.html'));
   console.log(path.join(__dirname, 'public/html', 'events.html'));
