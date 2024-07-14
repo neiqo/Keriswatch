@@ -90,6 +90,13 @@ app.delete("/bookmarks/:articleId", bookmarkController.deleteBookmark); // route
 
 
 // DATABASE CONNECTION
+// Controllers
+const statisticsController = require("./controllers/statisticsController");
+
+// GET request routes
+app.get("/statistics/:country", statisticsController.getStatisticsByCountry);
+
+// For database connection
 app.listen(port, async () => {
   try {
     // Connect to the database
