@@ -28,7 +28,7 @@ app.use(staticMiddleware); // Mount the static middleware
 
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
-
+const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
 
 // CONTROLLER ROUTINGS
 // EVENT ROUTES
@@ -83,6 +83,11 @@ app.put("/articles/:articleID/editTags", articlesController.editTags); // route 
 app.delete("/articles/:articleID", articlesController.removeArticle); // route for deleting article
 app.get("/articles", articlesController.getAllArticles); // basic route for getting all articles in the db
 app.post("/addArticle", upload.array('images', 3), articlesController.addArticle); // route for adding articles with max 3 images
+// BOOKMARK ROUTES
+app.get("/bookmarks", bookmarkController.getAllBookmarkedArticles); // route for getting all bookmarks by userId
+app.post("/bookmarks/:articleId", bookmarkController.addBookmark); // route for adding bookmarked article
+app.delete("/bookmarks/:articleId", bookmarkController.deleteBookmark); // route for deleting a bookmarked article
+
 
 // DATABASE CONNECTION
 app.listen(port, async () => {
