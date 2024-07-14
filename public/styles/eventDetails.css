@@ -1,0 +1,49 @@
+.event-details {
+    display: flex;
+    flex-direction: column;
+    padding: 5rem;
+}
+
+.event-general {
+    border-radius: 0.5rem;
+    background-color: antiquewhite;
+    width: 50rem;
+    margin-bottom: 3rem;
+}
+
+.event-information {
+    display: flex;
+    flex-direction: column;
+    padding-left: 3rem;
+}
+
+.event-information button {
+    width: 4rem;
+}
+
+.event-about {
+    border-radius: 0.5rem;
+    width: 50rem;
+    height: 40rem;
+    background-color: antiquewhite;
+    margin-bottom: 3rem;
+    padding: 1.25rem;
+}
+
+.organiser-general {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.5rem;
+    width: 50rem;
+    height: 10rem;
+    background-color: antiquewhite;
+    padding: 1.25rem;
+}
+
+/*.organiser details {}*/
+
+.organiser-information {
+    display: flex;
+    flex-direction: column;
+    padding-left: 3rem;
+}
