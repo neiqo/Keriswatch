@@ -11,6 +11,7 @@
     href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/mdb5/fonts/roboto-subset.css?ver=3.9.0-update.5"
     type="text/css" media="all">
     <link rel="stylesheet" type="text/css" href="../css/login.css"/>
+    <script src="../js/login.js" defer></script>
 </head>
 <body>
     <section class="h-100 gradient-form" style="background-color: #eee;">
@@ -25,25 +26,25 @@
                       <div class="text-center">
                         <img src="../images/keriswatch.png"
                           style="width: 300px;" alt="logo">
-                        <h4 class="mt-1 mb-5 pb-1">We are Keriswatch</h4>
+                        <h4 class="mt-1 mb-5 pb-1">Welcome back!</h4>
                       </div>
       
                       <form>
                         <p>Please login to your account</p>
       
                         <div data-mdb-input-init class="form-outline mb-4">
-                          <input type="email" id="form2Example11" class="form-control"
+                          <input type="email" id="email" class="form-control"
                             placeholder="Please enter your registered email address." />
-                          <label class="form-label" for="form2Example11">Email Address</label>
+                          <label class="form-label" for="email">Email Address</label>
                         </div>
       
                         <div data-mdb-input-init class="form-outline mb-4">
-                          <input type="password" id="form2Example22" class="form-control" />
-                          <label class="form-label" for="form2Example22">Password</label>
+                          <input type="password" id="password" class="form-control" />
+                          <label class="form-label" for="password">Password</label>
                         </div>
       
                         <div class="text-center pt-1 mb-5 pb-1">
-                          <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="button">Log
+                          <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="button" onclick="loginUser()">Log
                             in</button>
                           <!-- <a class="text-muted" href="#!">Forgot password?</a> -->
                         </div>
@@ -69,5 +70,6 @@
           </div>
         </div>
     </section>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.js"></script>
 </body>
 </html>
