@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>Checkout example for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/styles/eventCreationBootstrap.css" rel="stylesheet">
+    <link href="/styles/eventCreation.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/styles/form-validation.css" rel="stylesheet">
+</head>
+  
+    <body class="bg-light">
+
+        <div class="container">
+
+        <div class="row">
+            
+            <div class="col-md-8 order-md-1">
+            <h4 class="mb-3">Update Event</h4>
+            <form id="event-form" class="needs-validation" novalidate="" enctype="multipart/form-data">
+                <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name">Event name</label>
+                    <input type="text" class="form-control" id="name" placeholder="Name" value="" required="">
+                    <div class="invalid-feedback">
+                    Valid event name is required.
+                    </div>
+                </div>
+                </div>
+
+                <div class="mb-3">
+                <label for="username">Description</label>
+                <div class="input-group">
+                    <!-- <div class="input-group-prepend">
+                    <span class="input-group-text">@</span>
+                    </div> -->
+                    <input type="text" class="form-control" id="description" placeholder="Description" required="">
+                    <div class="invalid-feedback" style="width: 100%;">
+                    Description is required.
+                    </div>
+                </div>
+                </div>
+
+                <div class="mb-3">
+                <!-- <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                <input type="email" class="form-control" id="email" placeholder="you@example.com"> -->
+                <label for="startdate">Start Date:</label>
+                <input type="date" class="form-control" id="startdate" name="startdate" placeholder="Start Date" required="">
+                <div class="invalid-feedback" style="width: 100%;">
+                    Start Date is required.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="enddate">End Date:</label>
+                    <input type="date" class="form-control" id="enddate" name="enddate" placeholder="End Date" required="">
+                    <div class="invalid-feedback" style="width: 100%;">
+                        End Date is required.
+                        </div>
+                    </div>
+
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <label for="type">Event Type</label>
+                        <select id="type" class="custom-select d-block w-100" required="">
+                        <option value="">Choose...</option>
+                        <option>Trade</option>
+                        <option>Show</option>
+                        <option>Exhibition</option>
+                        </select>
+                        <div class="invalid-feedback">
+                        Please select a valid event type.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="imageContainer" class="col-md-5 mb-4">
+                        <label for="eventImage">Event Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/png, image/jpeg, image/gif" onchange="previewImage(event)">
+                        <div class="invalid-feedback">
+                            Please select an image.
+                        </div>
+                        <img id="imagePreview" style="display:none; max-width: 100%; margin-top: 10px;" alt="Event Image Preview">
+                    </div>
+                </div>
+            
+                <hr class="mb-4">
+                <button class="btn btn-primary btn-lg btn-block" type="submit" id="SubmitButton">Update</button>
+                <button class="btn btn-primary btn-lg btn-block" type="button" id="CancelButton">Cancel</button>
+                <button class="btn btn-primary btn-lg btn-block" type="button" id="DeleteButton">Delete</button>
+            </form>
+            </div>
+        </div>
+
+        <!-- <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">© 2017-2018 Company Name</p>
+            <ul class="list-inline">
+            <li class="list-inline-item"><a href="#">Privacy</a></li>
+            <li class="list-inline-item"><a href="#">Terms</a></li>
+            <li class="list-inline-item"><a href="#">Support</a></li>
+            </ul>
+        </footer> -->
+        </div>
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+        <!-- <script src="../../../../assets/js/vendor/popper.min.js"></script>
+        <script src="../../../../dist/js/bootstrap.min.js"></script>
+        <script src="../../../../assets/js/vendor/holder.min.js"></script> -->
+        
+        <script src="/scripts/eventUpdate.js"></script>
+
+
+    </body>
+</html>
