@@ -18,7 +18,7 @@ class Book {
         connection.close();
         
         return result.recordset.map(
-            (row) => new Book(row.book_id, row.title, 
+            (row) => new Book(row.id, row.title, 
                 row.author, row.availability)
         );
     }
@@ -55,7 +55,7 @@ class Book {
             return null;
         }
 
-        return new Book(row.book_id, row.title, row.author, row.availability);
+        return new Book(row.id, row.title, row.author, row.availability);
     }
 
 }
