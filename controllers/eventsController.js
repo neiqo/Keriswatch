@@ -180,6 +180,22 @@ async function deleteUserfromEvent(req, res) {
   }
 }
 
+// Controller to get specific event with users
+async function getSpecificUserwithEvents(req, res) {
+  const userId = parseInt(req.params.userId);
+
+  try {
+    const user = await Event.getSpecificEventwithUsers(userId);
+    if (!user) {
+      return res.status(404).send("Event not found");
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching specific user with events" });
+  }
+};
+
 module.exports = {
   getAllEvents,
   getEventById,
@@ -193,5 +209,6 @@ module.exports = {
   getEventswithUsers,
   getSpecificEventwithUsers,
   addUsertoEvent,
-  deleteUserfromEvent
+  deleteUserfromEvent,
+  getSpecificUserwithEvents
 };

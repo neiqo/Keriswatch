@@ -48,9 +48,18 @@ app.put('/update/organisation', authUser.validateUpdateOrganisation, UserControl
 app.get('/users', UserController.getAllUsers); 
 
 // EVENT ROUTES
+app.get('/events/joined/:userId', (req, res) => { //not done yet
+  res.sendFile(path.join(__dirname, 'public/html', 'eventsJoined.html'));
+});
+
+// app.get('/events/:id/join', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public/html', 'eventJoin.html'));
+// });
+
+
 app.get('/events', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/html', 'events.html'));
-  console.log(path.join(__dirname, 'public/html', 'events.html'));
+  // console.log(path.join(__dirname, 'public/html', 'events.html'));
 });
 
 app.get("/events/:id", (req, res) => {
@@ -85,7 +94,8 @@ next();
 console.log('Passed validateUpdateEvent middleware');
 next();
 }, eventsController.updateEvent);// app.delete("/api/events/:id", eventsController.deleteEvent);
-app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);  
+app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser); 
+app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
 

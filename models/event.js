@@ -4,6 +4,7 @@ const moment = require('moment');
 const upload = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { type } = require('os');
 
 class Event {
     constructor(id, name, description, type, startDate, endDate, createddate, modifieddate, imagepath) {
@@ -386,14 +387,21 @@ class Event {
       const connection = await sql.connect(dbConfig);
 
       try {
-        const query = `
-          SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.id AS user_id, u.username, u.email
+        // const query = `
+        //   // SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.id AS user_id, u.username, u.email
+        //   // FROM Events e
+        //   // INNER JOIN EventUsers eu ON eu.event_id = e.id
+        //   // LEFT JOIN Users u ON eu.user_id = u.id
+        //   // ORDER BY e.id;
+        // `;
+
+        const query=`
+        SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.userId AS user_id, u.username, u.email
           FROM Events e
           INNER JOIN EventUsers eu ON eu.event_id = e.id
-          LEFT JOIN Users u ON eu.user_id = u.id
+          LEFT JOIN Users u ON eu.user_id = u.userId
           ORDER BY e.id;
-        `;
-
+          `;
         const result = await connection.request().query(query);
 
         // Group users and their books
@@ -495,7 +503,7 @@ class Event {
                   VALUES (@eventId, @userId)
               END
             END;
-            SELECT SCOPE_IDENTITY() AS id;`    ;
+            SELECT SCOPE_IDENTITY() AS id;`;
       
             const request = await connection.request();
             request.input("eventId", eventId);
@@ -530,7 +538,61 @@ class Event {
     
         return this.getSpecificEventwithUsers(eventId);
     }
+
+    //Get Specific Event with Users
+    static async getSpecificEventwithUsers(userId) {
+      const connection = await sql.connect(dbConfig);
+
+      try {
+        const query = `
+          SELECT u.userId AS user_id, username, email, e.id AS event_id, name, type, startDate, endDate, imagePath
+          FROM Users u
+          INNER JOIN EventUsers eu ON eu.user_id = u.userId
+          LEFT JOIN Events e ON eu.event_id = e.id
+          WHERE u.userId = @userId;
+        `;
+  
+        const request = await connection.request();
+        request.input("userId", userId);
+        const result = await request.query(query);
+  
+        connection.close();
+        // Group users and their books
+        //console.log(result.recordset);
+
+        // Modify this so that it doesnt loop but instead only show 1
+        const userWithEvents = {};
+        for (const row of result.recordset) {
+          const userId = row.user_id;
+          if (!userWithEvents[userId]) {
+            userWithEvents[userId] = {
+              id: userId,
+              username: row.username,
+              email: row.email,
+              events: [],
+            };
+          }
+          userWithEvents[userId].events.push({
+            id: row.event_id,
+            name: row.name,
+            type: row.type,
+            startDate: row.startDate,
+            endDate: row.endDate,
+            imagePath: row.imagePath
+          });
+        }
+  
+        return Object.values(userWithEvents);
+      } catch (error) {
+        throw new Error("Error fetching specific user with events");
+      } finally {
+        await connection.close();
+      }
+  }
+  
 }
+
+
 
 module.exports = Event;
 

@@ -1,5 +1,7 @@
 //let event = document.getElementById("event-information");
 
+// const { join } = require("path");
+
 let image = document.getElementById("image");
 let name = document.getElementById("name");
 let startDate = document.getElementById("startDate");
@@ -49,3 +51,24 @@ getEventDetails(getEventIdFromUrl());
 
 // function delete event
 let deleteButton = document.getElementById("deleteButton");
+let joinButton = document.getElementById("joinButton");
+
+joinButton.addEventListener("click", () => {
+    joinEvent(getEventIdFromUrl());
+});
+
+
+async function joinEvent(eventId) {
+    const response = await fetch(`/api/events/with-users/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            eventId: eventId
+        })
+    });
+    const data = await response.json();
+    console.log(data);
+    //window.location = "/events/joined";
+}

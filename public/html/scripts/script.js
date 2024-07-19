@@ -93,7 +93,7 @@ function updateButton(dataLength) {
 }
 
 const prevButton = document.getElementById("prev-page");
-const nextButton = document.    getElementById("next-page");
+const nextButton = document.getElementById("next-page");
 
 prevButton.addEventListener("click", () => {
   // Handle previous page click
