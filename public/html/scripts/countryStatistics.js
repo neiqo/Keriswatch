@@ -1,8 +1,16 @@
+document.addEventListener('DOMContentLoaded', function () {
+    // Fetch and display statistics for selected country on page load, set to Singapore for now
+    fetchStatistics('SGP');
+});
+
+// Used for displaying the selected country to the users
 document.getElementById('countryForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const country = document.getElementById('country').value;
+    fetchStatistics(country);
+});
 
-    // Fetching through the route
+function fetchStatistics(country) {
     fetch(`/statistics/${country}`, {
         method: 'GET',
         headers: {
@@ -25,6 +33,10 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
             }
         });
 
+        // Update the selected country display
+        updateSelectedCountry(country);
+
+        // Update the chart with the fetched data
         updateCombinedChart('statisticsContainer', {
             agriculture: agricultureData[0], 
             services: servicesData[0], 
@@ -32,8 +44,29 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
         });
     })
     .catch(error => console.error('Error:', error));
-});
+}
 
+function updateSelectedCountry(countryCode) {
+    // Dictionary for storing code and countries
+    const countryNames = {
+        'PHL': 'Philippines',
+        'SGP': 'Singapore',
+        'KHM': 'Cambodia',
+        'BRN': 'Brunei',
+        'MMR': 'Myanmar',
+        'THA': 'Thailand',
+        'MYS': 'Malaysia',
+        'VNM': 'Vietnam',
+        'IDN': 'Indonesia',
+        'LAO': 'Laos'
+    };
+
+    // Display the selected country name to the users
+    const selectedCountryDiv = document.getElementById('selectedCountry');
+    selectedCountryDiv.textContent = `Selected Country: ${countryNames[countryCode]}`;
+}
+
+// Used for creating the chart in html
 function updateCombinedChart(containerId, data) {
     const container = document.getElementById(containerId);
 
