@@ -148,12 +148,12 @@ async function getSpecificEventwithUsers(req, res) {
 // Controller to add user to event
 async function addUsertoEvent(req, res) {
   // for /events/:eventId/with-users/:userId
-  //const eventId = parseInt(req.params.eventId);
-  //const userId = parseInt(req.params.userId);
+  const eventId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
 
   // for /events/with-users?eventId=3&user_id=2
-  const eventId = req.query.eventId;
-  const userId = req.query.userId;
+  // const eventId = req.query.eventId;
+  // const userId = req.query.userId;
 
   try {
     const event = await Event.addUsertoEvent(eventId, userId);
@@ -167,8 +167,8 @@ async function addUsertoEvent(req, res) {
 
 // Controller to delete user from event
 async function deleteUserfromEvent(req, res) {
-  const eventId = req.query.eventId;
-  const userId = req.query.userId;
+  const eventId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
 
   try {
     const event = await Event.deleteUserfromEvent(eventId, userId);
@@ -196,6 +196,20 @@ async function getSpecificUserwithEvents(req, res) {
   }
 };
 
+async function checkIfUserJoinedEvent(req, res) {
+  const eventId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
+
+  try {
+    const event = await Event.checkIfUserJoinedEvent(eventId, userId);
+    res.json(event);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching events with users" });
+  }
+}
+
 module.exports = {
   getAllEvents,
   getEventById,
@@ -210,5 +224,6 @@ module.exports = {
   getSpecificEventwithUsers,
   addUsertoEvent,
   deleteUserfromEvent,
-  getSpecificUserwithEvents
+  getSpecificUserwithEvents,
+  checkIfUserJoinedEvent
 };

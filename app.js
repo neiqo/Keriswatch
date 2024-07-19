@@ -62,7 +62,11 @@ app.get('/events', (req, res) => {
   // console.log(path.join(__dirname, 'public/html', 'events.html'));
 });
 
-app.get("/events/:id", (req, res) => {
+// app.get("/events/:id", (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
+// });
+
+app.get("/events/:id/user/:userId", (req, res) => {
   res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
 });
 
@@ -76,8 +80,11 @@ app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);
 //app.get("/api/events/search", eventsController.searchEvents);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
-app.post("/api/events/with-users", eventsController.addUsertoEvent);
-app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
+// app.post("/api/events/with-users", eventsController.addUsertoEvent);
+// app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
+app.get("/api/events/:id/user/:userId/joined", eventsController.checkIfUserJoinedEvent);
+app.post("/api/events/:id/user/:userId", eventsController.addUsertoEvent);
+app.delete("/api/events/:id/user/:userId", eventsController.deleteUserfromEvent);
 
 
 app.get("/api/events/:id", eventsController.getEventById);
@@ -96,6 +103,7 @@ next();
 }, eventsController.updateEvent);// app.delete("/api/events/:id", eventsController.deleteEvent);
 app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser); 
 app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
+
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
 

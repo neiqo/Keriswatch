@@ -590,6 +590,35 @@ class Event {
       }
   }
   
+  static async checkIfUserJoinedEvent(eventId, userId) {
+    const connection = await sql.connect(dbConfig);
+    console.log("eventId", eventId);
+
+    try {
+      const query = `
+      SELECT CASE WHEN EXISTS (
+        SELECT 1
+        FROM EventUsers
+        WHERE event_id = @eventId
+        AND user_id = @userId
+      ) THEN 1 ELSE 0 END AS 'exists';
+      `;
+
+      const request = await connection.request();
+      request.input("eventId", eventId);
+      request.input("userId", userId);
+      const result = await request.query(query);
+
+      console.log('Query Result:', result);
+
+      return result.recordset[0].exists === 1;
+
+    } catch (error) {
+      throw new Error("Error checking if user joined event");
+    } finally {
+      await connection.close();
+    }
+  }
 }
 
 
