@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     brandLink.className = 'navbar-brand';
     brandLink.href = 'index.html';
     const brandImg = document.createElement('img');
-    brandImg.src = './images/keriswatch.png';
+    brandImg.src = '../images/keriswatch.png';
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
     brandImg.loading = 'lazy';
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
     userItem.appendChild(userLink);
 
     // Default guest profile image
-    const defaultUserImg = './images/defaultProfile.png';
+    const defaultUserImg = '../images/defaultProfile.png';
     const defaultUserName = 'Guest';
 
     // Check if user is logged in (example check)
