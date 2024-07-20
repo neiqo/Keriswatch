@@ -1,10 +1,10 @@
 // booksController.test.js
 
 const booksController = require("../controllers/bookController");
-const Book = require("../models/Book");
+const Book = require("../models/book");
 
 // Mock the Book model
-jest.mock("../models/Book"); // Replace with the actual path to your Book model
+jest.mock("../models/book"); // Replace with the actual path to your Book model
 
 describe("booksController.getAllBooks", () => {
   beforeEach(() => {
