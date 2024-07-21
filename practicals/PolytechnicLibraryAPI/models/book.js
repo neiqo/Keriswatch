@@ -18,7 +18,7 @@ class Book {
         connection.close();
         
         return result.recordset.map(
-            (row) => new Book(row.book_id, row.title, 
+            (row) => new Book(row.id, row.title, 
                 row.author, row.availability)
         );
     }
@@ -50,12 +50,12 @@ class Book {
 
         connection.close();
 
-        const row = result.recordset[0];
-        if (!row) {
+        if (!result || !result.recordset || result.recordset.length === 0) {
             return null;
         }
+        const row = result.recordset[0];
 
-        return new Book(row.book_id, row.title, row.author, row.availability);
+        return new Book(row.id, row.title, row.author, row.availability);
     }
 
 }
