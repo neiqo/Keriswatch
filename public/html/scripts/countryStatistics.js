@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Fetch and display statistics for selected country on page load, set to Singapore for now
+    // Fetch and display statistics for Singapore on page load
     fetchStatistics('SGP');
-});
 
-// Used for displaying the selected country to the users
-document.getElementById('countryForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const country = document.getElementById('country').value;
-    fetchStatistics(country);
+    // Set up event listener for the image map
+    document.querySelectorAll('area').forEach(area => {
+        area.addEventListener('click', function (e) {
+            e.preventDefault();
+            const country = this.dataset.country;
+            fetchStatistics(country);
+        });
+    });
 });
 
 function fetchStatistics(country) {
