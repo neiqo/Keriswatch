@@ -17,7 +17,8 @@ CREATE TABLE Users (
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    role VARCHAR(30) NOT NULL CHECK (role IN ('Organisation', 'Admin', 'NormalUser'))
+    role VARCHAR(30) NOT NULL CHECK (role IN ('Organisation', 'Admin', 'NormalUser')),
+    profilePicture VARCHAR(255) NOT NULL DEFAULT 'defaultProfile.png'
 );
 
 CREATE TABLE Admin (
@@ -42,3 +43,4 @@ CREATE TABLE NormalUser (
     CONSTRAINT FK_NormalUser_User FOREIGN KEY (userId) REFERENCES Users(userId)
     -- Add any NormalUser-specific columns here if needed
 );
+

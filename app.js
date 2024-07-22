@@ -1,5 +1,6 @@
 // MODULE IMPORTS
 const express = require("express");
+const fileUpload = require('express-fileupload');
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const bodyParser = require("body-parser"); // Import body-parser
@@ -23,6 +24,7 @@ const authUser = require('./middlewares/authUser');
 const validateEvent = require("./middlewares/validateEvent");
 const validateUpdateEvent = require("./middlewares/validateUpdateEvent");
 const uploadEventImage = require("./middlewares/validateEventImage");
+const verifyJWT = require('./middlewares/verifyJWT');
 
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
@@ -37,20 +39,20 @@ app.get('/login', (req, res) => {
   console.log(path.join(__dirname + '/public/html/login.html'));
 });
 
-app.post('/login', authUser.validateLogin, userController.userLogin);
+app.post('/api/login', authUser.validateLogin, userController.userLogin);
 
 // Specific-user routes
-app.get('/users/:username', userController.getUserByUsername);
-app.delete('/users/:username', userController.deleteUser); 
+app.get('/api/users/:username', userController.getUserByUsername);
+app.delete('/api/users/:username', verifyJWT, userController.deleteUser); 
 
 // User creation and update routes
-app.post('/signup/normal', authUser.validateNormalUser, userController.registerUser); 
-app.post('/signup/organisation', authUser.validateOrganisation, userController.registerUser);
-app.put('/update/normal', authUser.validateUpdateNormalUser, userController.updateNormalUser);
-app.put('/update/organisation', authUser.validateUpdateOrganisation, userController.updateOrganisation); 
+app.post('/api/signup/normal', authUser.validateNormalUser, userController.registerUser); 
+app.post('/api/signup/organisation', authUser.validateOrganisation, userController.registerUser);
+app.put('/api/update/normal', verifyJWT, authUser.validateUpdateNormalUser, userController.updateNormalUser);
+app.put('/api/update/organisation', verifyJWT, authUser.validateUpdateOrganisation, userController.updateOrganisation); 
 
 // Get all users except admin route
-app.get('/users', userController.getAllUsers); 
+app.get('/api/users', userController.getAllUsers); 
 
 // EVENT ROUTES
 app.get('/events', (req, res) => {

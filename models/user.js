@@ -36,28 +36,31 @@ class User {
     // }
 
     static async getUserByEmail(email) {
+        let connection;
+
         try {
-            const connection = await sql.connect(dbConfig);
+            connection = await sql.connect(dbConfig);
             const sqlQuery = `SELECT * FROM Users WHERE email = @Email`;
     
             const request = connection.request();
-            request.input('Username', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
+            request.input('Email', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
     
             const result = await request.query(sqlQuery);
             connection.close();
     
-            if (!result || result.recordset) return null; // if no user found, return null
+            if (!result || !result.recordset) return null; // if no user found, return null
     
             return result.recordset[0];
         }
-        catch {
+        catch (err) {
             connection.close();
             throw new Error('Error retrieving user: ' + err.message);
         }
     }
     static async getUserByUsername(username) {
+        let connection;
         try {
-            const connection = await sql.connect(dbConfig);
+            connection = await sql.connect(dbConfig);
             const sqlQuery = `SELECT * FROM Users WHERE username = @Username`;
     
             const request = connection.request();
@@ -66,7 +69,9 @@ class User {
             const result = await request.query(sqlQuery);
             connection.close();
     
-            if (!result || result.recordset) return null; // if no user found, return null
+            console.log("Result: " + result.recordset[0]); 
+
+            if (!result || !result.recordset) return null; // if no user found, return null
     
             return result.recordset[0];
         }
@@ -75,7 +80,30 @@ class User {
             throw new Error('Error retrieving user: ' + err.message);
         }
     }
+
+    static async uploadProfilePicture(userId, profilePicture) { 
+        try {
+            const connection = await sql.connect(dbConfig);
+            const sqlQuery = `UPDATE Users SET profilePicture = @ProfilePicture WHERE userId = @UserId`;
+
+            const request = connection.request();
+            request.input('UserId', sql.Int, userId);
+            request.input('ProfilePicture', sql.VarChar, profilePicture);
+            
+            const result = await request.query(sqlQuery);
+            connection.close();
+
+            if (!result) return { success: false, message: 'No user found.'}; // if no user found, return null
+
+            return { success: true, message: 'Profile picture uploaded successfully.'};
+
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            return { success: false, message: 'Error uploading profile picture: ' + error.message };
+        }
+    }
 }
+
 
 // Normal User class
 class NormalUser extends User {
@@ -104,10 +132,9 @@ class NormalUser extends User {
             request.input('Username', sql.VarChar, user.username);
             request.input('Password', sql.VarChar, user.password);
             request.input('Email', sql.VarChar, user.email);
-            request.input('Country', sql.VarChar, user.country);
             request.input('Role', sql.VarChar, user.role);
 
-            console.log(user.role);
+            console.log("User role: " + user.role);
 
             // Insert into Users table and get the new userId
             const insertUserQuery = `INSERT INTO Users (username, password, email, role)
@@ -117,11 +144,20 @@ class NormalUser extends User {
             const userResult = await request.query(insertUserQuery);
             const userId = userResult.recordset[0].userId;
 
-            // Insert into NormalUsers table
-            const insertNormalUserQuery = `INSERT INTO NormalUser (userId, country)
-                                           VALUES (@UserId, @Country)`;
+            console.log("Checking user : " + user);
+            console.log("User details : " + userResult);
+            console.log("User ID: " + userId);
+
             request.input('UserId', sql.Int, userId);
-            await request.query(insertNormalUserQuery);
+            request.input('Country', sql.VarChar, user.country);
+
+            
+            // Insert into NormalUser table
+            const insertNormalUserQuery = `INSERT INTO NormalUser (userId, country)
+                                           VALUES (@UserId, @Country);`;
+            const normalUserResult = await request.query(insertNormalUserQuery);
+
+            console.log("Normal User result : " + normalUserResult);
 
             await transaction.commit();
             connection.close();

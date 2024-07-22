@@ -21,8 +21,13 @@ const verifyJWT = (req, res, next) => {
 
     // Define the roles authorised to access specific endpoints
     const authorisedRoles = {
-      "/books": ["member", "librarian"],
-      "/books/[0-9]+/availability": ["librarian"],
+      "/api/update/normal": ["NormalUser"],
+      "/api/update/organisation": ["Organisation"],
+      "/api/users/[0-9]+": ["Admin"],
+      "/api/users" : ["NormalUser", "Organisation", "Admin"],
+      
+      // exmaple of using regex to match multiple endpoints
+      "/books/[0-9]+/availability": ["Admin"],
     };
 
     // Get the requested endpoint and the user's role from the decoded token

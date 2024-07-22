@@ -1,10 +1,15 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path'); // Import the path module
 require('dotenv').config(); // Load environment variables from a .env file
 const { User, NormalUser, Admin, Organisation } = require('../models/user');
+const upload = require('../middlewares/multerConfig');
 
 const registerUser = async (req, res) => {
   const user = { ...req.body };
+  const profilePicture = req.files ? req.files.profilePicture : null;
+
+  let profilePicturePath = null;
 
   try {
     // Validation code for user registration
@@ -24,28 +29,53 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10); 
     const hashedPassword = await bcrypt.hash(user.password, salt);
 
-    // Assuming newUser has an id property that uniquely identifies the user
-    const payload = {
-        userId: user.userId,
-        role: user.role,
-        username: user.username,
-    };
-
     // hash it to store in database when creating account
     user.password = hashedPassword;
 
     // Register the new user in the database
     if (user.role === 'NormalUser') {
-        NormalUser.createAccount(user);
+        await NormalUser.createAccount(user);
     }
     else if (user.role === 'Organisation') {
-         await Organisation.createAccount(user);
+        await Organisation.createAccount(user);
     }
+
+    console.log(user.username);
+
+    const userRecord = await User.getUserByUsername(user.username);
+    if (!userRecord) {
+        return res.status(500).json({ message: "Failed to retrieve user after creation" });
+    }
+    const userId = userRecord.userId;
+    let uploadProfileSuccess = false;
+
+    if (profilePicture) {
+
+        const fileExtension = path.extname(profilePicture.name); // extract file extension
+        profilePicturePath = `${userId}${fileExtension}`;
+    
+
+        uploadProfileSuccess = (User.uploadProfilePicture(userId, profilePicturePath)).success;
+      }
+        
+    if (uploadProfileSuccess) { 
+        const uploadPath = path.join(__dirname, 'images/profile-pictures', profilePicturePath);
+        console.log(uploadPath);
+        profilePicture.mv(uploadPath, err => {
+            if (err) return res.status(500).send(err);
+        });
+    }
+
+    const payload = {
+        userId: userId,
+        role: user.role,
+        username: user.username,
+    };
 
     // if (newUser['success'] === false) { 
     //     return res.status(400).json({ message: newUser['message'] });
     // }    
-    
+
     // Generate JWT token
     const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "3600s"});
   
@@ -72,7 +102,7 @@ const userLogin = async (req,res) => {
     // check if password used to login matches the password in the database
     //  - the login password is hashed using bcrypt's algorithm and checks if the
     //    login password that is hashed matches exactly to the hashed password in the database
-    const isMatchedPass = await bcrypt.compare(password, user.passwordHash);
+    const isMatchedPass = await bcrypt.compare(password, user.password);
     if (!isMatchedPass){
       return res.status(401).json({message: "Wrong password!"});
     }
