@@ -24,7 +24,9 @@ const registerUser = async (req, res) => {
     }
 
     // Hashing password
-    const salt = await bcrypt.genSalt(10);
+    // to ensure that the same password entered by different users will not have the same hash
+    // 10 means a cost factor of 10, 2^10 times of iterations to hash the passwords
+    const salt = await bcrypt.genSalt(10); 
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Register the new user in the database

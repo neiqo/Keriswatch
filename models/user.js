@@ -1,7 +1,6 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-// is there a need for role? cuz can use type of class to find out the role, so shld i remove?
 class User {
     constructor(username, password, email) {
         this.username = username;
@@ -9,56 +8,71 @@ class User {
         this.email = email;
     }
 
-    static async loginUser(email, password) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE email = @Email AND password = @Password`;
+    // static async loginUser(email, password) {
+    //     const connection = await sql.connect(dbConfig);
+    //     const sqlQuery = `SELECT * FROM Users WHERE email = @Email AND password = @Password`;
 
-        const request = connection.request();
-        request.input('Email', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
-        request.input('Password', sql.VarChar, password); // specify data type varchar to avoid system misinterpretation
+    //     const request = connection.request();
+    //     request.input('Email', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
+    //     request.input('Password', sql.VarChar, password); // specify data type varchar to avoid system misinterpretation
 
-        const result = await request.query(sqlQuery);
-        connection.close();
+    //     const result = await request.query(sqlQuery);
+    //     connection.close();
 
-        const user = result.recordset[0];
+    //     const user = result.recordset[0];
 
-        if (!user) return null; // if no user found, return null
+    //     if (!user) return null; // if no user found, return null
 
-        switch (user.role) {
-            case 'NormalUser':
-                return await NormalUser.getNormalUserByUsername(user.username);
-            case 'Admin':
-                return new Admin(user.username, user.password, user.email);
-            case 'Organisation':
-                return await Organisation.getOrganisationByUsername(user.username);
-            default:
-                return new User(user.username, user.password, user.email);
+    //     switch (user.role) {
+    //         case 'NormalUser':
+    //             return await NormalUser.getNormalUserByUsername(user.username);
+    //         case 'Admin':
+    //             return new Admin(user.username, user.password, user.email);
+    //         case 'Organisation':
+    //             return await Organisation.getOrganisationByUsername(user.username);
+    //         default:
+    //             return new User(user.username, user.password, user.email);
+    //     }
+    // }
+
+    static async getUserByEmail(email) {
+        try {
+            const connection = await sql.connect(dbConfig);
+            const sqlQuery = `SELECT * FROM Users WHERE email = @Email`;
+    
+            const request = connection.request();
+            request.input('Username', sql.VarChar, email); // specify data type varchar to avoid system misinterpretation
+    
+            const result = await request.query(sqlQuery);
+            connection.close();
+    
+            if (!result || result.recordset) return null; // if no user found, return null
+    
+            return result.recordset[0];
+        }
+        catch {
+            connection.close();
+            throw new Error('Error retrieving user: ' + err.message);
         }
     }
-
     static async getUserByUsername(username) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE username = @Username`;
-
-        const request = connection.request();
-        request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
-
-        const result = await request.query(sqlQuery);
-        connection.close();
-
-        const user = result.recordset[0];
-
-        if (!user) return null; // if no user found, return null
-
-        switch (user.role) {
-            case 'NormalUser':
-                return await NormalUser.getNormalUserByUsername(username);
-            case 'Admin':
-                return new Admin(user.username, user.password, user.email);
-            case 'Organisation':
-                return await Organisation.getOrganisationByUsername(username);
-            default:
-                throw new Error('Error identifying user role');
+        try {
+            const connection = await sql.connect(dbConfig);
+            const sqlQuery = `SELECT * FROM Users WHERE username = @Username`;
+    
+            const request = connection.request();
+            request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
+    
+            const result = await request.query(sqlQuery);
+            connection.close();
+    
+            if (!result || result.recordset) return null; // if no user found, return null
+    
+            return result.recordset[0];
+        }
+        catch {
+            connection.close();
+            throw new Error('Error retrieving user: ' + err.message);
         }
     }
 }
@@ -70,15 +84,8 @@ class NormalUser extends User {
         this.country = country;
     }
 
-    static role = "NormalUser";
-
     // Normal user-specific methods
     static async createAccount(user) {
-
-        // if username already exists, throw error
-        if (await this.getNormalUserByUsername(user.username) != null) {
-            throw new Error('User already exists');
-        }
 
         let transaction;
         let connection;
@@ -98,70 +105,62 @@ class NormalUser extends User {
             request.input('Password', sql.VarChar, user.password);
             request.input('Email', sql.VarChar, user.email);
             request.input('Country', sql.VarChar, user.country);
-            request.input('Role', sql.VarChar, this.role);
+            request.input('Role', sql.VarChar, user.role);
 
-            console.log(this.role);
+            console.log(user.role);
 
-            // Insert into Users table and get the new user_id
+            // Insert into Users table and get the new userId
             const insertUserQuery = `INSERT INTO Users (username, password, email, role)
                                      VALUES (@Username, @Password, @Email, @Role);
-                                     SELECT SCOPE_IDENTITY() AS user_id;`;
+                                     SELECT SCOPE_IDENTITY() AS userId;`;
             
             const userResult = await request.query(insertUserQuery);
-            const userId = userResult.recordset[0].user_id;
+            const userId = userResult.recordset[0].userId;
 
             // Insert into NormalUsers table
-            const insertNormalUserQuery = `INSERT INTO NormalUser (user_id, username, password, email, country)
-                                           VALUES (@UserId, @Username, @Password, @Email, @Country)`;
+            const insertNormalUserQuery = `INSERT INTO NormalUser (userId, country)
+                                           VALUES (@UserId, @Country)`;
             request.input('UserId', sql.Int, userId);
             await request.query(insertNormalUserQuery);
 
             await transaction.commit();
             connection.close();
 
-            return this.getNormalUserByUsername(user.username);
-        } catch (err) {
+            return { success: true, message: 'User signed up successfully', userId: userId };
+        } catch (error) {
             await transaction.rollback();
             connection.close();
-            throw new Error('Error creating account: ' + err.message);
+            console.error('Error creating account:', error);
+            return { success: false, message: 'Error creating account: ' + error.message };
         }
     }
 
     static async getNormalUserByUsername(username) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM NormalUser WHERE username = @Username`;
-
-        console.log(username);
-
-        const request = connection.request();
-        request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
-
-        const result = await request.query(sqlQuery);
-        connection.close();
-
-        console.log(result.recordset);
-
-        return result.recordset[0]
-        ? new NormalUser(
-            result.recordset[0].username,
-            result.recordset[0].password,
-            result.recordset[0].email,
-            result.recordset[0].country
-          )
-        : null;
+        try {
+            const connection = await sql.connect(dbConfig);
+            const sqlQuery = `SELECT * FROM NormalUser WHERE username = @Username`;
+    
+            console.log(username);
+    
+            const request = connection.request();
+            request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
+    
+            const result = await request.query(sqlQuery);
+            connection.close();
+    
+            console.log(result.recordset);
+    
+            return result.recordset[0]
+            ? result.recordset[0]
+            : null;
+        }
+        catch (err) {
+            connection.close();
+            throw new Error('Error retrieving user: ' + err.message);
+        }
     }
 
-    static async updateAccountDetails(user) {
-
-        // if username does not exist, throw error
-        let oldUserDetails = null;
-
-        console.log(user.oldUsername);
-
-        if ((oldUserDetails = await this.getNormalUserByUsername(user.oldUsername)) == null) {
-            throw new Error('User does not exist');
-        }
-
+    static async updateAccountDetails(user, oldUserDetails) {
         let connection;
         let transaction;
 
@@ -182,23 +181,30 @@ class NormalUser extends User {
             // Update Users table
             const updateUserQuery = `UPDATE Users
                                      SET username = @Username, password = @Password, email = @Email
-                                     WHERE username = @oldUsername`;
-            await request.query(updateUserQuery);
+                                     WHERE username = @oldUsername;`;
+            request.query(updateUserQuery);
+
+            // Get the userId of the user
+            const userIdQuery = `SELECT userId FROM Users WHERE username = @Username`;
+            const userId = (await request.query(userIdQuery)).recordset[0].userId;
+
+            request.input('UserId', sql.Int, userId);   
 
             // Update NormalUsers table
             const updateNormalUserQuery = `UPDATE NormalUser
-                                           SET username = @Username, password = @Password, email = @Email, country = @Country
-                                           WHERE username = @oldUsername`;
+                                           SET country = @Country
+                                           WHERE userId = @UserId`;
             await request.query(updateNormalUserQuery);
 
             await transaction.commit();
             connection.close();
 
-            return this.getNormalUserByUsername(user.username);
+            return { success : true, message: 'User updated successfully', userId: userId, username : user.username || oldUserDetails.username};
         } catch (err) {
             await transaction.rollback();
             connection.close();
-            throw new Error('Error updating account: ' + err.message);
+            // Return failure flag and error message
+            return { success: false, errorMessage: 'Error updating account: ' + err.message };
         }
     }
 }
@@ -209,35 +215,42 @@ class Admin extends User {
         super(username, password, email);
     }
 
-    static role = "Admin";
-
     // Admin-specific methods
-    
+
     // to be used for viewing all profiles as admin
     static async getAllUsers() {
         const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Users WHERE role = 'NormalUser' OR role = 'Organisation'`;
+        const sqlQuery = `
+            SELECT 
+                u.username, u.password, u.email, u.role, 
+                n.country AS country, o.orgNumber AS orgNumber
+            FROM Users u
+            LEFT JOIN NormalUser n ON u.userId = n.userId
+            LEFT JOIN Organisation o ON u.userId = o.userId
+            WHERE u.role = 'NormalUser' OR u.role = 'Organisation'
+        `;
 
         const request = connection.request();
         const result = await request.query(sqlQuery);
         connection.close();
 
-        return result.recordset.map (user => {
-            return user.role == 'NormalUser'
-            ? new NormalUser(
-                user.username,
-                user.password,
-                user.email,
-                user.country
-              )
-            : new Organisation(
-                user.username,
-                user.password,
-                user.email,
-                user.orgNumber
-              );
+        return result.recordset.map(user => {
+            if (user.role == 'NormalUser') {
+                return new NormalUser(
+                    user.username,
+                    user.password,
+                    user.email,
+                    user.country
+                );
+            } else {
+                return new Organisation(
+                    user.username,
+                    user.password,
+                    user.email,
+                    user.orgNumber
+                );
+            }
         });
-    
     }
 
     // to be used for deleting a normal user or organisation as admin
@@ -250,7 +263,7 @@ class Admin extends User {
             await transaction.begin();
 
             // Check the role of the user
-            const roleQuery = `SELECT role FROM Users WHERE username = @Username AND role != 'Admin'`;
+            const roleQuery = `SELECT role, userId FROM Users WHERE username = @Username AND role != 'Admin'`;
             const request = new sql.Request(transaction);
             request.input('Username', sql.VarChar, username);
             const roleResult = await request.query(roleQuery);
@@ -259,34 +272,36 @@ class Admin extends User {
                 // No user found or user is an Admin
                 await transaction.rollback();
                 connection.close();
-                return false;
+                return { success : false, message: 'User does not exist, or user is not an admin.'};
             }
 
             const role = roleResult.recordset[0].role;
 
+            request.input('UserId', sql.Int, roleResult.recordset[0].userId);
+
             // Delete from the specific table
             let deleteSpecificQuery;
             if (role === 'NormalUser') {
-                deleteSpecificQuery = `DELETE FROM NormalUser WHERE username = @Username`;
+                deleteSpecificQuery = `DELETE FROM NormalUser WHERE userId = @UserId`;
             } else if (role === 'Organisation') {
-                deleteSpecificQuery = `DELETE FROM Organisation WHERE username = @Username`;
+                deleteSpecificQuery = `DELETE FROM Organisation WHERE userId = @UserId`;
             }
 
             await request.query(deleteSpecificQuery);
 
             // Delete from the Users table
-            const deleteUserQuery = `DELETE FROM Users WHERE username = @Username`;
+            const deleteUserQuery = `DELETE FROM Users WHERE userId = @UserId`;
             await request.query(deleteUserQuery);
 
             // Commit the transaction
             await transaction.commit();
             connection.close();
-            return true; // if successful, returns true
+            return { success : true, message: 'User deleted successfully'};
         } catch (err) {
             // Rollback the transaction in case of error
             await transaction.rollback();
             connection.close();
-            throw new Error('Error deleting user: ' + err.message);
+            return { success: false, errorMessage: 'Error deleting user: ' + err.message };
         }
     }
 }
@@ -298,17 +313,8 @@ class Organisation extends User {
         this.orgNumber = orgNumber;
     }
     
-    static role = "Organisation";
-
     // Organisation-specific methods
     static async createAccount(user) {
-
-        // if username already exists, throw error
-        if (await this.getOrganisationByUsername(user.username) != null) {
-            throw new Error('Organisation already exists');
-        }
-
-
         let transaction;
         let connection;
 
@@ -327,32 +333,33 @@ class Organisation extends User {
             request.input('Password', sql.VarChar, user.password);
             request.input('Email', sql.VarChar, user.email);
             request.input('OrgNumber', sql.Int, user.orgNumber);
-            request.input('Role', sql.VarChar, this.role);
+            request.input('Role', sql.VarChar, user.role);
 
-            console.log(this.role);
+            console.log(user.role);
 
-            // Insert into Users table and get the new user_id
+            // Insert into Users table and get the new userId
             const insertUserQuery = `INSERT INTO Users (username, password, email, role)
                                         VALUES (@Username, @Password, @Email, @Role);
-                                        SELECT SCOPE_IDENTITY() AS user_id;`;
+                                        SELECT SCOPE_IDENTITY() AS userId;`;
             
             const userResult = await request.query(insertUserQuery);
-            const userId = userResult.recordset[0].user_id;
+            const userId = userResult.recordset[0].userId;
 
             // Insert into Organisations table
-            const insertOrganisationQuery = `INSERT INTO Organisation (user_id, username, password, email, orgNumber)
-                                        VALUES (@UserId, @Username, @Password, @Email, @OrgNumber)`;
+            const insertOrganisationQuery = `INSERT INTO Organisation (userId, orgNumber)
+                                        VALUES (@UserId, @OrgNumber)`;
             request.input('UserId', sql.Int, userId);
             await request.query(insertOrganisationQuery);
 
             await transaction.commit();
             connection.close();
 
-            return this.getOrganisationByUsername(user.username);
-        } catch (err) {
-            await transaction.rollback(); // at least one of the queries failed, so discard changes
+            return { success: true, message: 'User signed up successfully', userId: userId };
+        } catch (error) {
+            await transaction.rollback();
             connection.close();
-            throw new Error('Error creating account: ' + err.message);
+            console.error('Error creating account:', error);
+            return { success: false, message: 'Error creating account: ' + error.message };
         }
     }
 
@@ -370,24 +377,11 @@ class Organisation extends User {
         console.log(connection);
 
         return result.recordset[0]
-        ? new Organisation(
-            result.recordset[0].username,
-            result.recordset[0].password,
-            result.recordset[0].email,
-            result.recordset[0].orgNumber
-          )
+        ? result.recordset[0]
         : null;
     }
 
-    static async updateAccountDetails(user) {
-
-        let oldUserDetails = null;
-
-        // if username does not exist, throw error
-        if ((oldUserDetails = await this.getOrganisationByUsername(user.oldUsername)) == null) {
-            throw new Error('Organisation does not exist');
-        }
-
+    static async updateAccountDetails(user, oldUserDetails) {
         let connection;
         let transaction;
 
@@ -408,23 +402,30 @@ class Organisation extends User {
             // Update Users table
             const updateUserQuery = `UPDATE Users
                                      SET username = @Username, password = @Password, email = @Email
-                                     WHERE username = @oldUsername`;
+                                     WHERE username = @oldUsername;`;
+
             await request.query(updateUserQuery);
 
-            // Update NormalUsers table
+            const userIdQuery = `SELECT userId FROM Users WHERE username = @Username`;
+            const userId = (await request.query(userIdQuery)).recordset[0].userId;
+
+            request.input('UserId', sql.Int, userId);   
+
+            // Update Organisation table
             const updateOrganisationQuery = `UPDATE Organisation
-                                           SET username = @Username, password = @Password, email = @Email, orgNumber = @OrgNumber
-                                           WHERE username = @oldUsername`;
+                                           SET orgNumber = @OrgNumber
+                                           WHERE userId = @UserId`;
             await request.query(updateOrganisationQuery);
 
             await transaction.commit();
             connection.close();
 
-            return this.getOrganisationByUsername(user.username);
+            return { success : true, message: 'User updated successfully', userId: userId, username : user.username || oldUserDetails.username};
         } catch (err) {
             await transaction.rollback();
             connection.close();
-            throw new Error('Error updating account: ' + err.message);
+            // Return failure flag and error message
+            return { success: false, errorMessage: 'Error updating account: ' + err.message };
         }
     }
 }

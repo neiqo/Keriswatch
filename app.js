@@ -27,38 +27,44 @@ const uploadEventImage = require("./middlewares/validateEventImage");
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
-const UserController = require('./controllers/userController');
+const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
 
 // CONTROLLER ROUTINGS
 // LOGIN ROUTES
-app.post('/login', authUser.validateLogin, UserController.login);
+app.get('/login', (req, res) => { 
+  res.sendFile(path.join(__dirname + '/public/html/login.html'));
+  console.log(path.join(__dirname + '/public/html/login.html'));
+});
+
+app.post('/login', authUser.validateLogin, userController.userLogin);
 
 // Specific-user routes
-app.get('/users/:username', UserController.getUserByUsername);
-app.delete('/users/:username', UserController.deleteUser); 
+app.get('/users/:username', userController.getUserByUsername);
+app.delete('/users/:username', userController.deleteUser); 
 
 // User creation and update routes
-app.post('/signup/normal', authUser.validateNormalUser, UserController.createNormalUser); 
-app.post('/signup/organisation', authUser.validateOrganisation, UserController.createOrganisation);
-app.put('/update/normal', authUser.validateUpdateNormalUser, UserController.updateNormalUser);
-app.put('/update/organisation', authUser.validateUpdateOrganisation, UserController.updateOrganisation); 
+app.post('/signup/normal', authUser.validateNormalUser, userController.registerUser); 
+app.post('/signup/organisation', authUser.validateOrganisation, userController.registerUser);
+app.put('/update/normal', authUser.validateUpdateNormalUser, userController.updateNormalUser);
+app.put('/update/organisation', authUser.validateUpdateOrganisation, userController.updateOrganisation); 
 
 // Get all users except admin route
-app.get('/users', UserController.getAllUsers); 
+app.get('/users', userController.getAllUsers); 
 
 // EVENT ROUTES
 app.get('/events', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/html', 'events.html'));
-  console.log(path.join(__dirname, 'public/html', 'events.html'));
+  res.sendFile(path.join(__dirname + '/public/html/events.html'));
+  console.log(path.join(__dirname + '/public/html/events.html'));
 });
 
 app.get("/events/:id", (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
+  res.sendFile(path.join(__dirname + '/public/html/eventDetails.html'));
 });
 
 app.get('/events/:id/update', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/html', 'eventUpdate.html'));
+  res.sendFile(path.join(__dirname + '/public/html/eventUpdate.html'));
+  console.log(path.join(__dirname + '/public/html/eventUpdate.html'));
 });
 
 
