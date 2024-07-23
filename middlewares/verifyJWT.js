@@ -25,9 +25,10 @@ const verifyJWT = (req, res, next) => {
       "/api/update/organisation": ["Organisation"],
       "/api/users/[0-9]+": ["Admin"],
       "/api/users" : ["NormalUser", "Organisation", "Admin"],
-      
-      // exmaple of using regex to match multiple endpoints
-      "/books/[0-9]+/availability": ["Admin"],
+      "/api/comments": ["NormalUser", "Organisation", "Admin"],
+      "/api/comments/[0-9]+": ["NormalUser", "Organisation", "Admin"],
+      "/api/comments/[0-9]+/upvote": ["NormalUser", "Organisation", "Admin"],
+      "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
     };
 
     // Get the requested endpoint and the user's role from the decoded token

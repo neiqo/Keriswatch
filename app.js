@@ -31,6 +31,7 @@ const articlesController = require("./controllers/articlesController"); // ARTIC
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
 const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
+const CommentController = require('./controllers/commentController');
 
 // CONTROLLER ROUTINGS
 // LOGIN ROUTES
@@ -53,6 +54,13 @@ app.put('/api/update/organisation', verifyJWT, authUser.validateUpdateOrganisati
 
 // Get all users except admin route
 app.get('/api/users', userController.getAllUsers); 
+
+// COMMENT ROUTES
+app.get('/api/:articleId/comments', CommentController.getComments);
+app.post('/api/comments', verifyJWT, CommentController.createComment);
+app.delete('/api/comments/:commentId', verifyJWT, CommentController.deleteComment);
+app.post('/api/comments/:commentId/upvote', verifyJWT, CommentController.upvoteComment);
+app.post('/api/comments/:commentId/downvote', verifyJWT, CommentController.downvoteComment);
 
 // EVENT ROUTES
 app.get('/events', (req, res) => {

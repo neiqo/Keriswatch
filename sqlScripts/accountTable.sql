@@ -25,7 +25,6 @@ CREATE TABLE Admin (
     id INT PRIMARY KEY IDENTITY(1,1),
     userId INT NOT NULL UNIQUE,
     CONSTRAINT FK_Admin_User FOREIGN KEY (userId) REFERENCES Users(userId)
-    -- Add any Admin-specific columns here if needed
 );
 
 CREATE TABLE Organisation (
@@ -33,7 +32,6 @@ CREATE TABLE Organisation (
     userId INT NOT NULL UNIQUE,
     orgNumber INT NOT NULL UNIQUE,
     CONSTRAINT FK_Organisation_User FOREIGN KEY (userId) REFERENCES Users(userId)
-    -- Add any Org-specific columns here if needed
 );
 
 CREATE TABLE NormalUser (
@@ -41,6 +39,5 @@ CREATE TABLE NormalUser (
     userId INT NOT NULL UNIQUE,
     country VARCHAR(255) NOT NULL,
     CONSTRAINT FK_NormalUser_User FOREIGN KEY (userId) REFERENCES Users(userId)
-    -- Add any NormalUser-specific columns here if needed
 );
 
