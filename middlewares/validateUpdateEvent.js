@@ -49,7 +49,7 @@ const validateUpdateEvent = (req, res, next) => {
 
     if (req.file) {
         console.log('File is present');
-        const imagePath = path.join("/images/events", req.file.originalname);
+        const imagePath = path.join("/html/images/events", req.file.originalname);
         req.body.imagePath = imagePath;
         req.file.path = path.join(__dirname, "../public", imagePath);
     } else {

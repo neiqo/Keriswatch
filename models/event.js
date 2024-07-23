@@ -7,59 +7,61 @@ const fs = require('fs');
 const { type } = require('os');
 
 class Event {
-    constructor(id, name, description, type, startDate, endDate, createddate, modifieddate, imagepath) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.type = type;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.createddate = createddate;
-        this.modifieddate = modifieddate;
-        this.imagepath = imagepath;
-    }
+  constructor(id, name, description, categoryId, locationId, startDate, endDate, createddate, modifieddate, imagepath) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.categoryId = categoryId;
+    this.locationId = locationId;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.createddate = createddate;
+    this.modifieddate = modifieddate;
+    this.imagepath = imagepath;
+  }
 
-    /* Get All Events */
-    static async getAllEvents() {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM Events`;
-        const request = connection.request();
-        const result = await request.query(sqlQuery);
+  /* Get All Events */
+  static async getAllEvents() {
+      const connection = await sql.connect(dbConfig);
+      const sqlQuery = `SELECT * FROM Events`;
+      const request = connection.request();
+      const result = await request.query(sqlQuery);
 
-        connection.close();
-        
-        return result.recordset.map(
-            (row) => new Event(row.id, row.name, 
-              row.description, row.type, row.startDate, row.endDate,
-          row.createdDate, row.modifiedDate, row.imagePath)
-        );
-    }
+      connection.close();
+      
+      return result.recordset.map(
+          (row) => new Event(row.id, row.name, 
+            row.description, row.categoryId, row.locationId, row.startDate, row.endDate,
+        row.createdDate, row.modifiedDate, row.imagePath)
+      );
+  }
 
     /* Get Event by ID */
     static async getEventById(id) {
-        const connection = await sql.connect(dbConfig);
-    
-        const sqlQuery = `SELECT * FROM Events WHERE id = @id`; // Parameterized query
-    
-        const request = connection.request();
-        request.input("id", id);
-        const result = await request.query(sqlQuery);
-    
-        connection.close();
-    
-        return result.recordset[0]
-          ? new Event(
-              result.recordset[0].id,
-              result.recordset[0].name,
-              result.recordset[0].description,
-              result.recordset[0].type,
-              moment(result.recordset[0].startDate).format('DD-MMM-YYYY'), // Format StartDate
-              moment(result.recordset[0].endDate).format('DD-MMM-YYYY'),
-              result.recordset[0].createdDate,
-              result.recordset[0].modifiedDate,
-              result.recordset[0].imagePath
-            )
-          : null; // Handle book not found
+    const connection = await sql.connect(dbConfig);
+
+    const sqlQuery = `SELECT * FROM Events WHERE id = @id`; // Parameterized query
+
+    const request = connection.request();
+    request.input("id", id);
+    const result = await request.query(sqlQuery);
+
+    connection.close();
+
+    return result.recordset[0]
+      ? new Event(
+          result.recordset[0].id,
+          result.recordset[0].name,
+          result.recordset[0].description,
+          result.recordset[0].categoryId,
+          result.recordset[0].locationId,
+          moment(result.recordset[0].startDate).format('DD-MMM-YYYY'), // Format StartDate
+          moment(result.recordset[0].endDate).format('DD-MMM-YYYY'),
+          result.recordset[0].createdDate,
+          result.recordset[0].modifiedDate,
+          result.recordset[0].imagePath
+        )
+      : null; // Handle book not found
     }
 
     /* Create Event */
@@ -85,8 +87,8 @@ class Event {
         
         // Check if an image was uploaded
         if (newEventData.imagePath) {
-                const newFilePath = path.join("/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
-                const oldFilePath = path.join(__dirname, "../public", newEventData.imagePath);
+                const newFilePath = path.join("/html/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
+                const oldFilePath = path.join(__dirname, "../public/html", newEventData.imagePath);
                 //console.log("imagepath", newEventData.imagePath);
                 // Rename the file to include the event ID
                 fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
@@ -143,7 +145,7 @@ class Event {
       let newImagePath;
       if (newEventData.imagePath) {
           // Make sure to use the relative path for the new image
-          relativeImagePath = `\\images\\events\\Image_${id}${path.extname(newEventData.imagePath)}`;
+          relativeImagePath = `\\html\\images\\events\\Image_${id}${path.extname(newEventData.imagePath)}`;
           console.log("relativeImagePath", relativeImagePath);
           newImagePath = newEventData.imagePath; // Store the original path
           updatedFields.push(`imagePath = @imagePath`);
@@ -619,6 +621,8 @@ class Event {
       await connection.close();
     }
   }
+
+  
 }
 
 
