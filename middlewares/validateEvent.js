@@ -6,7 +6,7 @@ const validateEvent = (req, res, next) => {
     const schema = Joi.object({
       name: Joi.string().min(3).max(50).required(),
       description: Joi.string().min(3).max(50).required(),
-      categoryId: Joi.string().min(3).max(50).required(),
+      categoryName: Joi.string().min(3).max(50).required(),
       startDate: Joi.date().iso().required(), // ISO 8601 format date with time (required)
       endDate: Joi.date().iso().required(),
       locationName: Joi.string().min(1).max(50).required(),

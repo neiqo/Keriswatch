@@ -72,6 +72,9 @@ class Event {
       try {
           await transaction.begin();
   
+          // Get the category ID
+          const categoryId = await Event.getCategory(newEventData.categoryName);
+
           const location = {
               locationName: newEventData.locationName,
               address: newEventData.address,
@@ -90,7 +93,7 @@ class Event {
           const request = transaction.request();
           request.input("name", newEventData.name);
           request.input("description", newEventData.description);
-          request.input("categoryId", 1); // Use the default category ID`");
+          request.input("categoryId", categoryId); // Use the default category ID`");
           request.input("locationId", locationId); //
           request.input("startdate", newEventData.startDate);
           request.input("enddate", newEventData.endDate);
@@ -663,6 +666,29 @@ class Event {
       return result;
     } catch (error) {
       throw new Error("Error adding location: " + error.message);
+    }
+  }
+  static async getCategory(name) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const query = `
+      SELECT id from EventCategories
+      WHERE name = @name;   
+      `;
+
+      const request = connection.request();
+      request.input("name", name);
+      
+      const result = await request.query(query);
+      
+      if (result.recordset.length === 0) {
+        throw new Error("Category not found");
+      }
+
+      return result.recordset[0].id;
+    }
+    catch (error) {
+      throw new Error("Error fetching event categories");
     }
   }
 }
