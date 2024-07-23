@@ -65,7 +65,7 @@ function updateSelectedCountry(countryCode) {
 
     // Display the selected country name to the users
     const selectedCountryDiv = document.getElementById('selectedCountry');
-    selectedCountryDiv.textContent = `Selected Country: ${countryNames[countryCode]}`;
+    selectedCountryDiv.textContent = `${countryNames[countryCode]} statistics for the year of 2023`;
 }
 
 // Used for creating the chart in html

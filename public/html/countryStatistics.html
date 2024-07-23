@@ -7,29 +7,28 @@
     <link rel="stylesheet" href="./styles/countryStatistics.css">
 </head>
 <body>
-    <h3>Country Sector Readiness (value of Industry added, % of GDP)</h3>
-    <hr>
-    <h5>This information shows the value of the various industries added as a % of GDP. Useful for fostering a better understanding of how different industries contribute to the economy!</h5>
-    <h5>Please click on the flags of the country to see the statistics for it.</h5>
-
+    <h3>Select a country</h3>
     <img src="./images/statistics/asean-map.png" usemap="#asean-map" alt="ASEAN Map" id="asean-map-img">
     <map name="asean-map">
         <!--coords calculated through here https://www.image-map.net/ -->
-        <area shape="rect" coords="617,296,696,356" alt="Philippines" data-country="PHL">
-        <area shape="rect" coords="231,426,302,486" alt="Singapore" data-country="SGP">
-        <area shape="rect" coords="329,251,398,311" alt="Cambodia" data-country="KHM">
-        <area shape="rect" coords="340,367,399,432" alt="Brunei" data-country="BRN">
-        <area shape="rect" coords="158,16,227,77" alt="Myanmar" data-country="MMR">
-        <area shape="rect" coords="27,290,93,352" alt="Thailand" data-country="THA">
-        <area shape="rect" coords="32,366,98,428" alt="Malaysia" data-country="MYS">
-        <area shape="rect" coords="272,54,336,116" alt="Vietnam" data-country="VNM">
-        <area shape="rect" coords="85,636,158,702" alt="Indonesia" data-country="IDN">
-        <area shape="rect" coords="284,174,349,241" alt="Laos" data-country="LAO">
+        <area shape="rect" coords="459,132,575,160" alt="Philippines" data-country="PHL">
+        <area shape="rect" coords="180,298,289,324" alt="Singapore" data-country="SGP">
+        <area shape="rect" coords="188,167,301,184" alt="Cambodia" data-country="KHM">
+        <area shape="rect" coords="313,240,381,258" alt="Brunei" data-country="BRN">
+        <area shape="rect" coords="60,74,163,91" alt="Myanmar" data-country="MMR">
+        <area shape="rect" coords="144,138,247,155" alt="Thailand" data-country="THA">
+        <area shape="rect" coords="235,267,338,284" alt="Malaysia" data-country="MYS">
+        <area shape="rect" coords="235,267,338,284" alt="Vietnam" data-country="VNM">
+        <area shape="rect" coords="323,359,426,376" alt="Indonesia" data-country="IDN">
+        <area shape="rect" coords="169,98,231,114" alt="Laos" data-country="LAO">
     </map>
+
+    <h3>Country Sector Readiness (value of Industry added, % of GDP)</h3>
+    <hr>
+    <p>Showing the value of the various industries added as a % of their country's GDP, we hope this is useful for fostering a better understanding of how different industries contribute to each country's economy!</p>
     
     <div id="selectedCountry"></div> <!--for displaying selected country-->
     <div id="statisticsContainer"></div> <!--for displaying country statistics-->
     <script src="./scripts/countryStatistics.js"></script>
-    <script src="./scripts/navbar.js"></script>
 </body>
 </html>
