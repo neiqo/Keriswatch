@@ -1,3 +1,8 @@
+#asean-map-img {
+    border-radius: 10px;
+    border: 2px solid #000; /* Adds a black border */
+}
+
 .skill-container {
     display: flex;
     align-items: center;
