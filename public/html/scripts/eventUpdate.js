@@ -465,3 +465,4 @@ async function getEventCategory(categoryId) {
 //         console.error(error);
 //     }
 // }
+

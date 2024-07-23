@@ -84,6 +84,7 @@ app.get("/api/events/location/:locationId", eventsController.getEventLocation);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
 // app.post("/api/events/with-users", eventsController.addUsertoEvent);
 // app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
+app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
 app.get("/api/events/:id/user/:userId/joined", eventsController.checkIfUserJoinedEvent);
 app.post("/api/events/:id/user/:userId", eventsController.addUsertoEvent);
 app.delete("/api/events/:id/user/:userId", eventsController.deleteUserfromEvent);

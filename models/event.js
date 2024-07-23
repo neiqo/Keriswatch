@@ -509,10 +509,10 @@ class Event {
 
         try {
           const query = `
-            SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.id AS user_id, u.username, u.email
+            SELECT e.id AS event_id, e.name, e.description, e.categoryId, e.startDate, e.endDate, e.imagePath, u.userId AS user_id, u.username, u.email
             FROM Events e
             INNER JOIN EventUsers eu ON eu.event_id = e.id
-            LEFT JOIN Users u ON eu.user_id = u.id
+            LEFT JOIN Users u ON eu.user_id = u.userId
             WHERE e.id = @eventId;
           `;
     
@@ -613,7 +613,7 @@ class Event {
 
       try {
         const query = `
-          SELECT u.userId AS user_id, username, email, e.id AS event_id, name, type, startDate, endDate, imagePath
+          SELECT u.userId AS user_id, username, email, e.id AS event_id, name, categoryId, startDate, endDate, imagePath
           FROM Users u
           INNER JOIN EventUsers eu ON eu.user_id = u.userId
           LEFT JOIN Events e ON eu.event_id = e.id
@@ -646,11 +646,7 @@ class Event {
             categoryId: row.categoryId,
             startDate: row.startDate,
             endDate: row.endDate,
-            imagePath: row.imagePath,
-            locationName: row.locationName,
-            address: row.address,
-            postalCode: row.postalCode,
-            country: row.country,
+            imagePath: row.imagePath
           });
         }
   
@@ -753,6 +749,24 @@ class Event {
     }
   }
 
+  static async getNumberofUsersJoined(eventId) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const query = `
+      SELECT COUNT(*) AS numberOfUsersJoined
+      FROM EventUsers
+      WHERE event_id = @eventId;
+      `;
+
+      const request = connection.request();
+      request.input("eventId", eventId);
+      const result = await request.query(query);
+      return result.recordset[0].numberOfUsersJoined;
+    }
+    catch (error) {
+      throw new Error("Error fetching number of users joined");
+    }
+  }
 
   // static async getEventLocation(locationId) {
   //   try {

@@ -18,6 +18,12 @@ let totalCapacity = document.getElementById("totalCapacity");
 // }
 const eventId = getEventIdFromUrl();
 const userId = getUserIdFromUrl();
+//const numberOfUsersJoined = getNumberofUsersJoined(eventId);
+let totalCapacityValue = 0;
+
+console.log("eventid", eventId);
+// console.log("numberofusersjoined", numberOfUsersJoined);
+console.log("totalcapacityvalue", totalCapacityValue);
 
 function getEventIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -59,6 +65,8 @@ async function getEventDetails(eventId) {
     category.textContent = data.categoryName;
     location.textContent = data.locationName + ", " + data.address + ", " + data.postalCode + ", " + data.country;
     totalCapacity.textContent = data.totalCapacity;
+
+    totalCapacityValue = data.totalCapacity;
     // type.textContent = data.type;
 
     getEventCategory(data.categoryId);
@@ -118,11 +126,33 @@ async function addUsertoEvent(eventId, userId) {
         //     headers: { 'Content-Type': 'application/json' },
         //     body: JSON.stringify({ userId })
         // });
-        if (new Date() >= new Date(endDate.textContent)) {
-            alert("Event has already ended");
+        const numberOfUsersJoined = await getNumberofUsersJoined(eventId);
+        
+        if (totalCapacityValue <= numberOfUsersJoined) {
+            console.log("totalCapacityValue", totalCapacityValue);
+            console.log("numberOfUsersJoined", numberOfUsersJoined);
+            alert("Event is full");
             return;
         }
-        else if (new Date() >= new Date(startDate.textContent)) {
+
+        // if (new Date() >= new Date(endDate.textContent)) {
+        //     alert("Event has already ended");
+        //     return;
+        // }
+        // else if (new Date() >= new Date(startDate.textContent)) {
+        //     alert("Event has already started");
+        //     return;
+        // }
+
+        //betterversion
+        const startDateValue = new Date(startDate.textContent);
+        const endDateValue = new Date(endDate.textContent);
+        const currentDate = new Date();
+
+        if (currentDate >= endDateValue) {
+            alert("Event has already ended");
+            return;
+        } else if (currentDate >= startDateValue) {
             alert("Event has already started");
             return;
         }
@@ -200,5 +230,22 @@ async function getEventCategory(categoryId) {
         category.textContent = data.name;
     } catch (error) {
         console.error("Error getting event category:", error);
+    }
+}
+
+
+async function getNumberofUsersJoined(eventId) {
+    try {
+        const response = await fetch(`/api/events/${eventId}/users`, {
+            method: 'GET'
+        });
+        const data = await response.json();
+        return data;
+        
+        // const users = document.getElementById("users");
+        // users.textContent = data;
+    } catch (error) {
+        console.error("Error getting number of users joined:", error);
+        return 0;
     }
 }

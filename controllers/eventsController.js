@@ -242,6 +242,18 @@ async function getEventLocation(req, res) {
   }
 }
 
+async function getNumberofUsersJoined(req, res) {
+  try {
+    const eventId = parseInt(req.params.id);
+    const users = await Event.getNumberofUsersJoined(eventId);
+    res.status(200).json(users);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching number of users joined" });
+  }
+}
+
 module.exports = {
   getAllEvents,
   getEventById,
@@ -259,5 +271,6 @@ module.exports = {
   getSpecificUserwithEvents,
   checkIfUserJoinedEvent,
   getEventCategory,
-  getEventLocation
+  getEventLocation,
+  getNumberofUsersJoined
 };
