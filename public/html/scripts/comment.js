@@ -65,7 +65,7 @@ function createCommentElement(comment) {
 
 async function postComment(content, parentId = null) {
     const articleId = 1; // Replace with the actual article ID
-    const response = await fetch(`${API_URL}/comments`, {
+    const response = await fetch(`api/comments`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

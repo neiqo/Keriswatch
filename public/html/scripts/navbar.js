@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const accountItems = [
         { text: 'Your Account', href: '#' },
         { text: 'Help', href: '#' },
-        { text: 'Log Out', href: '#' }
+        { text: 'Log Out', href: '#', id: 'logout' }
     ];
 
     accountItems.forEach(item => {
@@ -220,6 +220,42 @@ document.addEventListener("DOMContentLoaded", function() {
         dropdownItem.textContent = item.text;
         dropdownMenu.appendChild(dropdownItem);
     });
+
+
+    const logoutItem = document.getElementById('logout');
+    if (logoutItem) {
+        logoutItem.addEventListener('click', async (event) => {
+            event.preventDefault();
+            await logoutUser();
+        });
+    }
+
+    async function logoutUser() {
+        try {
+            // Clear the token from localStorage
+            localStorage.removeItem('token');
+    
+            // Call the API logout function
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+    
+            if (response.ok) {
+                // Redirect to the login page or home page
+                window.location.href = './index.html';
+                window.alert('Logged out successfully');
+                
+            } else {
+                console.error('Failed to log out');
+            }
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    }
 
     navbarListRight.appendChild(userItem);
 

@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const path = require('path'); // Import the path module
 require('dotenv').config(); // Load environment variables from a .env file
 const { User, NormalUser, Admin, Organisation } = require('../models/user');
+const Token = require('../models/token');
+
 const upload = require('../middlewares/multerConfig');
 
 const registerUser = async (req, res) => {
@@ -120,12 +122,34 @@ const userLogin = async (req,res) => {
     // server will verify the signature/token using the secret key
     const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "3600s"});
 
+    // Decode the token to get the expiration time
+    const decodedToken = jwt.decode(token);
+    const expiresAt = new Date(decodedToken.exp * 1000); // Convert from seconds to milliseconds
+    
+    console.log(`Token: ${token}`);
+    console.log(`Expires At: ${expiresAt}`);
+
+    // store the token in the database
+    await Token.storeToken(user.userId, token, expiresAt);
+    
     return res.status(200).json({ token }); // returns the JWT token to be used for future authentication
   }
   catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error" }) 
   }
+}
+
+const userLogout = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decoded = jwt.decode(token);
+        await Token.deleteToken(decoded.userId);
+        res.status(200).send('User logged out successfully');
+    } catch (error) {
+        res.status(500).send('Error logging out user: ' + error.message);
+    }
+
 }
 
 const getUserByUsername =  async (req, res) => {
@@ -242,6 +266,7 @@ const getAllUsers =  async (req, res) => {
 module.exports = {
     registerUser,
     userLogin,
+    userLogout,
     getUserByUsername,
     updateNormalUser,
     updateOrganisation,

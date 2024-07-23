@@ -41,6 +41,7 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/api/login', authUser.validateLogin, userController.userLogin);
+app.post('/api/logout', userController.userLogout);
 
 // Specific-user routes
 app.get('/api/users/:username', userController.getUserByUsername);
