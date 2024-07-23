@@ -20,7 +20,7 @@ function displayArticles(articles) {
     const articleElement = document.createElement('div');
     articleElement.classList.add('article');
     articleElement.className = "article-container";
-    articleElement.style.backgroundImage = `url('../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
+    articleElement.style.backgroundImage = `url('./images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
 
     articleElement.innerHTML = `
       <a href="./article.html?id=${article.articleID}">

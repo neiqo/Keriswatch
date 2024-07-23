@@ -24,7 +24,7 @@ function displayArticle(article) {
     const articleContainer = document.getElementById('article-container');
 
     articleContainer.innerHTML = `
-        <img class="article-img-cover" src='../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}'></img>
+        <img class="article-img-cover" src='../images/articles/article-${article.articleID}/${article.imageFileNames[0]}'></img>
         <h1 class="article-title">${article.Title}</h1>
         <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
         <p class="article-country"><strong>Country:</strong> ${article.Country}</p>
@@ -35,8 +35,8 @@ function displayArticle(article) {
         <div id="edit-tags-container"></div> <!-- Container for the input field -->
         <button class="delete-article-btn" data-article-id="${article.articleID}">Delete</button>
         <div class="article-body">${article.Body}</div>
-        <img class="article-img-1" src='../media/images/articles/article-${article.articleID}/${article.imageFileNames[1]}'></img>
-        <img class="article-img-2" src='../media/images/articles/article-${article.articleID}/${article.imageFileNames[2]}'></img>
+        <img class="article-img-1" src='../images/articles/article-${article.articleID}/${article.imageFileNames[1]}'></img>
+        <img class="article-img-2" src='../images/articles/article-${article.articleID}/${article.imageFileNames[2]}'></img>
     `;
 
     const deleteButton = document.querySelector('.delete-article-btn');

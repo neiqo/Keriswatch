@@ -10,9 +10,9 @@ exports.getStatisticsByCountry = async (req, res) => {
 
     try {
         // Getting information from the api
-        const agricultureResponse = await axios.get(`https://api.worldbank.org/v2/countries/${country}/indicators/NV.AGR.TOTL.ZS?format=json`);
-        const industryResponse = await axios.get(`https://api.worldbank.org/v2/countries/${country}/indicators/NV.IND.TOTL.ZS?format=json`);
-        const servicesResponse = await axios.get(`https://api.worldbank.org/v2/countries/${country}/indicators/NV.SRV.TOTL.ZS?format=json`);
+        //const agricultureResponse = await axios.get(`https://api.worldbank.org/v2/countries/${country}/indicators/NV.AGR.TOTL.ZS?format=json`);
+        //const industryResponse = await axios.get(`https://api.worldbank.org/v2/countries/${country}/indicators/NV.IND.TOTL.ZS?format=json`);
+        //const servicesResponse = await axios.get(`https://api.worldbank.org/v2/countries/${country}/indicators/NV.SRV.TOTL.ZS?format=json`);
 
         const agricultureData = agricultureResponse.data;
         const industryData = industryResponse.data;

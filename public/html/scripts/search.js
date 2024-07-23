@@ -17,9 +17,11 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
                 data.forEach(article => {
                     const articleDiv = document.createElement('div');
                     articleDiv.className = "article-container";
-                    articleDiv.style.backgroundImage = `url('../media/images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
+                    articleDiv.style.backgroundImage = `url('../images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
                     articleDiv.innerHTML = `
-                        <h3 class="article-title">${article.Title}</h3>
+                        <a href="./article.html?id=${article.articleID}">
+                            <h3 class="article-title">${article.Title}</h3>
+                        </a>                        
                         <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
                         <p class="article-country"><strong>Country:</strong> ${article.Country}</p>
                         <p class="article-publisher"><strong>Publisher:</strong> ${article.Publisher}</p>
