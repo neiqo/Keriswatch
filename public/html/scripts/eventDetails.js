@@ -1,4 +1,3 @@
-//let event = document.getElementById("event-information");
 
 // const { join } = require("path");
 
@@ -7,7 +6,9 @@ let name = document.getElementById("name");
 let startDate = document.getElementById("startDate");
 let endDate = document.getElementById("endDate");
 let description = document.getElementById("description");
-let type = document.getElementById("type");
+let category = document.getElementById("category");
+let eventLocation = document.getElementById("location");
+let totalCapacity = document.getElementById("totalCapacity");
 
 // function getEventIdFromUrl() {
 //     const path = window.location.pathname;
@@ -55,7 +56,12 @@ async function getEventDetails(eventId) {
     startDate.textContent = data.startDate;
     endDate.textContent = data.endDate;
     description.textContent = data.description;
-    type.textContent = data.type;
+    category.textContent = data.categoryName;
+    location.textContent = data.locationName + ", " + data.address + ", " + data.postalCode + ", " + data.country;
+    totalCapacity.textContent = data.totalCapacity;
+    // type.textContent = data.type;
+
+    getEventCategory(data.categoryId);
 }
 
 getEventDetails(eventId);
@@ -182,4 +188,17 @@ async function deleteUserFromEvent(eventId, userId) {
     // checkIfUserJoinedEvent(eventId, userId);
 }
 
-
+async function getEventCategory(categoryId) {
+    try {
+        const response = await fetch(`/api/events/category/${categoryId}`, {
+            method: 'GET'
+        });
+        const data = await response.json();
+        console.log(data);
+        
+        const category = document.getElementById("category");
+        category.textContent = data.name;
+    } catch (error) {
+        console.error("Error getting event category:", error);
+    }
+}

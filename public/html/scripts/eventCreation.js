@@ -67,6 +67,7 @@ function getValue() {
     let addressValue = form.elements['address'].value;
     let postalCodeValue = form.elements['postalCode'].value;
     let countryValue = form.elements['country'].value;
+    let totalCapacityValue = form.elements['totalCapacity'].value;
 
     // Image file
     let imagefile = form.elements['image'].files[0];
@@ -98,7 +99,8 @@ function getValue() {
         locationNameValue,
         addressValue,
         postalCodeValue,
-        countryValue
+        countryValue,
+        totalCapacityValue
     );
 }
 
@@ -125,7 +127,7 @@ function validateDates(startdate, enddate) {
     return true; // Valid dates
 }
 
-async function createEvent(name, description, category, startdate, enddate, imagefile, locationName, address, postalCode, country) {
+async function createEvent(name, description, category, startdate, enddate, imagefile, locationName, address, postalCode, country, totalCapacity) {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
@@ -135,15 +137,16 @@ async function createEvent(name, description, category, startdate, enddate, imag
     formData.append("image", imagefile); // Assuming imageFile is the File object
 
     console.log(`Type of locationName: ${typeof locationName}`);
-console.log(`Type of address: ${typeof address}`);
-console.log(`Type of postalCode: ${typeof postalCode}`);
-console.log(`Type of country: ${typeof country}`);
+    console.log(`Type of address: ${typeof address}`);
+    console.log(`Type of postalCode: ${typeof postalCode}`);
+    console.log(`Type of country: ${typeof country}`);
     // Append location details
     formData.append("locationName", locationName);
     formData.append("address", address);
     formData.append("postalCode", postalCode);
     formData.append("country", country);
 
+    formData.append("totalCapacity", totalCapacity);
 
     console.log('Sending event data:', formData); // Log the FormData being sent
 

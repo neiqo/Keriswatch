@@ -1,3 +1,4 @@
+const { get } = require("https");
 const Event = require("../models/event");
 
 // Controller to get all events
@@ -49,9 +50,13 @@ const updateEvent = async (req, res) => {
   const newEventData = {
     name: req.body.name,
     description: req.body.description,
-    type: req.body.type,
+    categoryName: req.body.categoryName,
     startDate: req.body.startDate,
-    endDate: req.body.endDate
+    endDate: req.body.endDate,
+    locationName: req.body.locationName,
+    address: req.body.address,
+    postalCode: req.body.postalCode,
+    country: req.body.country
   };
 
   // If an image is uploaded, include it in newEventData
@@ -204,11 +209,36 @@ async function checkIfUserJoinedEvent(req, res) {
 
   try {
     const event = await Event.checkIfUserJoinedEvent(eventId, userId);
-    res.json(event);
+    res.status(200).json(event);
   }
   catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching events with users" });
+  }
+}
+
+async function getEventCategory(req, res) {
+  try {
+    const categoryId = parseInt(req.params.categoryId);
+    const category = await Event.getEventCategory(categoryId);
+    res.status(200).json(category);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching event category" });
+  }
+}
+
+async function getEventLocation(req, res) {
+  // Get the user's location
+  try {
+    const locationId = parseInt(req.params.locationId);
+    const eventLocation = await Event.getEventLocation(locationId);
+    res.status(200).json(eventLocation);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching event location" });
   }
 }
 
@@ -227,5 +257,7 @@ module.exports = {
   addUsertoEvent,
   deleteUserfromEvent,
   getSpecificUserwithEvents,
-  checkIfUserJoinedEvent
+  checkIfUserJoinedEvent,
+  getEventCategory,
+  getEventLocation
 };

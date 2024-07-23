@@ -7,17 +7,21 @@ const fs = require('fs');
 const { type } = require('os');
 
 class Event {
-  constructor(id, name, description, categoryId, locationId, startDate, endDate, createddate, modifieddate, imagepath) {
+  constructor(id, name, description, categoryId, startDate, endDate, createddate, modifieddate, imagepath, locationName, address, postalCode, country, totalCapacity) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.categoryId = categoryId;
-    this.locationId = locationId;
     this.startDate = startDate;
     this.endDate = endDate;
     this.createddate = createddate;
     this.modifieddate = modifieddate;
     this.imagepath = imagepath;
+    this.locationName = locationName;
+    this.address = address;
+    this.postalCode = postalCode;
+    this.country = country;
+    this.totalCapacity = totalCapacity;
   }
 
   /* Get All Events */
@@ -31,8 +35,9 @@ class Event {
       
       return result.recordset.map(
           (row) => new Event(row.id, row.name, 
-            row.description, row.categoryId, row.locationId, row.startDate, row.endDate,
-        row.createdDate, row.modifiedDate, row.imagePath)
+            row.description, row.categoryId, row.startDate, row.endDate,
+        row.createdDate, row.modifiedDate, row.imagePath,
+        row.locationName, row.address, row.postalCode, row.country, row.totalCapacity)
       );
   }
 
@@ -54,12 +59,16 @@ class Event {
           result.recordset[0].name,
           result.recordset[0].description,
           result.recordset[0].categoryId,
-          result.recordset[0].locationId,
           moment(result.recordset[0].startDate).format('DD-MMM-YYYY'), // Format StartDate
           moment(result.recordset[0].endDate).format('DD-MMM-YYYY'),
           result.recordset[0].createdDate,
           result.recordset[0].modifiedDate,
-          result.recordset[0].imagePath
+          result.recordset[0].imagePath,
+          result.recordset[0].locationName,
+          result.recordset[0].address,
+          result.recordset[0].postalCode,
+          result.recordset[0].country,
+          result.recordset[0].totalCapacity
         )
       : null; // Handle book not found
     }
@@ -73,34 +82,39 @@ class Event {
           await transaction.begin();
   
           // Get the category ID
-          const categoryId = await Event.getCategory(newEventData.categoryName);
+          const category = await Event.getCategory(newEventData.categoryName);
+          const categoryId = category.recordset[0].id;
 
-          const location = {
-              locationName: newEventData.locationName,
-              address: newEventData.address,
-              postalCode: newEventData.postalCode,
-              country: newEventData.country
-          }
+          // const location = {
+          //     locationName: newEventData.locationName,
+          //     address: newEventData.address,
+          //     postalCode: newEventData.postalCode,
+          //     country: newEventData.country
+          // }
           // Add the location first
-          const locationResult = await Event.addLocation(location, transaction);
-          const locationId = locationResult.recordset[0].id; // Assuming you have an identity column in EventLocations
+          // const locationResult = await Event.addLocation(location, transaction);
+          // const locationId = locationResult.recordset[0].id; // Assuming you have an identity column in EventLocations
           
           // Now add the event
-          const sqlQuery = `INSERT INTO Events (name, description, categoryId, locationId, startDate, endDate, createdDate, modifiedDate, imagePath)
-              VALUES (@name, @description, @categoryId, @locationId, @startdate, @enddate, @createddate, @modifieddate, @imagepath); 
+          const sqlQuery = `INSERT INTO Events (name, description, categoryId, startDate, endDate, createdDate, modifiedDate, imagePath, locationName, address, postalCode, country, totalCapacity)
+              VALUES (@name, @description, @categoryId, @startdate, @enddate, @createddate, @modifieddate, @imagepath, @locationName, @address, @postalCode, @country, @totalCapacity); 
               SELECT SCOPE_IDENTITY() AS EventId;`; // Retrieve ID of inserted record
           
           const request = transaction.request();
           request.input("name", newEventData.name);
           request.input("description", newEventData.description);
           request.input("categoryId", categoryId); // Use the default category ID`");
-          request.input("locationId", locationId); //
           request.input("startdate", newEventData.startDate);
           request.input("enddate", newEventData.endDate);
           request.input("createddate", new Date().toISOString().slice(0, 19));
           request.input("modifieddate", null);
           request.input("imagepath", newEventData.imagePath);
-  
+          request.input("locationName", newEventData.locationName);
+          request.input("address", newEventData.address);
+          request.input("postalCode", newEventData.postalCode);
+          request.input("country", newEventData.country);
+          request.input("totalCapacity", newEventData.totalCapacity);
+
           const result = await request.query(sqlQuery);
           const eventId = result.recordset[0].EventId;
   
@@ -140,7 +154,7 @@ class Event {
     /* Update Event */
     static async updateEvent(id, newEventData) {
       let transaction;
-    let connection;
+      let connection;
 
     try {
       // Establish the connection
@@ -149,6 +163,8 @@ class Event {
       // Begin transaction
       transaction = new sql.Transaction(connection);
       await transaction.begin();
+
+      
 
       // Query for the old image path
       const request = new sql.Request(transaction);
@@ -164,18 +180,40 @@ class Event {
       // Prepare the update query with dynamic fields
       const fields = Object.entries(newEventData);
       const updatedFields = fields
-          .filter(([key, value]) => value !== undefined && key !== 'imagePath') // Filter out undefined values and imagePath
+          .filter(([key, value]) => value !== undefined && key !== 'imagePath' && key !== 'categoryName') // Filter out undefined values and imagePath
           .map(([key, value]) => `${key} = @${key}`);
+
+      // Get the category ID
+      const category = await Event.getCategory(newEventData.categoryName);
+      const categoryId = category.recordset[0].id;
+      if (categoryId === undefined) {
+        updatedFields.push(`categoryId = @categoryId`);
+        request.input('categoryId', sql.Int, categoryId);
+      }
+
+      // const location = {
+      //   locationName: newEventData.locationName,
+      //   address: newEventData.address,
+      //   postalCode: newEventData.postalCode,
+      //   country: newEventData.country
+      // };
+      // console.log("location", location);
+      // const locationResult = await Event.addLocation(location, transaction);
+      // const locationId = locationResult.recordset[0].id;
+      // if (locationId === undefined) {
+      //   updatedFields.push(`locationId = @locationId`);
+      //   request.input('locationId', sql.Int, locationId);
+      // }
 
       // Add the imagePath field to the query if a new image is provided
       let relativeImagePath;
       let newImagePath;
       if (newEventData.imagePath) {
-          // Make sure to use the relative path for the new image
-          relativeImagePath = `\\html\\images\\events\\Image_${id}${path.extname(newEventData.imagePath)}`;
-          console.log("relativeImagePath", relativeImagePath);
-          newImagePath = newEventData.imagePath; // Store the original path
-          updatedFields.push(`imagePath = @imagePath`);
+        // Make sure to use the relative path for the new image
+        relativeImagePath = `\\html\\images\\events\\Image_${id}${path.extname(newEventData.imagePath)}`;
+        console.log("relativeImagePath", relativeImagePath);
+        newImagePath = newEventData.imagePath; // Store the original path
+        updatedFields.push(`imagePath = @imagePath`);
       }
 
       console.log("newimagepath", newImagePath);
@@ -343,10 +381,11 @@ class Event {
             const result = await connection.request().query(query);
             return result.recordset.map(
                 (row) => new Event(row.id, row.name, row.description,
-                    row.type, 
+                    row.categoryId,  
                     moment(row.startDate).format('DD-MMM-YYYY'), // Format StartDate
                     moment(row.endDate).format('DD-MMM-YYYY'), // Format End Date
-                    row.createdDate, row.modifiedDate, row.imagePath
+                    row.createdDate, row.modifiedDate, row.imagePath,
+                    row.locationName, row.address, row.postalCode, row.country, row.totalCapacity
                 )
             );
         } catch (error) {
@@ -440,12 +479,12 @@ class Event {
           if (!eventsWithUsers[eventId]) {
             eventsWithUsers[eventId] = {
               id: eventId,
-              name: row.EventName,
-              description: row.EventDescription,
-              type: row.EventType,
-              startdate: row.StartDate,
-              enddate: row.EndDate,
-              imagepath: row.imagePath,
+              name: row.name,
+              description: row.description,
+              categoryId: row.categoryId,
+              startDate: row.startDate,
+              endDate: row.endDate,
+              imagePath: row.imagePath,
               users: [],
             };
           }
@@ -492,12 +531,12 @@ class Event {
             if (!eventsWithUsers[eventId]) {
               eventsWithUsers[eventId] = {
                 id: eventId,
-                name: row.EventName,
-                description: row.EventDescription,
-                type: row.EventType,
-                startdate: row.StartDate,
-                enddate: row.EndDate,
-                imagepath: row.imagePath,
+                name: row.name,
+                description: row.description,
+                categoryId: row.categoryId,
+                startDate: row.startDate,
+                endDate: row.endDate,
+                imagePath: row.imagePath,
                 users: [],
               };
             }
@@ -604,10 +643,14 @@ class Event {
           userWithEvents[userId].events.push({
             id: row.event_id,
             name: row.name,
-            type: row.type,
+            categoryId: row.categoryId,
             startDate: row.startDate,
             endDate: row.endDate,
-            imagePath: row.imagePath
+            imagePath: row.imagePath,
+            locationName: row.locationName,
+            address: row.address,
+            postalCode: row.postalCode,
+            country: row.country,
           });
         }
   
@@ -648,31 +691,31 @@ class Event {
       await connection.close();
     }
   }
-  static async addLocation(locationData, transaction) {
-    try {
-      const query = `
-        INSERT INTO EventLocations (locationName, address, postalCode, country)
-        VALUES (@name, @address, @postalCode, @country);
-        SELECT SCOPE_IDENTITY() AS id;
-      `; // Retrieve ID of inserted record
+  // static async addLocation(locationData, transaction) {
+  //   try {
+  //     const query = `
+  //       INSERT INTO EventLocations (locationName, address, postalCode, country)
+  //       VALUES (@name, @address, @postalCode, @country);
+  //       SELECT SCOPE_IDENTITY() AS id;
+  //     `; // Retrieve ID of inserted record
 
-      const request = transaction.request();
-      request.input("name", locationData.locationName);
-      request.input("address", locationData.address);
-      request.input("postalCode", locationData.postalCode);
-      request.input("country", locationData.country);
+  //     const request = transaction.request();
+  //     request.input("name", locationData.locationName);
+  //     request.input("address", locationData.address);
+  //     request.input("postalCode", locationData.postalCode);
+  //     request.input("country", locationData.country);
 
-      const result = await request.query(query);
-      return result;
-    } catch (error) {
-      throw new Error("Error adding location: " + error.message);
-    }
-  }
+  //     const result = await request.query(query);
+  //     return result;
+  //   } catch (error) {
+  //     throw new Error("Error adding location: " + error.message);
+  //   }
+  // }
   static async getCategory(name) {
     try {
       const connection = await sql.connect(dbConfig);
       const query = `
-      SELECT id from EventCategories
+      SELECT * from EventCategories
       WHERE name = @name;   
       `;
 
@@ -685,12 +728,48 @@ class Event {
         throw new Error("Category not found");
       }
 
-      return result.recordset[0].id;
+      return result;
     }
     catch (error) {
       throw new Error("Error fetching event categories");
     }
   }
+
+  static async getEventCategory(categoryId) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const query = `
+      SELECT * FROM EventCategories
+      WHERE id = @categoryId;
+      `;
+
+      const request = connection.request();
+      request.input("categoryId", categoryId);
+      const result = await request.query(query);
+      return result.recordset[0];
+    }
+    catch (error) {
+      throw new Error("Error fetching event categories");
+    }
+  }
+
+
+  // static async getEventLocation(locationId) {
+  //   try {
+  //     const connection = await sql.connect(dbConfig);
+  //     const query = `
+  //     SELECT * FROM EventLocations
+  //     WHERE id = @locationId;
+  //     `;
+
+  //     const request = connection.request();
+  //     request.input("locationId", locationId);
+  //     const result = await request.query(query);
+  //     return result.recordset[0];
+  //   } catch (error) {
+  //     throw new Error("Error fetching event locations");
+  //   }
+  // }
 }
 
 
