@@ -7,6 +7,9 @@
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/dist/mdb5/standard/core.min.css">
@@ -17,15 +20,64 @@
     <link rel="stylesheet" type="text/css" href="./styles/navbar.css"/>
 </head>
 <body>
-    <a href="./searchpage.html">Search Page</a>
-    <a href="./displayallarticles.html">Display All Articles</a>
-    <a href="./addnewarticle.html">Add new article</a>
-    <a href="./events.html">Events</a>
-    <a href="./bookmarked.html">Display Bookmarked Articles</a>
-    <a href="./countryStatistics.html">Country Statistics</a>
-    <a href="./login.html">Login</a>
+    <div id="content">
+        <div id="left-column">
+            <div id="country-container"> <!-- add country tings here -->
+                <div id="country-selector-container">
+                    <label for="country-selector">Select Country:</label>
+                    <select id="country-selector">
+                        <option value="Singapore">Singapore</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Brunei">Brunei</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Laos">Laos</option>
+                        <option value="Myanmar">Myanmar</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="Thailand">Thailand</option>
 
 
+                    </select>
+                </div>
+            </div>
+            <p id="sector-country-news-title" class="headerTitle">Sector News In</p>
+            <div id="sector-country-news">
+                <div id="agriculture-container">
+                    <p class="paraTitle">AGRICULTURE</p>
+                    <div id="agriculture-news">
+
+                    </div>
+                </div>
+                <div id="services-container">
+                    <p class="paraTitle">SERVICES</p>
+                    <div id="services-news">
+
+                    </div>
+                </div>
+                <div id="manufacture-container">
+                    <p class="paraTitle">MANUFACTURE</p>
+                    <div id="manufacture-news">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="right-column">
+            <div id="latest-news-container">
+                <p class="paraTitle">Latest News</p>
+                <div id="latest-news">
+
+                </div>
+            </div>
+            <div id="latest-news-container">
+                <p class="paraTitle">Upcoming Events</p>
+                <div id="upcoming-events"> <!-- add event tings here -->
+                
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- The navbar will be inserted here by the JavaScript -->
     
@@ -36,5 +88,7 @@
 
     <!-- Include your custom JavaScript -->
     <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/displayarticles.js"></script> <!-- display articles script -->
+
 </body>
 </html>
