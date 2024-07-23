@@ -66,49 +66,73 @@ class Event {
 
     /* Create Event */
     static async createEvent(newEventData) {
-        const connection = await sql.connect(dbConfig);
-    
-        const sqlQuery = `INSERT INTO Events (name, description, type, startDate, endDate, createdDate, modifiedDate, imagePath)
-     VALUES (@name, @description, @type, @startdate, @enddate, @createddate, @modifieddate, @imagepath); SELECT SCOPE_IDENTITY() AS EventId;`; // Retrieve ID of inserted record
-    
-        const request = connection.request();
-        request.input("name", newEventData.name);
-        request.input("description", newEventData.description);
-        request.input("type", newEventData.type);
-        request.input("startdate", newEventData.startDate);
-        request.input("enddate", newEventData.endDate);
-        request.input("createddate", new Date().toISOString().slice(0, 19));
-        request.input("modifieddate", null);
-        request.input("imagepath", newEventData.imagePath);
+      const connection = await sql.connect(dbConfig);
+      const transaction = new sql.Transaction(connection);
+  
+      try {
+          await transaction.begin();
+  
+          const location = {
+              locationName: newEventData.locationName,
+              address: newEventData.address,
+              postalCode: newEventData.postalCode,
+              country: newEventData.country
+          }
+          // Add the location first
+          const locationResult = await Event.addLocation(location, transaction);
+          const locationId = locationResult.recordset[0].id; // Assuming you have an identity column in EventLocations
+          
+          // Now add the event
+          const sqlQuery = `INSERT INTO Events (name, description, categoryId, locationId, startDate, endDate, createdDate, modifiedDate, imagePath)
+              VALUES (@name, @description, @categoryId, @locationId, @startdate, @enddate, @createddate, @modifieddate, @imagepath); 
+              SELECT SCOPE_IDENTITY() AS EventId;`; // Retrieve ID of inserted record
+          
+          const request = transaction.request();
+          request.input("name", newEventData.name);
+          request.input("description", newEventData.description);
+          request.input("categoryId", 1); // Use the default category ID`");
+          request.input("locationId", locationId); //
+          request.input("startdate", newEventData.startDate);
+          request.input("enddate", newEventData.endDate);
+          request.input("createddate", new Date().toISOString().slice(0, 19));
+          request.input("modifieddate", null);
+          request.input("imagepath", newEventData.imagePath);
+  
+          const result = await request.query(sqlQuery);
+          const eventId = result.recordset[0].EventId;
+  
+          // Check if an image was uploaded
+          if (newEventData.imagePath) {
+              const newFilePath = path.join("/html/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
+              const oldFilePath = path.join(__dirname, "../public/html", newEventData.imagePath);
+              // Rename the file to include the event ID
+              fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
+      
+              // Update the event with the new file path
+              const updateQuery = `
+                  UPDATE Events
+                  SET imagePath = @imagepath
+                  WHERE id = @eventid`;
+              
+              const updateRequest = transaction.request();
+              updateRequest.input("imagepath", newFilePath);
+              updateRequest.input("eventid", eventId);
+              await updateRequest.query(updateQuery);
+          }
+  
+          await transaction.commit();
+  
+          // Retrieve the newly created event using its ID
+          const createdEvent = await this.getEventById(eventId);
 
-        const result = await request.query(sqlQuery);
-        const eventId = result.recordset[0].EventId;
-
-        
-        // Check if an image was uploaded
-        if (newEventData.imagePath) {
-                const newFilePath = path.join("/html/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
-                const oldFilePath = path.join(__dirname, "../public/html", newEventData.imagePath);
-                //console.log("imagepath", newEventData.imagePath);
-                // Rename the file to include the event ID
-                fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
-    
-                // Update the event with the new file path
-                const updateQuery = `
-                    UPDATE Events
-                    SET imagePath = @imagepath
-                    WHERE id = @eventid`;
-                
-                const updateRequest = connection.request();
-                updateRequest.input("imagepath", newFilePath);
-                updateRequest.input("eventid", eventId);
-                await updateRequest.query(updateQuery);
-            }
-
-        connection.close();
-        // Retrieve the newly created book using its ID
-        return this.getEventById(result.recordset[0].EventId);
-    }
+          return createdEvent;
+      } catch (error) {
+          await transaction.rollback();
+          throw new Error("Error creating event: " + error.message);
+      } finally {
+          await connection.close();
+      }
+  }
 
     /* Update Event */
     static async updateEvent(id, newEventData) {
@@ -621,8 +645,26 @@ class Event {
       await connection.close();
     }
   }
+  static async addLocation(locationData, transaction) {
+    try {
+      const query = `
+        INSERT INTO EventLocations (locationName, address, postalCode, country)
+        VALUES (@name, @address, @postalCode, @country);
+        SELECT SCOPE_IDENTITY() AS id;
+      `; // Retrieve ID of inserted record
 
-  
+      const request = transaction.request();
+      request.input("name", locationData.locationName);
+      request.input("address", locationData.address);
+      request.input("postalCode", locationData.postalCode);
+      request.input("country", locationData.country);
+
+      const result = await request.query(query);
+      return result;
+    } catch (error) {
+      throw new Error("Error adding location: " + error.message);
+    }
+  }
 }
 
 

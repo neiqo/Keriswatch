@@ -30,6 +30,8 @@ const getEventById = async (req, res) => {
 // Controller to create event
 const createEvent = async (req, res) => {
   const newEvent = req.body;
+
+  console.log("new event", newEvent);
   try {
     const createdEvent = await Event.createEvent(newEvent);
     res.status(201).json(createdEvent);
