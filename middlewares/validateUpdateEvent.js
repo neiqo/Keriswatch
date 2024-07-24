@@ -12,7 +12,7 @@ const validateUpdateEvent = (req, res, next) => {
     const schema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         description: Joi.string().min(3).max(50).required(),
-        categoryName: Joi.string().min(3).max(50).required(),
+        categoryId: Joi.number().integer().min(1).required(),
         startDate: Joi.date().iso().required(),
         endDate: Joi.date().iso().required(),
         locationName: Joi.string().min(1).max(50).required(),

@@ -79,7 +79,7 @@ app.get('/events/:id/update', (req, res) => {
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);
 app.get("/api/events/category/:categoryId", eventsController.getEventCategory);
-app.get("/api/events/location/:locationId", eventsController.getEventLocation);
+app.get("/api/events/:eventId/related/category/:categoryId", eventsController.getRelatedEvent);
 //app.get("/api/events/search", eventsController.searchEvents);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
 // app.post("/api/events/with-users", eventsController.addUsertoEvent);
@@ -88,7 +88,6 @@ app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
 app.get("/api/events/:id/user/:userId/joined", eventsController.checkIfUserJoinedEvent);
 app.post("/api/events/:id/user/:userId", eventsController.addUsertoEvent);
 app.delete("/api/events/:id/user/:userId", eventsController.deleteUserfromEvent);
-
 
 app.get("/api/events/:id", eventsController.getEventById);
 app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);

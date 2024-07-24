@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
         //category
-        document.getElementById('category').value = category.name;
+        document.getElementById('category').value = category.id;
 
         //location
         document.getElementById('locationName').value = data.locationName;
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append("name", name);
         formData.append("description", description);
         // formData.append("type", type);
-        formData.append("categoryName", category);
+        formData.append("categoryId", category);
         formData.append("startDate", startdate);
         formData.append("endDate", enddate);
         formData.append("locationName", locationName);

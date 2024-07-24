@@ -131,7 +131,7 @@ async function createEvent(name, description, category, startdate, enddate, imag
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("categoryName", category);
+    formData.append("categoryId", category);
     formData.append("startDate", startdate);
     formData.append("endDate", enddate);
     formData.append("image", imagefile); // Assuming imageFile is the File object

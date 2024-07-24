@@ -76,85 +76,72 @@ class Event {
     /* Create Event */
     static async createEvent(newEventData) {
       const connection = await sql.connect(dbConfig);
+
       const transaction = new sql.Transaction(connection);
-  
       try {
-          await transaction.begin();
-  
-          // Get the category ID
-          const category = await Event.getCategory(newEventData.categoryName);
-          const categoryId = category.recordset[0].id;
+        await transaction.begin();
 
-          // const location = {
-          //     locationName: newEventData.locationName,
-          //     address: newEventData.address,
-          //     postalCode: newEventData.postalCode,
-          //     country: newEventData.country
-          // }
-          // Add the location first
-          // const locationResult = await Event.addLocation(location, transaction);
-          // const locationId = locationResult.recordset[0].id; // Assuming you have an identity column in EventLocations
-          
-          // Now add the event
-          const sqlQuery = `INSERT INTO Events (name, description, categoryId, startDate, endDate, createdDate, modifiedDate, imagePath, locationName, address, postalCode, country, totalCapacity)
-              VALUES (@name, @description, @categoryId, @startdate, @enddate, @createddate, @modifieddate, @imagepath, @locationName, @address, @postalCode, @country, @totalCapacity); 
-              SELECT SCOPE_IDENTITY() AS EventId;`; // Retrieve ID of inserted record
-          
-          const request = transaction.request();
-          request.input("name", newEventData.name);
-          request.input("description", newEventData.description);
-          request.input("categoryId", categoryId); // Use the default category ID`");
-          request.input("startdate", newEventData.startDate);
-          request.input("enddate", newEventData.endDate);
-          request.input("createddate", new Date().toISOString().slice(0, 19));
-          request.input("modifieddate", null);
-          request.input("imagepath", newEventData.imagePath);
-          request.input("locationName", newEventData.locationName);
-          request.input("address", newEventData.address);
-          request.input("postalCode", newEventData.postalCode);
-          request.input("country", newEventData.country);
-          request.input("totalCapacity", newEventData.totalCapacity);
+        // Now add the event
+        const sqlQuery = `
+          INSERT INTO Events (name, description, categoryId, startDate, endDate, createdDate, modifiedDate, imagePath, locationName, address, postalCode, country, totalCapacity)
+          VALUES (@name, @description, @categoryId, @startdate, @enddate, @createddate, @modifieddate, @imagepath, @locationName, @address, @postalCode, @country, @totalCapacity); 
+          SELECT SCOPE_IDENTITY() AS EventId;`;
 
-          const result = await request.query(sqlQuery);
-          const eventId = result.recordset[0].EventId;
-  
-          // Check if an image was uploaded
-          if (newEventData.imagePath) {
-              const newFilePath = path.join("/html/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
-              const oldFilePath = path.join(__dirname, "../public/html", newEventData.imagePath);
-              // Rename the file to include the event ID
-              fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
-      
-              // Update the event with the new file path
-              const updateQuery = `
-                  UPDATE Events
-                  SET imagePath = @imagepath
-                  WHERE id = @eventid`;
-              
-              const updateRequest = transaction.request();
-              updateRequest.input("imagepath", newFilePath);
-              updateRequest.input("eventid", eventId);
-              await updateRequest.query(updateQuery);
-          }
-  
-          await transaction.commit();
-  
-          // Retrieve the newly created event using its ID
-          const createdEvent = await this.getEventById(eventId);
+        const request = new sql.Request(transaction);
+        request.input("name", newEventData.name);
+        request.input("description", newEventData.description);
+        request.input("categoryId", newEventData.categoryId);
+        request.input("startdate", newEventData.startDate);
+        request.input("enddate", newEventData.endDate);
+        request.input("createddate", new Date().toISOString().slice(0, 19));
+        request.input("modifieddate", null);
+        request.input("imagepath", newEventData.imagePath);
+        request.input("locationName", newEventData.locationName);
+        request.input("address", newEventData.address);
+        request.input("postalCode", newEventData.postalCode);
+        request.input("country", newEventData.country);
+        request.input("totalCapacity", newEventData.totalCapacity);
 
-          return createdEvent;
+        const result = await request.query(sqlQuery);
+        const eventId = result.recordset[0].EventId;
+
+        // Check if an image was uploaded
+        if (newEventData.imagePath) {
+          const newFilePath = path.join("/html/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
+          const oldFilePath = path.join(__dirname, "../public/html", newEventData.imagePath);
+          // Rename the file to include the event ID
+          fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
+
+          // Update the event with the new file path
+          const updateQuery = `
+            UPDATE Events
+            SET imagePath = @imagepath
+            WHERE id = @eventid`;
+
+          const updateRequest = new sql.Request(transaction);
+          updateRequest.input("imagepath", newFilePath);
+          updateRequest.input("eventid", eventId);
+          await updateRequest.query(updateQuery);
+        }
+
+        await transaction.commit();
+
+        // Retrieve the newly created event using its ID
+        const createdEvent = await this.getEventById(eventId);
+
+        return createdEvent;
       } catch (error) {
-          await transaction.rollback();
-          throw new Error("Error creating event: " + error.message);
+        await transaction.rollback();
+        throw new Error("Error creating event: " + error.message);
       } finally {
-          await connection.close();
+        await connection.close();
       }
-  }
+    }
 
     /* Update Event */
     static async updateEvent(id, newEventData) {
       let transaction;
-      let connection;
+    let connection;
 
     try {
       // Establish the connection
@@ -164,72 +151,61 @@ class Event {
       transaction = new sql.Transaction(connection);
       await transaction.begin();
 
+      console.log("Updating event with ID:", id);
+      console.log("New event data:", newEventData);
       
-
       // Query for the old image path
       const request = new sql.Request(transaction);
       const oldImageQuery = `SELECT imagePath FROM Events WHERE id = @id`;
       request.input('id', sql.Int, id);
       const result = await request.query(oldImageQuery);
 
-      let oldImagePath;
-      if (result.recordset.length > 0) {
-          oldImagePath = result.recordset[0].imagePath;
+      if (result.recordset.length === 0) {
+        throw new Error(`Event with ID ${id} not found`);
       }
+
+      let oldImagePath = result.recordset[0].imagePath;
 
       // Prepare the update query with dynamic fields
       const fields = Object.entries(newEventData);
       const updatedFields = fields
-          .filter(([key, value]) => value !== undefined && key !== 'imagePath' && key !== 'categoryName') // Filter out undefined values and imagePath
-          .map(([key, value]) => `${key} = @${key}`);
+        .filter(([key, value]) => value !== undefined && key !== 'imagePath' && key !== 'categoryName') // Filter out undefined values and imagePath
+        .map(([key, value]) => `${key} = @${key}`);
 
-      // Get the category ID
-      const category = await Event.getCategory(newEventData.categoryName);
-      const categoryId = category.recordset[0].id;
-      if (categoryId === undefined) {
+      // Get the category ID if provided
+      if (newEventData.categoryName) {
+        const category = await Event.getCategory(newEventData.categoryName);
+        const categoryId = category.recordset[0].id;
         updatedFields.push(`categoryId = @categoryId`);
         request.input('categoryId', sql.Int, categoryId);
       }
-
-      // const location = {
-      //   locationName: newEventData.locationName,
-      //   address: newEventData.address,
-      //   postalCode: newEventData.postalCode,
-      //   country: newEventData.country
-      // };
-      // console.log("location", location);
-      // const locationResult = await Event.addLocation(location, transaction);
-      // const locationId = locationResult.recordset[0].id;
-      // if (locationId === undefined) {
-      //   updatedFields.push(`locationId = @locationId`);
-      //   request.input('locationId', sql.Int, locationId);
-      // }
 
       // Add the imagePath field to the query if a new image is provided
       let relativeImagePath;
       let newImagePath;
       if (newEventData.imagePath) {
         // Make sure to use the relative path for the new image
-        relativeImagePath = `\\html\\images\\events\\Image_${id}${path.extname(newEventData.imagePath)}`;
-        console.log("relativeImagePath", relativeImagePath);
+        relativeImagePath = `/html/images/events/Image_${id}${path.extname(newEventData.imagePath)}`;
         newImagePath = newEventData.imagePath; // Store the original path
         updatedFields.push(`imagePath = @imagePath`);
       }
 
-      console.log("newimagepath", newImagePath);
+      // Always set the modified date
+      updatedFields.push(`modifiedDate = @modifiedDate`);
+      request.input('modifiedDate', sql.DateTime, new Date());
 
       const sqlQuery = `UPDATE Events SET ${updatedFields.join(', ')}
                         WHERE id = @eventId`; // Parameterized query
 
       // Bind the parameters to the request
       fields.forEach(([key, value]) => {
-          if (key !== 'imagePath') {
-              request.input(key, value || null);
-          }
+        if (key !== 'imagePath' && key !== 'categoryName') {
+          request.input(key, value);
+        }
       });
 
       if (relativeImagePath) {
-          request.input('imagePath', relativeImagePath);
+        request.input('imagePath', relativeImagePath);
       }
 
       request.input("eventId", sql.Int, id);
@@ -237,48 +213,46 @@ class Event {
 
       // Save the new file
       if (newEventData.imagePath) {
-          const newFilePath = path.join(__dirname, "..", "public", relativeImagePath);
-          console.log("newFilePath", newFilePath);
+        const newFilePath = path.join(__dirname, "..", "public", relativeImagePath);
 
-          // Ensure the destination directory exists
-          const destDir = path.dirname(newFilePath);
-          if (!fs.existsSync(destDir)) {
-              fs.mkdirSync(destDir, { recursive: true });
-          }
+        // Ensure the destination directory exists
+        const destDir = path.dirname(newFilePath);
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, { recursive: true });
+        }
 
-          // Use the original path directly if it's absolute
-          let sourceFilePath = newImagePath;
-          if (!path.isAbsolute(newImagePath)) {
-              sourceFilePath = path.join(__dirname, "..", "public", newImagePath);
-          }
+        // Use the original path directly if it's absolute
+        let sourceFilePath = newImagePath;
+        if (!path.isAbsolute(newImagePath)) {
+          sourceFilePath = path.join(__dirname, "..", "public", newImagePath);
+        }
 
-          console.log("sourceFilePath", sourceFilePath);
-          if (!fs.existsSync(sourceFilePath)) {
-              throw new Error(`Source file does not exist: ${sourceFilePath}`);
-          }
+        if (!fs.existsSync(sourceFilePath)) {
+          throw new Error(`Source file does not exist: ${sourceFilePath}`);
+        }
 
-          // Rename the new file first
-          fs.renameSync(sourceFilePath, newFilePath);
-          console.log(`File renamed from ${sourceFilePath} to ${newFilePath}`);
-
+        // Rename the new file first
+        fs.renameSync(sourceFilePath, newFilePath);
       }
 
       // Commit transaction
       await transaction.commit();
+
       console.log("Event updated successfully.");
 
       return await this.getEventById(id);
 
     } catch (err) {
-        console.error("Error updating event:", err);
-        // Rollback transaction in case of error
-        if (transaction) {
-            await transaction.rollback();
-        }
+      console.error("Error updating event:", err.message);
+      // Rollback transaction in case of error
+      if (transaction) {
+        await transaction.rollback();
+      }
+      throw err;
     } finally {
-        if (connection) {
-            connection.close();
-        }
+      if (connection) {
+        connection.close();
+      }
     }
       
       // const connection = await sql.connect(dbConfig);
@@ -395,19 +369,6 @@ class Event {
         }
     };
 
-    //Delete Event
-    static async deleteEvent(id) {
-      const connection = await sql.connect(dbConfig);
-
-      const sqlQuery = `DELETE FROM Events WHERE id = @id;`; // Parameterized query
-
-      const request = connection.request();
-      request.input("id", id);
-      const result = await request.query(sqlQuery);
-
-      connection.close();
-      return result.rowsAffected > 0;
-    }
 
     //Delete Event and User
     static async deleteEventandUser(id) {
@@ -656,7 +617,7 @@ class Event {
       } finally {
         await connection.close();
       }
-  }
+    }
   
   static async checkIfUserJoinedEvent(eventId, userId) {
     const connection = await sql.connect(dbConfig);
@@ -707,40 +668,18 @@ class Event {
   //     throw new Error("Error adding location: " + error.message);
   //   }
   // }
-  static async getCategory(name) {
-    try {
-      const connection = await sql.connect(dbConfig);
-      const query = `
-      SELECT * from EventCategories
-      WHERE name = @name;   
-      `;
-
-      const request = connection.request();
-      request.input("name", name);
-      
-      const result = await request.query(query);
-      
-      if (result.recordset.length === 0) {
-        throw new Error("Category not found");
-      }
-
-      return result;
-    }
-    catch (error) {
-      throw new Error("Error fetching event categories");
-    }
-  }
 
   static async getEventCategory(categoryId) {
     try {
       const connection = await sql.connect(dbConfig);
       const query = `
-      SELECT * FROM EventCategories
-      WHERE id = @categoryId;
+      SELECT * from EventCategories
+      WHERE id = @id;   
       `;
 
       const request = connection.request();
-      request.input("categoryId", categoryId);
+      request.input("id", categoryId);
+      
       const result = await request.query(query);
       return result.recordset[0];
     }
@@ -768,22 +707,33 @@ class Event {
     }
   }
 
-  // static async getEventLocation(locationId) {
-  //   try {
-  //     const connection = await sql.connect(dbConfig);
-  //     const query = `
-  //     SELECT * FROM EventLocations
-  //     WHERE id = @locationId;
-  //     `;
+  static async getRelatedEvent(eventId, categoryId) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const query = `
+      SELECT e.*, COALESCE(eu.numberOfUsersJoined, 0) AS numberOfUsersJoined
+      FROM events e
+      LEFT JOIN (
+        SELECT eu.event_id, COUNT(*) AS numberOfUsersJoined
+        FROM EventUsers eu
+        GROUP BY eu.event_id
+      ) eu ON e.id = eu.event_id
+      WHERE e.categoryId = @categoryId
+        AND e.id != @eventId
+        AND e.startDate > GETDATE()
+        AND COALESCE(eu.numberOfUsersJoined, 0) < e.totalCapacity;
+      `;
 
-  //     const request = connection.request();
-  //     request.input("locationId", locationId);
-  //     const result = await request.query(query);
-  //     return result.recordset[0];
-  //   } catch (error) {
-  //     throw new Error("Error fetching event locations");
-  //   }
-  // }
+      const request = connection.request();
+      request.input("eventId", eventId);
+      request.input("categoryId", categoryId);
+      const result = await request.query(query);
+      return result.recordset;
+    }
+    catch (error) {
+      throw new Error("Error fetching related events");
+    }
+  }
 }
 
 

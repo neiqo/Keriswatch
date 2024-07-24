@@ -1,14 +1,15 @@
 
 // const { join } = require("path");
 
+
 let image = document.getElementById("image");
 let name = document.getElementById("name");
-let startDate = document.getElementById("startDate");
-let endDate = document.getElementById("endDate");
+let eventDate = document.getElementById("eventDate");
 let description = document.getElementById("description");
 let category = document.getElementById("category");
 let eventLocation = document.getElementById("location");
 let totalCapacity = document.getElementById("totalCapacity");
+let noOfUsersJoined = document.getElementById("noOfUsersJoined");
 
 // function getEventIdFromUrl() {
 //     const path = window.location.pathname;
@@ -18,6 +19,8 @@ let totalCapacity = document.getElementById("totalCapacity");
 // }
 const eventId = getEventIdFromUrl();
 const userId = getUserIdFromUrl();
+let startDateValue;
+let endDateValue;
 //const numberOfUsersJoined = getNumberofUsersJoined(eventId);
 let totalCapacityValue = 0;
 
@@ -59,17 +62,50 @@ async function getEventDetails(eventId) {
     image.src = data.imagepath;
     console.log(data.imagepath);
     name.textContent = data.name;
-    startDate.textContent = data.startDate;
-    endDate.textContent = data.endDate;
+
+    const startDateObj = new Date(data.startDate);
+    const endDateObj = new Date(data.endDate);
+
+    startDateValue = startDateObj;
+    endDateValue = endDateObj;
+    
+    let dateDisplayText = '';
+
+    // Check if both dates are in the same year and month
+    if (startDateObj.getFullYear() === endDateObj.getFullYear()) {
+        if (startDateObj.getMonth() === endDateObj.getMonth()) {
+            // Same month and year
+            dateDisplayText = `${startDateObj.getDate()} - ${endDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
+        } else {
+            // Different month, same year
+            dateDisplayText = `${startDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} - ${endDateObj.getDate()} ${endDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
+        }
+    } else {
+        // Different year
+        dateDisplayText = `${formatDate(startDateObj)} - ${formatDate(endDateObj)}`;
+    }
+
+    eventDate.textContent = dateDisplayText;
+
+    // startDate.textContent = data.startDate;
+    // endDate.textContent = data.endDate;
     description.textContent = data.description;
     category.textContent = data.categoryName;
-    location.textContent = data.locationName + ", " + data.address + ", " + data.postalCode + ", " + data.country;
+    eventLocation.textContent = data.locationName + ", " + data.address + ", " + data.postalCode + ", " + data.country;
     totalCapacity.textContent = data.totalCapacity;
 
     totalCapacityValue = data.totalCapacity;
     // type.textContent = data.type;
 
     getEventCategory(data.categoryId);
+    getNumberofUsersJoined(eventId);
+    getRelatedEvent(data.id, data.categoryId);
+}
+
+// Function to format date
+function formatDate(date) {
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
 }
 
 getEventDetails(eventId);
@@ -135,6 +171,7 @@ async function addUsertoEvent(eventId, userId) {
             return;
         }
 
+        noOfUsersJoined.textContent = numberOfUsersJoined + 1;
         // if (new Date() >= new Date(endDate.textContent)) {
         //     alert("Event has already ended");
         //     return;
@@ -145,8 +182,8 @@ async function addUsertoEvent(eventId, userId) {
         // }
 
         //betterversion
-        const startDateValue = new Date(startDate.textContent);
-        const endDateValue = new Date(endDate.textContent);
+        // const startDateValue = new Date(startDate.textContent);
+        // const endDateValue = new Date(endDate.textContent);
         const currentDate = new Date();
 
         if (currentDate >= endDateValue) {
@@ -186,12 +223,14 @@ async function deleteUserFromEvent(eventId, userId) {
         //     headers: { 'Content-Type': 'application/json' },
         //     body: JSON.stringify({ userId })
         // });
+        
     
-        if (new Date() >= new Date(endDate.textContent)) {
+        const currentDate = new Date();
+        if (currentDate >= startDateValue) {
             alert("Event has already ended");
             return;
         }
-        else if (new Date() >= new Date(startDate.textContent)) {
+        else if (currentDate >= endDateValue) {
             alert("Event is ongoing");
             return;
         }
@@ -202,6 +241,11 @@ async function deleteUserFromEvent(eventId, userId) {
                 'Content-Type': 'application/json'
             }
         });
+
+        const numberOfUsersJoined = await getNumberofUsersJoined(eventId);
+
+        noOfUsersJoined.textContent = numberOfUsersJoined;
+
         const data = await response.json();
         // console.log(data);
         // Update button state after joining the event
@@ -221,7 +265,10 @@ async function deleteUserFromEvent(eventId, userId) {
 async function getEventCategory(categoryId) {
     try {
         const response = await fetch(`/api/events/category/${categoryId}`, {
-            method: 'GET'
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
         });
         const data = await response.json();
         console.log(data);
@@ -240,6 +287,8 @@ async function getNumberofUsersJoined(eventId) {
             method: 'GET'
         });
         const data = await response.json();
+        
+        noOfUsersJoined.textContent = data;
         return data;
         
         // const users = document.getElementById("users");
@@ -247,5 +296,49 @@ async function getNumberofUsersJoined(eventId) {
     } catch (error) {
         console.error("Error getting number of users joined:", error);
         return 0;
+    }
+}
+
+async function getRelatedEvent(eventId, categoryId) {
+    try {
+        const response = await fetch(`/api/events/${eventId}/related/category/${categoryId}`, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log(data);
+        
+        const relatedEvents = document.getElementById("related-events");
+        // relatedEvents.textContent = data;
+
+        data.forEach(event => {
+            const relatedEvent = document.createElement("div");
+            relatedEvent.classList.add("related-event-item");
+
+            let date = document.createElement("p");
+            let startDateValue = new Date(event.startDate);
+            startDateValue = startDateValue.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            // Remove the comma from the formatted date string
+            startDateValue = startDateValue.replace(',', '');
+            date.textContent = startDateValue;
+
+            let name = document.createElement("p");
+            name.textContent = event.name;
+
+            let location = document.createElement("p");
+            location.textContent = event.locationName + ", " + event.country;
+
+            relatedEvent.appendChild(date);
+            relatedEvent.appendChild(name);
+            relatedEvent.appendChild(location);
+
+            relatedEvent.addEventListener("click", () => {
+                window.location.href = `/events/${eventId}/user/${userId}`;
+            });
+            relatedEvents.appendChild(relatedEvent);
+        });
+        
+    } catch (error) {
+        console.error("Error getting related events:", error);
     }
 }

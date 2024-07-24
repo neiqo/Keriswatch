@@ -1,5 +1,6 @@
 const { get } = require("https");
 const Event = require("../models/event");
+const { parse } = require("path");
 
 // Controller to get all events
 const getAllEvents = async (req, res) => {
@@ -56,7 +57,8 @@ const updateEvent = async (req, res) => {
     locationName: req.body.locationName,
     address: req.body.address,
     postalCode: req.body.postalCode,
-    country: req.body.country
+    country: req.body.country,
+    totalCapacity: req.body.totalCapacity
   };
 
   // If an image is uploaded, include it in newEventData
@@ -78,21 +80,6 @@ const updateEvent = async (req, res) => {
   }
 };
 
-// Controller to delete event
-const deleteEvent = async (req, res) => {
-  const EventId = parseInt(req.params.id);
-
-  try {
-    const success = await Event.deleteEvent(EventId);
-    if (!success) {
-      return res.status(404).send("Event not found");
-    }
-    res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error deleting event");
-  }
-}
 
 //To delete event from eventuser table and event table
 const deleteEventandUser = async (req, res) => {
@@ -229,19 +216,6 @@ async function getEventCategory(req, res) {
   }
 }
 
-async function getEventLocation(req, res) {
-  // Get the user's location
-  try {
-    const locationId = parseInt(req.params.locationId);
-    const eventLocation = await Event.getEventLocation(locationId);
-    res.status(200).json(eventLocation);
-  }
-  catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error fetching event location" });
-  }
-}
-
 async function getNumberofUsersJoined(req, res) {
   try {
     const eventId = parseInt(req.params.id);
@@ -254,12 +228,25 @@ async function getNumberofUsersJoined(req, res) {
   }
 }
 
+async function getRelatedEvent(req, res) {
+  try {
+    const eventId = parseInt(req.params.eventId);
+    const categoryId = parseInt(req.params.categoryId);
+    const events = await Event.getRelatedEvent(eventId, categoryId);
+    res.status(200).json(events);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching related events" });
+  }
+
+}
+
 module.exports = {
   getAllEvents,
   getEventById,
   createEvent,
   updateEvent,
-  //deleteEvent,
   deleteEventandUser,
   //deleteUserandEvent,
   getEvents,
@@ -269,8 +256,8 @@ module.exports = {
   addUsertoEvent,
   deleteUserfromEvent,
   getSpecificUserwithEvents,
-  checkIfUserJoinedEvent,
-  getEventCategory,
-  getEventLocation,
-  getNumberofUsersJoined
+  checkIfUserJoinedEvent, //redundant
+  getEventCategory, // can be combined for id and  name
+  getNumberofUsersJoined, //redundant???
+  getRelatedEvent
 };
