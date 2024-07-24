@@ -31,6 +31,7 @@ const articlesController = require("./controllers/articlesController"); // ARTIC
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
 const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
+const statisticsController = require("./controllers/statisticsController");
 
 // CONTROLLER ROUTINGS
 // LOGIN ROUTES
@@ -98,24 +99,19 @@ app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);
 
 
 // ARTICLE ROUTES
-
 app.get("/search", articlesController.searchArticles); // route for searching articles
 app.get('/articles/:articleID', articlesController.getArticleByID);
 app.put("/articles/:articleID/editTags", articlesController.editTags); // route for updating tags
 app.delete("/articles/:articleID", articlesController.removeArticle); // route for deleting article
 app.get("/articles", articlesController.getAllArticles); // basic route for getting all articles in the db
 app.post("/addArticle", upload.array('images', 3), articlesController.addArticle); // route for adding articles with max 3 images
+
 // BOOKMARK ROUTES
 app.get("/bookmarks", bookmarkController.getAllBookmarkedArticles); // route for getting all bookmarks by userId
 app.post("/bookmarks/:articleId", bookmarkController.addBookmark); // route for adding bookmarked article
 app.delete("/bookmarks/:articleId", bookmarkController.deleteBookmark); // route for deleting a bookmarked article
 
-
-// DATABASE CONNECTION
-// Controllers
-const statisticsController = require("./controllers/statisticsController");
-
-// GET request routes
+// STATISTICS ROUTES
 app.get("/statistics/:country", statisticsController.getStatisticsByCountry);
 
 // For database connection

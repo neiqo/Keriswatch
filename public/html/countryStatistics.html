@@ -7,24 +7,28 @@
     <link rel="stylesheet" href="./styles/countryStatistics.css">
 </head>
 <body>
+    <h3>Select a country</h3>
+    <img src="./images/statistics/asean-map.png" usemap="#asean-map" alt="ASEAN Map" id="asean-map-img">
+    <map name="asean-map">
+        <!--coords calculated through here https://www.image-map.net/ -->
+        <area shape="rect" coords="459,132,575,160" alt="Philippines" data-country="PHL">
+        <area shape="rect" coords="180,298,289,324" alt="Singapore" data-country="SGP">
+        <area shape="rect" coords="188,167,301,184" alt="Cambodia" data-country="KHM">
+        <area shape="rect" coords="313,240,381,258" alt="Brunei" data-country="BRN">
+        <area shape="rect" coords="60,74,163,91" alt="Myanmar" data-country="MMR">
+        <area shape="rect" coords="144,138,247,155" alt="Thailand" data-country="THA">
+        <area shape="rect" coords="235,267,338,284" alt="Malaysia" data-country="MYS">
+        <area shape="rect" coords="235,267,338,284" alt="Vietnam" data-country="VNM">
+        <area shape="rect" coords="323,359,426,376" alt="Indonesia" data-country="IDN">
+        <area shape="rect" coords="169,98,231,114" alt="Laos" data-country="LAO">
+    </map>
+
     <h3>Country Sector Readiness (value of Industry added, % of GDP)</h3>
-    <form id="countryForm">
-        <label for="country">Select Country:</label>
-        <select id="country" name="country">
-            <option value="PHL">Philippines</option>
-            <option value="SGP">Singapore</option>
-            <option value="KHM">Cambodia</option>
-            <option value="BRN">Brunei</option>
-            <option value="MMR">Myanmar</option>
-            <option value="THA">Thailand</option>
-            <option value="MYS">Malaysia</option>
-            <option value="VNM">Vietnam</option>
-            <option value="IDN">Indonesia</option>
-            <option value="LAO">Laos</option>
-        </select>
-        <button type="submit">Submit</button>
-    </form>
-    <div id="statisticsContainer"></div>
+    <hr>
+    <p>Showing the value of the various industries added as a % of their country's GDP, we hope this is useful for fostering a better understanding of how different industries contribute to each country's economy!</p>
+    
+    <div id="selectedCountry"></div> <!--for displaying selected country-->
+    <div id="statisticsContainer"></div> <!--for displaying country statistics-->
     <script src="./scripts/countryStatistics.js"></script>
 </body>
 </html>

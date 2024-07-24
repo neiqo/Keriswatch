@@ -155,16 +155,58 @@ hr {
   align-items: center;
 }
 
+/* For country statistics---------------------------------------------------------------------------------------------------------*/
+
 #country-container {
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center; /* Center the country selector */
   margin-bottom: 20px; /* Add space below the country selector */
+}
+
+#asean-map-img {
+  border-radius: 10px;
+  border: 2px solid #000;
+  margin-bottom: 20px;
+}
+
+area {
+  cursor: pointer;
 }
 
 #country-selector-container {
   width: 100%;
   text-align: left;
+}
+
+.skill-container {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.skill-label {
+  flex: 1;
+  margin-right: 10px;
+  text-align: right;
+}
+
+.skill-bar-container {
+  flex: 7;
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+}
+
+.skill-bar {
+  height: 30px;
+  border-radius: 5px;
+  text-align: right;
+  padding-right: 10px;
+  line-height: 30px;
+  color: white;
+  background-color: #5E6C5B;
 }
 
 #sector-country-news-title {
@@ -221,4 +263,71 @@ hr {
   color: black;
   align-items: left;
   text-align: left;
+}
+
+/* Footer style ----------------------------------------------------------------------------------------------------*/
+
+footer {
+  background-color: #5E6C5B;
+  color: #F4EFE6;
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+#column-footer-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#column-footer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-right: 20px;
+  height: 100%;
+}
+
+#column-footer:nth-child(1) {
+  margin-left: 60px;
+}
+
+#column-footer:nth-child(3) {
+  flex: 0 0 50%;
+}
+
+.paraTitle-footer {
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #F4EFE6;
+}
+
+.headerTitle-footer {
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: #F4EFE6;
+}
+
+footer p {
+  margin: 5px 0;
+}
+
+footer h1, footer h3 {
+  margin: 10px 0;
+}
+
+#column-footer > div {
+  flex: 1;
+}
+
+#org-footer {
+  margin-top: 47px;;
+}
+
+a{
+  color: #F4EFE6;
 }

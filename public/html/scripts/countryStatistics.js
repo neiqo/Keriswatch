@@ -1,8 +1,37 @@
-document.getElementById('countryForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const country = document.getElementById('country').value;
+document.addEventListener('DOMContentLoaded', function () {
+    // Fetch and display statistics for Singapore on page load
+    fetchStatistics('SGP');
 
-    // Fetching through the route
+    // Set up event listener for the image map
+    /*document.querySelectorAll('area').forEach(area => {
+        area.addEventListener('click', function (e) {
+            e.preventDefault();
+            const country = this.dataset.country;
+            fetchStatistics(country);
+        });
+    });*/
+
+    // Event listener for the country selector dropdown
+    const countrySelector = document.getElementById('country-selector');
+    countrySelector.addEventListener('change', function () {
+        const selectedCountry = countrySelector.value;
+        const countryCodes = {
+            'Singapore': 'SGP',
+            'Malaysia': 'MYS',
+            'Brunei': 'BRN',
+            'Cambodia': 'KHM',
+            'Indonesia': 'IDN',
+            'Laos': 'LAO',
+            'Myanmar': 'MMR',
+            'Philippines': 'PHL',
+            'Vietnam': 'VNM',
+            'Thailand': 'THA'
+        };
+        fetchStatistics(countryCodes[selectedCountry]);
+    });
+});
+
+function fetchStatistics(country) {
     fetch(`/statistics/${country}`, {
         method: 'GET',
         headers: {
@@ -25,6 +54,10 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
             }
         });
 
+        // Update the selected country display
+        updateSelectedCountry(country);
+
+        // Update the chart with the fetched data
         updateCombinedChart('statisticsContainer', {
             agriculture: agricultureData[0], 
             services: servicesData[0], 
@@ -32,8 +65,29 @@ document.getElementById('countryForm').addEventListener('submit', function (e) {
         });
     })
     .catch(error => console.error('Error:', error));
-});
+}
 
+function updateSelectedCountry(countryCode) {
+    // Dictionary for storing code and countries
+    const countryNames = {
+        'PHL': 'Philippines',
+        'SGP': 'Singapore',
+        'KHM': 'Cambodia',
+        'BRN': 'Brunei',
+        'MMR': 'Myanmar',
+        'THA': 'Thailand',
+        'MYS': 'Malaysia',
+        'VNM': 'Vietnam',
+        'IDN': 'Indonesia',
+        'LAO': 'Laos'
+    };
+
+    // Display the selected country name to the users
+    const selectedCountryDiv = document.getElementById('selectedCountry');
+    selectedCountryDiv.textContent = `${countryNames[countryCode]} statistics for the year of 2023`;
+}
+
+// Used for creating the chart in html
 function updateCombinedChart(containerId, data) {
     const container = document.getElementById(containerId);
 
