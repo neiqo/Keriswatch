@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     filterAndDisplayArticles(defaultCountry, articles);
 
     // Display the most recent articles
-    displayRecentArticles(articles, 'latest-news', 4); // Display top 5 recent articles
+    displayRecentArticles(articles, 'latest-news', 4);
 
   } catch (error) {
     console.error('Error fetching articles:', error);
