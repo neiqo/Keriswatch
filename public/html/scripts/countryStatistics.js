@@ -3,12 +3,31 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchStatistics('SGP');
 
     // Set up event listener for the image map
-    document.querySelectorAll('area').forEach(area => {
+    /*document.querySelectorAll('area').forEach(area => {
         area.addEventListener('click', function (e) {
             e.preventDefault();
             const country = this.dataset.country;
             fetchStatistics(country);
         });
+    });*/
+
+    // Event listener for the country selector dropdown
+    const countrySelector = document.getElementById('country-selector');
+    countrySelector.addEventListener('change', function () {
+        const selectedCountry = countrySelector.value;
+        const countryCodes = {
+            'Singapore': 'SGP',
+            'Malaysia': 'MYS',
+            'Brunei': 'BRN',
+            'Cambodia': 'KHM',
+            'Indonesia': 'IDN',
+            'Laos': 'LAO',
+            'Myanmar': 'MMR',
+            'Philippines': 'PHL',
+            'Vietnam': 'VNM',
+            'Thailand': 'THA'
+        };
+        fetchStatistics(countryCodes[selectedCountry]);
     });
 });
 
