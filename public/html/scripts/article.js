@@ -23,20 +23,45 @@ document.addEventListener("DOMContentLoaded", async function() {
 function displayArticle(article) {
     const articleContainer = document.getElementById('article-container');
 
+    // Format the publishDateTime
+    const publishDate = new Date(article.publishDateTime);
+    const formattedDate = publishDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const formattedTime = publishDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    // Create tags HTML
+    const tags = article.Tags.split(',').map(tag => `<span class="tag-pill">${tag.trim()}</span>`).join(' ');
+
     articleContainer.innerHTML = `
-        <img class="article-img-cover" src='../images/articles/article-${article.articleID}/${article.imageFileNames[0]}'></img>
+        <p class="article-country"><strong></strong> ${article.Country}</p>
+        <p class="article-sector"><strong></strong> ${article.Sector}</p>
         <h1 class="article-title">${article.Title}</h1>
-        <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
-        <p class="article-country"><strong>Country:</strong> ${article.Country}</p>
-        <p class="article-publisher"><strong>Publisher:</strong> ${article.Publisher}</p>
-        <p class="article-sector"><strong>Sector:</strong> ${article.Sector}</p>
-        <p class="article-tags"><strong>Tags:</strong> ${article.Tags}</p>
-        <button class="edit-tags-btn" data-article-id="${article.articleID}">Edit Tags</button>
-        <div id="edit-tags-container"></div> <!-- Container for the input field -->
-        <button class="delete-article-btn" data-article-id="${article.articleID}">Delete</button>
-        <div class="article-body">${article.Body}</div>
-        <img class="article-img-1" src='../images/articles/article-${article.articleID}/${article.imageFileNames[1]}'></img>
-        <img class="article-img-2" src='../images/articles/article-${article.articleID}/${article.imageFileNames[2]}'></img>
+        <div id="article-content">
+            <div id="left-column">
+                <img class="article-img-cover" src='../images/articles/article-${article.articleID}/${article.imageFileNames[0]}'></img>
+                <div class="article-body">${article.Body}</div>
+                <img class="article-img-body" src='../images/articles/article-${article.articleID}/${article.imageFileNames[1]}'></img>
+                <img class="article-img-body" src='../images/articles/article-${article.articleID}/${article.imageFileNames[2]}'></img>    
+            </div>
+            <div id="right-column">
+                <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
+                <p class="article-publisher"><strong>Published by:</strong> ${article.Publisher}</p>
+                <p class="article-publishDate"><strong>Published on </strong> ${formattedDate} at ${formattedTime}</p>
+                <button class="edit-tags-btn" data-article-id="${article.articleID}">Edit Tags</button>
+                <div id="edit-tags-container"></div> <!-- Container for the input field -->
+                <button class="delete-article-btn" data-article-id="${article.articleID}">Delete news article</button>
+                <p class="article-tags-title">Related Topics</p>
+                <hr class="tags-line">
+                <div class="article-tags">${tags}</div>
+
+            </div>
+        </div>
     `;
 
     const deleteButton = document.querySelector('.delete-article-btn');
