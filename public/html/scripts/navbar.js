@@ -66,11 +66,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Create the search form
     const searchForm = document.createElement('form');
+    searchForm.id = 'searchForm';  // Add the ID here
     searchForm.className = 'form-inline my-2 my-lg-0 ml-auto';
     const searchInput = document.createElement('input');
     searchInput.type = 'search';
     searchInput.className = 'form-control mr-sm-2';
     searchInput.placeholder = 'Search';
+    searchInput.name = 'query';  // Make sure the name attribute matches
     searchForm.appendChild(searchInput);
     const searchButton = document.createElement('button');
     searchButton.className = 'btn btn-outline-success my-2 my-sm-0';
@@ -78,7 +80,6 @@ document.addEventListener("DOMContentLoaded", function() {
     searchButton.innerHTML = '<i class="fas fa-search"></i>';
     searchForm.appendChild(searchButton);
     collapseDiv.appendChild(searchForm);
-    
     // Create additional navbar links list
     const navbarListRight = document.createElement('ul');
     navbarListRight.className = 'navbar-nav mb-2 mb-lg-0';
@@ -313,4 +314,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Append the navbar to the body
     document.body.appendChild(navbar);
+
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+    
+        const formData = new FormData(this); // Get form data
+        const searchParams = new URLSearchParams(formData); // Convert to URL-encoded string
+    
+        // Redirect to searchpage.html with search parameters
+        window.location.href = `searchpage.html?${searchParams.toString()}`;
+    });
 });
+
