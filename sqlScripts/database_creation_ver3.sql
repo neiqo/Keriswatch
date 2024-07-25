@@ -25,6 +25,30 @@ IF OBJECT_ID('FK_Organisation_User', 'F') IS NOT NULL
 IF OBJECT_ID('FK_NormalUser_User', 'F') IS NOT NULL
     ALTER TABLE NormalUser DROP CONSTRAINT FK_NormalUser_User;
 
+IF OBJECT_ID('FK_Comments_User', 'F') IS NOT NULL
+	ALTER TABLE Comments DROP CONSTRAINT FK_Comments_User;
+
+IF OBJECT_ID('FK_Comments_Article', 'F') IS NOT NULL
+	ALTER TABLE Comments DROP CONSTRAINT FK_Comments_Article;
+
+IF OBJECT_ID('FK_Comments_Parent', 'F') IS NOT NULL
+	ALTER TABLE Comments DROP CONSTRAINT FK_Comments_Parent;
+
+IF OBJECT_ID('FK_Upvotes_Comment', 'F') IS NOT NULL
+	ALTER TABLE Upvotes DROP CONSTRAINT FK_Upvotes_Comment;
+
+IF OBJECT_ID('FK_Upvotes_User', 'F') IS NOT NULL
+	ALTER TABLE Upvotes DROP CONSTRAINT FK_Upvotes_User;
+
+IF OBJECT_ID('FK_Downvotes_Comment', 'F') IS NOT NULL
+	ALTER TABLE Downvotes DROP CONSTRAINT FK_Downvotes_Comment;
+
+IF OBJECT_ID('FK_Downvotes_User', 'F') IS NOT NULL
+	ALTER TABLE Downvotes DROP CONSTRAINT FK_Downvotes_User;
+	
+IF OBJECT_ID('FK_Token_User', 'F') IS NOT NULL
+	ALTER TABLE Tokens DROP CONSTRAINT FK_Token_User;
+
 -- Drop tables
 IF OBJECT_ID('dbo.Bookmarks', 'U') IS NOT NULL
     DROP TABLE dbo.Bookmarks;
@@ -55,6 +79,15 @@ IF OBJECT_ID('dbo.EventUsers', 'U') IS NOT NULL
 
 IF OBJECT_ID('dbo.Tokens', 'U') IS NOT NULL
     DROP TABLE dbo.Tokens;
+
+IF OBJECT_ID('dbo.Comments', 'U') IS NOT NULL
+	DROP TABLE dbo.Comments;
+
+IF OBJECT_ID('dbo.Upvotes', 'U') IS NOT NULL
+	DROP TABLE dbo.Upvotes;
+
+IF OBJECT_ID('dbo.Downvotes', 'U') IS NOT NULL
+	DROP TABLE dbo.Downvotes;
 
 -- From Diontae
 CREATE TABLE Users (
@@ -194,6 +227,84 @@ CREATE TABLE EventUsers (
     CONSTRAINT FK_EventUsers_Event FOREIGN KEY (event_id) REFERENCES Events(id),
     CONSTRAINT FK_EventUsers_User FOREIGN KEY (user_id) REFERENCES Users(userId)
 );
+
+-- Insert Admin Users
+INSERT INTO Users (username, password, email, role) VALUES 
+('admin1', 'pass1', 'admin1@example.com', 'Admin'),
+('admin2', 'pass2', 'admin2@example.com', 'Admin'),
+('admin3', 'pass3', 'admin3@example.com', 'Admin'),
+('admin4', 'pass4', 'admin4@example.com', 'Admin'),
+('admin5', 'pass5', 'admin5@example.com', 'Admin'),
+('admin6', 'pass6', 'admin6@example.com', 'Admin'),
+('admin7', 'pass7', 'admin7@example.com', 'Admin'),
+('admin8', 'pass8', 'admin8@example.com', 'Admin'),
+('admin9', 'pass9', 'admin9@example.com', 'Admin'),
+('admin10', 'pass10', 'admin10@example.com', 'Admin');
+
+-- Insert into Admin table
+INSERT INTO Admin (userId) VALUES 
+((SELECT userId FROM Users WHERE username = 'admin1')),
+((SELECT userId FROM Users WHERE username = 'admin2')),
+((SELECT userId FROM Users WHERE username = 'admin3')),
+((SELECT userId FROM Users WHERE username = 'admin4')),
+((SELECT userId FROM Users WHERE username = 'admin5')),
+((SELECT userId FROM Users WHERE username = 'admin6')),
+((SELECT userId FROM Users WHERE username = 'admin7')),
+((SELECT userId FROM Users WHERE username = 'admin8')),
+((SELECT userId FROM Users WHERE username = 'admin9')),
+((SELECT userId FROM Users WHERE username = 'admin10'));
+
+-- Insert Organisation Users
+INSERT INTO Users (username, password, email, role) VALUES 
+('org1', 'pass1', 'org1@example.com', 'Organisation'),
+('org2', 'pass2', 'org2@example.com', 'Organisation'),
+('org3', 'pass3', 'org3@example.com', 'Organisation'),
+('org4', 'pass4', 'org4@example.com', 'Organisation'),
+('org5', 'pass5', 'org5@example.com', 'Organisation'),
+('org6', 'pass6', 'org6@example.com', 'Organisation'),
+('org7', 'pass7', 'org7@example.com', 'Organisation'),
+('org8', 'pass8', 'org8@example.com', 'Organisation'),
+('org9', 'pass9', 'org9@example.com', 'Organisation'),
+('org10', 'pass10', 'org10@example.com', 'Organisation');
+
+-- Insert into Organisation table
+INSERT INTO Organisation (userId, orgNumber) VALUES 
+((SELECT userId FROM Users WHERE username = 'org1'), 12345678),
+((SELECT userId FROM Users WHERE username = 'org2'), 22345678),
+((SELECT userId FROM Users WHERE username = 'org3'), 32345678),
+((SELECT userId FROM Users WHERE username = 'org4'), 42345678),
+((SELECT userId FROM Users WHERE username = 'org5'), 52345678),
+((SELECT userId FROM Users WHERE username = 'org6'), 62345678),
+((SELECT userId FROM Users WHERE username = 'org7'), 72345678),
+((SELECT userId FROM Users WHERE username = 'org8'), 82345678),
+((SELECT userId FROM Users WHERE username = 'org9'), 92345678),
+((SELECT userId FROM Users WHERE username = 'org10'), 02345678);
+
+-- Insert Normal Users
+INSERT INTO Users (username, password, email, role) VALUES 
+('user1', 'pass1', 'user1@example.com', 'NormalUser'),
+('user2', 'pass2', 'user2@example.com', 'NormalUser'),
+('user3', 'pass3', 'user3@example.com', 'NormalUser'),
+('user4', 'pass4', 'user4@example.com', 'NormalUser'),
+('user5', 'pass5', 'user5@example.com', 'NormalUser'),
+('user6', 'pass6', 'user6@example.com', 'NormalUser'),
+('user7', 'pass7', 'user7@example.com', 'NormalUser'),
+('user8', 'pass8', 'user8@example.com', 'NormalUser'),
+('user9', 'pass9', 'user9@example.com', 'NormalUser'),
+('user10', 'pass10', 'user10@example.com', 'NormalUser');
+
+-- Insert into NormalUser table
+INSERT INTO NormalUser (userId, country) VALUES 
+((SELECT userId FROM Users WHERE username = 'user1'), 'Singapore'),
+((SELECT userId FROM Users WHERE username = 'user2'), 'Malaysia'),
+((SELECT userId FROM Users WHERE username = 'user3'), 'Indonesia'),
+((SELECT userId FROM Users WHERE username = 'user4'), 'Singapore'),
+((SELECT userId FROM Users WHERE username = 'user5'), 'Malaysia'),
+((SELECT userId FROM Users WHERE username = 'user6'), 'Indonesia'),
+((SELECT userId FROM Users WHERE username = 'user7'), 'Singapore'),
+((SELECT userId FROM Users WHERE username = 'user8'), 'Malaysia'),
+((SELECT userId FROM Users WHERE username = 'user9'), 'Indonesia'),
+((SELECT userId FROM Users WHERE username = 'user10'), 'Singapore');
 
 -- Inserting data for Philippines
 INSERT INTO Articles (Author, Publisher, Country, Sector, Title, Body, publishDateTime, Tags)
