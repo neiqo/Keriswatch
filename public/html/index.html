@@ -7,6 +7,9 @@
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/dist/mdb5/standard/core.min.css">
@@ -15,17 +18,120 @@
     type="text/css" media="all">
     <link rel="stylesheet" href="./styles/styles.css">
     <link rel="stylesheet" type="text/css" href="./styles/navbar.css"/>
+    <link rel="stylesheet" href="./styles/footer.css">
 </head>
 <body>
-    <a href="./searchpage.html">Search Page</a>
-    <a href="./displayallarticles.html">Display All Articles</a>
-    <a href="./addnewarticle.html">Add new article</a>
-    <a href="./events.html">Events</a>
-    <a href="./bookmarked.html">Display Bookmarked Articles</a>
-    <a href="./countryStatistics.html">Country Statistics</a>
-    <a href="./login.html">Login</a>
+    <div id="content">
+        <div id="left-column">
+            <div id="country-container"> <!-- add country tings here -->
+                <div id="country-selector-container">
+                    <label for="country-selector"><b>Select Country:</b></label>
+                    <select id="country-selector">
+                        <option value="Singapore">Singapore</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Brunei">Brunei</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Laos">Laos</option>
+                        <option value="Myanmar">Myanmar</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="Thailand">Thailand</option>
+                    </select>
+                </div>
+                <!-- image area not working upon resizing, will fix it -->
+                <img src="./images/statistics/asean-map.png" usemap="#asean-map" alt="ASEAN Map" id="asean-map-img">
+                <!--<map name="asean-map">
+                    <area shape="rect" coords="459,132,575,160" alt="Philippines" data-country="PHL">
+                    <area shape="rect" coords="180,298,289,324" alt="Singapore" data-country="SGP">
+                    <area shape="rect" coords="188,167,301,184" alt="Cambodia" data-country="KHM">
+                    <area shape="rect" coords="313,240,381,258" alt="Brunei" data-country="BRN">
+                    <area shape="rect" coords="60,74,163,91" alt="Myanmar" data-country="MMR">
+                    <area shape="rect" coords="144,138,247,155" alt="Thailand" data-country="THA">
+                    <area shape="rect" coords="235,267,338,284" alt="Malaysia" data-country="MYS">
+                    <area shape="rect" coords="235,267,338,284" alt="Vietnam" data-country="VNM">
+                    <area shape="rect" coords="323,359,426,376" alt="Indonesia" data-country="IDN">
+                    <area shape="rect" coords="169,98,231,114" alt="Laos" data-country="LAO">
+                </map>-->
+            
+                <p class="headerTitle">Country Sector Readiness (value of Industry added, % of GDP)</p>
+                <p>Showing the value of the various industries added as a % of their country's GDP, we hope this helps in fostering a better understanding of how different industries contribute to each country's economy!</p>
+                
+                <div id="selectedCountry"></div> <!--for displaying selected country-->
+                <div id="statisticsContainer"></div> <!--for displaying country statistics-->
+            </div>
+            <p id="sector-country-news-title" class="headerTitle">Latest Sector News In</p>
+            <div id="sector-country-news">
+                <div id="agriculture-container">
+                    <p class="paraTitle">AGRICULTURE</p>
+                    <div id="agriculture-news">
 
+                    </div>
+                </div>
+                <div id="services-container">
+                    <p class="paraTitle">SERVICES</p>
+                    <div id="services-news">
 
+                    </div>
+                </div>
+                <div id="manufacture-container">
+                    <p class="paraTitle">MANUFACTURE</p>
+                    <div id="manufacture-news">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="right-column">
+            <div id="latest-news-container">
+                <p class="paraTitle">Latest News</p>
+                <div id="latest-news">
+
+                </div>
+            </div>
+            <div id="latest-news-container">
+                <p class="paraTitle">Upcoming Events</p>
+                <div id="upcoming-events"> <!-- add event tings here -->
+                
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div id="column-footer">
+            <div>
+                <h3 class="paraTitle-footer">Contact</h3>
+                <p>+6589217943</p>
+                <p>1 Paya Lebar Link #11-03<br>PLQ 1, Paya Lebar Quarter<br>Singapore 408533</p>
+            </div>
+            <div>
+                <h3 id="org-footer" class="paraTitle-footer">Organisations</h3>
+                <a href="./login.html">Login</a>
+            </div>
+        </div>
+
+        <div id="column-footer">
+            <div>
+                <h3 class="paraTitle-footer">Sections</h3>
+                <a href="./index.html">Home</a>
+                <p>Agriculture</p>
+                <p>Services</p>
+                <p>Manufacture</p>
+                <a href="./events.html">Events</a>
+            </div>
+            <div>
+                <h3 class="paraTitle-footer">Staffs</h3>
+                <a href="./login.html">Login</a>
+            </div>
+        </div>
+
+        <div id="column-footer">
+            <h1 class="headerTitle-footer">KERISWATCH</h1>
+            <h3 class="paraTitle-footer">About Us</h3>
+            <p>AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! AD FOR BED! </p>
+        </div>
+    </footer>
 
     <!-- The navbar will be inserted here by the JavaScript -->
     
@@ -36,5 +142,7 @@
 
     <!-- Include your custom JavaScript -->
     <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/displayarticles.js"></script> <!-- display articles script -->
+    <script src="./scripts/countryStatistics.js"></script> <!-- country statistics script -->
 </body>
 </html>

@@ -108,7 +108,7 @@ const addArticle = async (req, res) => {
       // because its after the transaction is commited where it will be rolled back if theres an error
       for (const imageFileName of imageFileNames) {
         const oldPath = path.join(__dirname, '../uploads/temp', imageFileName);
-        const newDir = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`);
+        const newDir = path.join(__dirname, `../public/html/images/articles/article-${articleID}`);
         const newPath = path.join(newDir, imageFileName);
 
         if (!fs.existsSync(newDir)) {

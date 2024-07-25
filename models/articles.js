@@ -119,7 +119,7 @@ class Article {
 
   
   async createImageFolder() {
-    const folderPath = `./public/html/media/images/articles/article-${this.articleID}`;
+    const folderPath = `./public/html/images/articles/article-${this.articleID}`;
 
     try {
       // Check if the folder exists
@@ -235,7 +235,7 @@ class Article {
       await transaction.commit();
   
       // Delete image files from the filesystem
-      const articleImageFolderPath = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`);
+      const articleImageFolderPath = path.join(__dirname, `../public/html/images/articles/article-${articleID}`);
   
       if (fs.existsSync(articleImageFolderPath)) {
         imageFileNames.forEach(imageFileName => {

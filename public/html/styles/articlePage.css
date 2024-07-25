@@ -1,0 +1,153 @@
+body {
+    font-family: "Inter", sans-serif;
+}
+
+#article-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 70px;
+    margin-top: 110px;
+    text-align: center;
+}
+
+#article-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 45px;
+}
+
+#left-column {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    text-align: left;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+#right-column {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    text-align: left;
+}
+
+.article-img-cover {
+    width: 100%;
+}
+
+.article-img-body {
+    width: 50%;
+}
+
+.article-country {
+    font-weight: 400;
+    color: black;
+    font-size: 1.2rem;
+}
+
+.article-sector {
+    font-weight: bold;
+    color: black;
+    font-size: 1.25rem;
+    margin-top: -20px;
+    
+}
+
+.article-title {
+    font-weight: 800;
+    color: black;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.article-body {
+    width: 90%;
+    font-weight: 600;
+    color: black;
+    font-size: 1.2rem;
+}
+
+.article-author {
+    margin-top: 60px;
+    font-weight: 600;
+    color: black;
+    font-size: 1.5rem;
+}
+
+.article-publisher, .article-publishDate {
+    font-weight: 400;
+    color: black;
+    font-size: 1rem;
+}
+
+.article-publisher {
+    margin-top: -10px;
+}
+
+.article-publishDate {
+    margin-top: -15px;
+}
+
+.article-tags-title {
+    margin-top: 180px;
+    margin-bottom: -10px;
+    font-weight: 800;
+    color: black;
+    font-size: 1.5rem;
+}
+
+.tags-line {
+    margin-top: 10px;
+    color: black;
+    border: solid  black 1px;
+}
+
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-pill {
+    background-color: #e0e0e0;
+    border-radius: 50px;
+    padding: 5px 15px;
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.edit-tags-btn {
+    margin: 0 auto;
+    width: 100%;
+    height: 50px;
+    border-radius: 4px;
+    border: #9575DE 1px solid ;
+    background-color: #9575DE;
+    color: white;
+}
+
+.delete-article-btn {
+    margin: 0 auto;
+    margin-top: 5px;
+    width: 100%;
+    height: 50px;
+    border-radius: 4px;
+
+    border: #D75757 1px solid ;
+    background-color: #D75757;
+    color: white;
+}
+
+/* COMMENTS CSS */
+#comments {
+    border: 2px solid black;
+    border-radius: 11px;
+    margin: 70px;
+    height: 200px;
+}
