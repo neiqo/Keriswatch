@@ -1,25 +1,13 @@
+require('dotenv').config();
+
 module.exports = {
-  user: "booksapi_user",
-  password: "booksapi_user",
-  server: "localhost",
-  database: "bed_db",
-  trustServerCertificate: true,
-  options: {
-    port: 1433, // Default SQL Server port
-    connectionTimeout: 60000,
-  },
-};
-
-// TO BE CHANGED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-/* DIONTAE CONFIG
-    user: "booksapi_user", // Replace with your SQL Server login username
-    password: "vincent123", // Replace with your SQL Server login password
-    server: "localhost",
-    database: "Keriswatch",
+    user: process.env.DB_USER, // Replace with your SQL Server login username
+    password: process.env.DB_PASSWORD, // Replace with your SQL Server login password
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
     trustServerCertificate: true,
     options: {
-      port: 1433, // Default SQL Server port
+      port: parseInt(process.env.DB_PORT, 10), // Default SQL Server port
       connectionTimeout: 60000, // Connection timeout in milliseconds
     },
-  };*/
+  };

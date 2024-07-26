@@ -1,5 +1,6 @@
 // MODULE IMPORTS
 const express = require("express");
+const fileUpload = require('express-fileupload');
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const bodyParser = require("body-parser"); // Import body-parser
@@ -23,29 +24,45 @@ const authUser = require('./middlewares/authUser');
 const validateEvent = require("./middlewares/validateEvent");
 const validateUpdateEvent = require("./middlewares/validateUpdateEvent");
 const uploadEventImage = require("./middlewares/validateEventImage");
+const verifyJWT = require('./middlewares/verifyJWT');
 
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
-const UserController = require('./controllers/userController');
+const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
+const CommentController = require('./controllers/commentController');
+const statisticsController = require("./controllers/statisticsController");
 
 // CONTROLLER ROUTINGS
 // LOGIN ROUTES
-app.post('/login', authUser.validateLogin, UserController.login);
+app.get('/login', (req, res) => { 
+  res.sendFile(path.join(__dirname + '/public/html/login.html'));
+  console.log(path.join(__dirname + '/public/html/login.html'));
+});
+
+app.post('/api/login', authUser.validateLogin, userController.userLogin);
+app.post('/api/logout', userController.userLogout);
 
 // Specific-user routes
-app.get('/users/:username', UserController.getUserByUsername);
-app.delete('/users/:username', UserController.deleteUser); 
+app.get('/api/users/:username', userController.getUserByUsername);
+app.delete('/api/users/:username', verifyJWT, userController.deleteUser); 
 
 // User creation and update routes
-app.post('/signup/normal', authUser.validateNormalUser, UserController.createNormalUser); 
-app.post('/signup/organisation', authUser.validateOrganisation, UserController.createOrganisation);
-app.put('/update/normal', authUser.validateUpdateNormalUser, UserController.updateNormalUser);
-app.put('/update/organisation', authUser.validateUpdateOrganisation, UserController.updateOrganisation); 
+app.post('/api/signup/normal', authUser.validateNormalUser, userController.registerUser); 
+app.post('/api/signup/organisation', authUser.validateOrganisation, userController.registerUser);
+app.put('/api/update/normal', verifyJWT, authUser.validateUpdateNormalUser, userController.updateNormalUser);
+app.put('/api/update/organisation', verifyJWT, authUser.validateUpdateOrganisation, userController.updateOrganisation); 
 
 // Get all users except admin route
-app.get('/users', UserController.getAllUsers); 
+app.get('/api/users', userController.getAllUsers); 
+
+// COMMENT ROUTES
+app.get('/api/:articleId/comments', CommentController.getComments);
+app.post('/api/comments', verifyJWT, CommentController.createComment);
+app.delete('/api/comments/:commentId', verifyJWT, CommentController.deleteComment);
+app.post('/api/comments/:commentId/upvote', verifyJWT, CommentController.upvoteComment);
+app.post('/api/comments/:commentId/downvote', verifyJWT, CommentController.downvoteComment);
 
 // EVENT ROUTES
 app.get('/events/joined/:userId', (req, res) => { //not done yet
@@ -71,7 +88,8 @@ app.get("/events/:id/user/:userId", (req, res) => {
 });
 
 app.get('/events/:id/update', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/html', 'eventUpdate.html'));
+  res.sendFile(path.join(__dirname + '/public/html/eventUpdate.html'));
+  console.log(path.join(__dirname + '/public/html/eventUpdate.html'));
 });
 
 
@@ -110,24 +128,20 @@ app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEv
 
 
 // ARTICLE ROUTES
-
 app.get("/search", articlesController.searchArticles); // route for searching articles
 app.get('/articles/:articleID', articlesController.getArticleByID);
 app.put("/articles/:articleID/editTags", articlesController.editTags); // route for updating tags
+app.put("/articles/:articleID", articlesController.updateArticleBody); // route for editing article
 app.delete("/articles/:articleID", articlesController.removeArticle); // route for deleting article
 app.get("/articles", articlesController.getAllArticles); // basic route for getting all articles in the db
 app.post("/addArticle", upload.array('images', 3), articlesController.addArticle); // route for adding articles with max 3 images
+
 // BOOKMARK ROUTES
 app.get("/bookmarks", bookmarkController.getAllBookmarkedArticles); // route for getting all bookmarks by userId
 app.post("/bookmarks/:articleId", bookmarkController.addBookmark); // route for adding bookmarked article
 app.delete("/bookmarks/:articleId", bookmarkController.deleteBookmark); // route for deleting a bookmarked article
 
-
-// DATABASE CONNECTION
-// Controllers
-const statisticsController = require("./controllers/statisticsController");
-
-// GET request routes
+// STATISTICS ROUTES
 app.get("/statistics/:country", statisticsController.getStatisticsByCountry);
 
 // For database connection

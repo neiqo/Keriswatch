@@ -119,7 +119,7 @@ class Article {
 
   
   async createImageFolder() {
-    const folderPath = `./public/html/media/images/articles/article-${this.articleID}`;
+    const folderPath = `./public/html/images/articles/article-${this.articleID}`;
 
     try {
       // Check if the folder exists
@@ -235,7 +235,7 @@ class Article {
       await transaction.commit();
   
       // Delete image files from the filesystem
-      const articleImageFolderPath = path.join(__dirname, `../public/html/media/images/articles/article-${articleID}`);
+      const articleImageFolderPath = path.join(__dirname, `../public/html/images/articles/article-${articleID}`);
   
       if (fs.existsSync(articleImageFolderPath)) {
         imageFileNames.forEach(imageFileName => {
@@ -352,6 +352,43 @@ class Article {
       return true;
     } catch (error) {
       console.error('Error updating tags:', error);
+      await transaction.rollback();
+      throw error;
+    } finally {
+      connection.close();
+    }
+  }
+
+  static async updateArticleBody(articleID, newBody) {
+    const connection = await sql.connect(dbConfig);
+    const transaction = new sql.Transaction(connection);
+
+    try {
+      await transaction.begin();
+
+      const request = new sql.Request(transaction);
+
+      const updateArticleQuery = `
+        UPDATE Articles
+        SET Body = @Body, publishDateTime = @publishDateTime
+        WHERE articleID = @ArticleID
+      `;
+
+      request.input('Body', sql.NVarChar, newBody);
+      request.input('publishDateTime', sql.DateTime, new Date());
+      request.input('ArticleID', sql.Int, articleID);
+
+      const result = await request.query(updateArticleQuery);
+
+      if (result.rowsAffected[0] === 0) {
+        throw new Error(`Article with ID ${articleID} not found`);
+      }
+
+      await transaction.commit();
+
+      return true;
+    } catch (error) {
+      console.error('Error updating article body:', error);
       await transaction.rollback();
       throw error;
     } finally {

@@ -7,7 +7,8 @@ const validateNormalUser = (req, res, next) => {
         username: Joi.string().min(3).max(30).required(),
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
-        country: Joi.string().min(2).max(50).required()
+        country: Joi.string().min(2).max(50).required(),
+        role: Joi.string().required()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -30,7 +31,7 @@ const validateUpdateNormalUser = (req, res, next) => {
         username: Joi.string().min(3).max(30).required(),
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
-        country: Joi.string().min(2).max(50).required()
+        country: Joi.string().min(2).max(50).required(),
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -52,7 +53,8 @@ const validateOrganisation = (req, res, next) => {
         username: Joi.string().min(3).max(30).required(),
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
-        orgNumber: Joi.number().integer().required()
+        orgNumber: Joi.number().integer().required(),
+        role: Joi.string().required()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -74,7 +76,7 @@ const validateUpdateOrganisation = (req, res, next) => {
         username: Joi.string().min(3).max(30).required(),
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
-        orgNumber: Joi.number().integer().required()
+        orgNumber: Joi.number().integer().required(),
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
