@@ -37,6 +37,7 @@ const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
 const CommentController = require('./controllers/commentController');
 const statisticsController = require("./controllers/statisticsController");
+const tokenController = require('./controllers/tokenController');
 
 // CONTROLLER ROUTINGS
 // LOGIN ROUTES
@@ -47,6 +48,7 @@ app.get('/login', (req, res) => {
 
 app.post('/api/login', authUser.validateLogin, userController.userLogin);
 app.post('/api/logout', verifyJWT, userController.userLogout);
+app.delete('/api/token', tokenController.deleteToken);
 
 // Specific-user routes
 app.get('/api/users/:username', userController.getUserByUsername);
