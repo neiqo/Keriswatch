@@ -53,14 +53,32 @@ function displayArticles(articles, elementId) {
     articleElement.classList.add('article-container');
     articleElement.style.backgroundImage = `url('./images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
 
+    // Format the publishDateTime
+    const publishDate = new Date(article.publishDateTime);
+    const formattedDate = publishDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
+    const formattedTime = publishDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
     articleElement.innerHTML = `
-      <a href="./article.html?id=${article.articleID}" class="article-link">
+    <a href="./article.html?id=${article.articleID}" class="article-link">
         <div class="article-content">
-          <p class="article-sector"><strong></strong> ${article.Sector}</p>
-          <h3 class="article-title">${article.Title}</h3>
-          <p class="article-publisher"><strong></strong> ${article.Publisher}</p>
+            <p class="article-sector">${article.Sector}</p>
+            <h3 class="article-title">${article.Title}</h3>
+            <div id="row1">
+              <p class="article-publisher">${article.Publisher}</p>
+              <div id="column1">
+                  <p class="article-publishDate">${formattedDate}</p>
+                  <p class="article-publishTime">${formattedTime}</p>
+              </div>
+            </div>
         </div>
-      </a>
+    </a>
     `;
 
     articlesList.appendChild(articleElement);

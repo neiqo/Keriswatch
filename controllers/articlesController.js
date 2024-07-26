@@ -94,7 +94,6 @@ const addArticle = async (req, res) => {
       // Create article in the database
       const articleID = await Article.createArticle(newArticleData, imageFileNames, transaction);
 
-
       if (!articleID) {
         throw new Error("Article ID not returned from createArticle function");
       }
@@ -139,7 +138,6 @@ const addArticle = async (req, res) => {
   }
 };
 
-
 const removeArticle = async (req, res) => {
   const { articleID } = req.params;
 
@@ -181,11 +179,29 @@ const editTags = async (req, res) => {
   }
 };
 
+const updateArticleBody = async (req, res) => {
+  const { articleID } = req.params;
+  const { Body } = req.body;
+  const publishDateTime = new Date();
+
+  try {
+    const updated = await Article.updateArticleBody(articleID, Body, publishDateTime);
+    if (!updated) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+    res.status(200).json({ message: "Article updated successfully" });
+  } catch (error) {
+    console.error("Error updating article:", error);
+    res.status(500).json({ error: "Error updating article" });
+  }
+};
+
 module.exports = {
   getAllArticles,
   searchArticles,
   addArticle,
   removeArticle,
   getArticleByID,
-  editTags
+  editTags,
+  updateArticleBody // Add this line
 };

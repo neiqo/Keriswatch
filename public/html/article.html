@@ -22,10 +22,39 @@
 
 </head>
 <body>
+    <div id="edit-body-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-body-modal">&times;</span>
+            <h2>Edit Article Body</h2>
+            <textarea id="new-body-input" placeholder="Edit article body"></textarea>
+            <button id="save-body-btn">Save Body</button>
+        </div>
+    </div>
+
+        <!-- Modal for editing tags -->
+    <div id="edit-tags-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-tags-modal">&times;</span>
+            <h2>Edit Article Tags</h2>
+            <input type="text" id="new-tags-input" placeholder="Enter new tags">
+            <button id="save-tags-btn">Save Tags</button>
+        </div>
+    </div>
+
+
     <div id="article-container"></div>
     
     <div id="comments"> <!-- insert comments here-->
         Comments
+    </div>
+
+    <div id="related-news-container">
+        <h2 id="related-news-title">Related News</h2>
+        <button id="related-news-viewMore-btn">View More</button>
+        <hr id="related-news-line">
+        <div id="related-news">
+
+        </div>
     </div>
 
     <footer>
