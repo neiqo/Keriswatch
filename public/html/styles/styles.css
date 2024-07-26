@@ -197,10 +197,6 @@ hr {
   margin-bottom: 20px;
 }
 
-area {
-  cursor: pointer;
-}
-
 #country-selector-container {
   width: 100%;
   text-align: left;
