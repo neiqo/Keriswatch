@@ -235,6 +235,12 @@ area {
   background-color: #5E6C5B;
 }
 
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
 #sector-country-news-title {
   width: 100%;
   text-align: left;

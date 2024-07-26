@@ -2,15 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fetch and display statistics for Singapore on page load
     fetchStatistics('SGP');
 
-    // Set up event listener for the image map
-    /*document.querySelectorAll('area').forEach(area => {
-        area.addEventListener('click', function (e) {
-            e.preventDefault();
-            const country = this.dataset.country;
-            fetchStatistics(country);
-        });
-    });*/
-
     // Event listener for the country selector dropdown
     const countrySelector = document.getElementById('country-selector');
     countrySelector.addEventListener('change', function () {
@@ -64,7 +55,10 @@ function fetchStatistics(country) {
             manufacture: manufactureData[0]
         });
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        displayErrorMessage();
+    });
 }
 
 function updateSelectedCountry(countryCode) {
@@ -121,4 +115,10 @@ function createSkillBar(container, label, percentage, className) {
     skillContainer.appendChild(skillLabel);
     skillContainer.appendChild(skillBarContainer);
     container.appendChild(skillContainer);
+}
+
+// user is notified of the error in fetching data
+function displayErrorMessage() {
+    const container = document.getElementById('statisticsContainer');
+    container.innerHTML = '<p class="error-message">Error fetching data from API, please try again later!</p>';
 }
