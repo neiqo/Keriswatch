@@ -71,11 +71,11 @@ function displayArticles(articles, elementId) {
             <p class="article-sector">${article.Sector}</p>
             <h3 class="article-title">${article.Title}</h3>
             <div id="row1">
-            <p class="article-publisher">${article.Publisher}</p>
-                <div id="column1">
-                    <p class="article-publishDate">${formattedDate}</p>
-                    <p class="article-publishTime">${formattedTime}</p>
-                </div>
+              <p class="article-publisher">${article.Publisher}</p>
+              <div id="column1">
+                  <p class="article-publishDate">${formattedDate}</p>
+                  <p class="article-publishTime">${formattedTime}</p>
+              </div>
             </div>
         </div>
     </a>

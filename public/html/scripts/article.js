@@ -168,19 +168,28 @@ function displayRelatedNews(articles) {
         const publishDate = new Date(article.publishDateTime);
         const formattedDate = publishDate.toLocaleDateString('en-US', {
             year: 'numeric',
-            month: 'long',
+            month: 'numeric',
             day: 'numeric'
         });
-
+        const formattedTime = publishDate.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
         articleElement.innerHTML = `
-            <a href="article.html?id=${article.articleID}" class="related-article-link">
-                <div class="related-article-content">
-                    <p class="related-article-sector">${article.Sector}</p>
-                    <h2 class="related-article-title">${article.Title}</h2>
-                    <p class="related-article-publisher">${article.Publisher}</p>
-                    <p class="related-article-date">${formattedDate}</p>
+        <a href="./article.html?id=${article.articleID}" class="related-article-link">
+            <div class="related-article-content">
+                <p class="related-article-sector">${article.Sector}</p>
+                <h3 class="related-article-title">${article.Title}</h3>
+                <div id="row1">
+                  <p class="related-article-publisher">${article.Publisher}</p>
+                  <div id="column1">
+                      <p class="related-article-publishDate">${formattedDate}</p>
+                      <p class="related-article-publishTime">${formattedTime}</p>
+                  </div>
                 </div>
-            </a>
+            </div>
+        </a>
         `;
 
         relatedNewsContainer.appendChild(articleElement);
