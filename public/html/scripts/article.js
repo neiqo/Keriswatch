@@ -144,9 +144,9 @@ async function fetchAllArticlesAndFilter(sector, currentArticleID) {
         const currentArticleIDStr = String(currentArticleID);
 
         // Filter articles by sector and exclude the current article
-        const relatedArticles = allArticles.filter(article => 
-            article.Sector === sector && String(article.articleID) !== currentArticleIDStr
-        );
+        const relatedArticles = allArticles
+            .filter(article => article.Sector === sector && String(article.articleID) !== currentArticleIDStr)
+            .slice(0, 4); // Limit to 4 articles
 
         displayRelatedNews(relatedArticles);
     } catch (error) {
@@ -157,7 +157,7 @@ async function fetchAllArticlesAndFilter(sector, currentArticleID) {
 
 function displayRelatedNews(articles) {
     const relatedNewsContainer = document.getElementById('related-news');
-    relatedNewsContainer.innerHTML = '<h2>Related News</h2>';
+
 
     articles.forEach(article => {
         const articleElement = document.createElement('div');

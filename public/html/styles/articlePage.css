@@ -153,6 +153,33 @@ body {
 }
 
 /* RELATED NEWS CSS */
+
+#related-news-container {
+    margin: 70px;
+}
+#related-news {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+}
+
+#related-news-title {
+    font-weight: bold;
+    font-size: 1.8rem;
+    color: black;
+    align-items: left;
+    text-align: left;
+}
+
+#related-news-line {
+    margin-top: 10px;
+    color: black;
+    border: solid  black 1px;
+}
+
+#related-news-viewMore-btn {
+    background:none; border:none;
+}
 /* Remove default link styling */
 .related-article-link {
     display: block;
