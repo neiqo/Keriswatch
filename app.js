@@ -6,6 +6,7 @@ const dbConfig = require("./dbConfig");
 const bodyParser = require("body-parser"); // Import body-parser
 const path = require("path");
 const fs = require("fs");
+const multer = require("multer");
 
 // APPLICATION SETUP
 const app = express();
@@ -15,8 +16,9 @@ const staticMiddleware = express.static("public/html");
 
 
 // MIDDLEWARE CONFIGURATION
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
+// Increase payload size limit
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // For form data handling
 app.use(staticMiddleware); // Mount the static middleware
 
 const upload = require("./middlewares/multerConfig"); // Import the multer configuration
@@ -25,6 +27,8 @@ const validateEvent = require("./middlewares/validateEvent");
 const validateUpdateEvent = require("./middlewares/validateUpdateEvent");
 const uploadEventImage = require("./middlewares/validateEventImage");
 const verifyJWT = require('./middlewares/verifyJWT');
+const storage = multer.memoryStorage();
+const profilePictureUpload = multer({ storage: storage });
 
 // CONTROLLERS
 const articlesController = require("./controllers/articlesController"); // ARTICLE CONTROLLER
@@ -42,23 +46,28 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/api/login', authUser.validateLogin, userController.userLogin);
-app.post('/api/logout', userController.userLogout);
+app.post('/api/logout', verifyJWT, userController.userLogout);
 
 // Specific-user routes
 app.get('/api/users/:username', userController.getUserByUsername);
 app.delete('/api/users/:username', verifyJWT, userController.deleteUser); 
 
 // User creation and update routes
-app.post('/api/signup/normal', authUser.validateNormalUser, userController.registerUser); 
+app.post('/api/signup/normal', authUser.validateNormalUser, userController.registerUser);
+// profilePictureUpload.single('profilePicture')
 app.post('/api/signup/organisation', authUser.validateOrganisation, userController.registerUser);
+
 app.put('/api/update/normal', verifyJWT, authUser.validateUpdateNormalUser, userController.updateNormalUser);
 app.put('/api/update/organisation', verifyJWT, authUser.validateUpdateOrganisation, userController.updateOrganisation); 
 
 // Get all users except admin route
 app.get('/api/users', userController.getAllUsers); 
 
+// Get specific user profile picture
+app.get('/api/users/:username/profilePicture', userController.getProfilePicture);
+
 // COMMENT ROUTES
-app.get('/api/:articleId/comments', CommentController.getComments);
+app.get('/api/:articleId/comments', CommentController.getArticleComments);
 app.post('/api/comments', verifyJWT, CommentController.createComment);
 app.delete('/api/comments/:commentId', verifyJWT, CommentController.deleteComment);
 app.post('/api/comments/:commentId/upvote', verifyJWT, CommentController.upvoteComment);

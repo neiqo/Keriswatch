@@ -29,6 +29,7 @@ const verifyJWT = (req, res, next) => {
       "/api/comments/[0-9]+": ["NormalUser", "Organisation", "Admin"],
       "/api/comments/[0-9]+/upvote": ["NormalUser", "Organisation", "Admin"],
       "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
+      "/api/logout": ["NormalUser", "Organisation", "Admin"],
     };
 
     // Get the requested endpoint and the user's role from the decoded token
