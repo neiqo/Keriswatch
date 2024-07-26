@@ -54,8 +54,33 @@ body {
 .article-tags,
 .article-body {
   position: relative;
-  z-index: 2; /* Ensures text is above the gradient */
+  z-index: 2; 
 }
+
+#row1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; 
+  align-items: center;
+  margin-top: -5px;
+  width: 100%;
+}
+
+#column1 {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-bottom: -20px;
+  font-size: 0.7rem;
+  font-weight: 300;
+}
+
+.article-publishTime {
+  margin-top: -20px;
+}
+
+
+
 
 .article-sector {
   font-weight: bold;
@@ -82,6 +107,7 @@ body {
 .article-publisher {
   font-size: 0.9rem;
   font-weight: 300;
+  margin-bottom: 10px;
 }
 
 
