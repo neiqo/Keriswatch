@@ -18,15 +18,26 @@
     <link rel="stylesheet" type="text/css" href="./styles/navbar.css"/>
     <link rel="stylesheet" href="./styles/footer.css">
     <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="./styles/searchPage.css">
+
 
 </head>
 <body>
-    <h1>Article Search</h1>
     <form id="searchForm">
         <label for="query">Search:</label>
         <input type="text" id="query" name="query">
+    
+        <label for="sector">Select Sector:</label>
+        <select id="sector" name="sector">
+            <option value="">All</option>
+            <option value="Agriculture">Agriculture</option>
+            <option value="Manufacture">Manufacture</option>
+            <option value="Services">Services</option>
+        </select>
+    
         <button type="submit">Search</button>
     </form>
+    
     
     <div id="searchResults">
         
