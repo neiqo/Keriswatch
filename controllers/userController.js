@@ -90,18 +90,18 @@ const registerUser = async (req, res) => {
         // profilePicture: profilePicturePath ? finalPath : path.join(finalDestination, `defaultProfile.png`)
     };
 
-    // Decode the token to get the expiration time
-    const decodedToken = jwt.decode(token);
-    const expiresAt = new Date(decodedToken.exp * 1000); // Convert from seconds to milliseconds
-    
-    console.log(`Token: ${token}`);
-    console.log(`Expires At: ${expiresAt}`);
-
     // Generate JWT token
     const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "3600s"});
   
+    // Decode the token to get the expiration time
+    const decodedToken = jwt.decode(token);
+    const expiresAt = new Date(decodedToken.exp * 1000); // Convert from seconds to milliseconds
+
+    console.log(`Token: ${token}`);
+    console.log(`Expires At: ${expiresAt}`);
+
     // store the token in the database
-    await Token.storeToken(user.userId, token, expiresAt);
+    await Token.storeToken(userId, token, expiresAt);
 
     return res.status(201).json({
       message: 'User registered successfully',
