@@ -33,6 +33,7 @@ const validateUpdateNormalUser = (req, res, next) => {
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
         country: Joi.string().min(2).max(50).required(),
+        profilePicture: Joi.any()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -79,6 +80,7 @@ const validateUpdateOrganisation = (req, res, next) => {
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
         orgNumber: Joi.number().integer().required(),
+        profilePicture: Joi.any()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
