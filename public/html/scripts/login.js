@@ -6,6 +6,8 @@
 //     });
 // });
 
+// const { response } = require("express");
+
 async function loginUser() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -20,14 +22,24 @@ async function loginUser() {
         },
         body: JSON.stringify({ email, password }),
     })
-        .then(response => response.json())
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                alert('Invalid email or password');
+                throw new Error('Error logging in:', response.status);
+            }
+        }
+        )
         .then(token => {
             console.log(token);
+            token = JSON.stringify(token);
             localStorage.setItem('token', token);   
             // After storing the token in localStorage, clear the input fields
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
-            windows.location.href = '/index.html';
+            alert('Logged in successfully!');
+            window.location.href = '/index.html';
         })
         .catch(error => {
             console.error(error);
@@ -130,44 +142,107 @@ async function signupUser() {
     const orgNumber = document.getElementById('signup-org-number') ? document.getElementById('signup-org-number').value : null;
     const profilePicture = document.getElementById('profile-picture').files[0];
 
-    console.log(profilePicture);
+    // const formData = new FormData();
+    // formData.append('username', username);
+    // formData.append('email', email);
+    // formData.append('password', password);
+    // formData.append('role', role);
+    // if (country) formData.append('country', country);
+    // if (orgNumber) formData.append('orgNumber', orgNumber);
+    // if (profilePicture) formData.append('profilePicture', profilePicture);
+
+    const rolePath = role === 'NormalUser' ? 'normal' : 'organisation';
+
+    console.log("Profile Picture in login.js: " + profilePicture);
+    
+    console.log(rolePath);
 
     const user = {
         username: username,
-        email: email,
         password: password,
-        role: role
+        email: email,
+        role: role,
     };
 
-    if (country) user.country = country;
-    if (orgNumber) user.orgNumber = orgNumber;
+    if (country) user['country'] = country;
+    if (orgNumber) user['orgNumber'] = orgNumber;
 
-    console.log(user);
-    
-    const rolePath = role === 'NormalUser' ? 'normal' : 'organisation';
+    const reader = new FileReader();
+    reader.onloadend = async function() {
+        const profilePictureImageBase64 = reader.result;
 
-    await fetch(`/api/signup/${rolePath}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
-    })
-        .then(response => response.json())
-        .then(token => {
+        user['profilePicture'] = profilePictureImageBase64;
+
+        try {
+            const response = await fetch(`/api/signup/${rolePath}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error signing up:', response.status);
+            }
+
+            const responseData = await response.json();
+            console.log(responseData.message);
+            const token = JSON.stringify(responseData['token']);
             console.log(token);
             localStorage.setItem('token', token);
-            // After storing the token in localStorage, clear the input fields
-            document.getElementById('signup-username').value = '';
-            document.getElementById('signup-email').value = '';
-            document.getElementById('signup-password').value = '';
-            if(document.getElementById('signup-country')) document.getElementById('signup-country').value = '';
-            if(document.getElementById('signup-org-number')) document.getElementById('signup-org-number').value = '';
-            // Assuming there's a way to clear the file input for the profile picture
-            document.getElementById('profile-picture').value = '';
-            windows.location.href = '/index.html';
-        })
-        .catch(error => {
-            console.error(error);
-        });
+
+            await alert('User created successfully!');
+            // window.location.reload();
+            window.location.href = '/index.html';
+        } catch (error) {
+            alert('Unable to sign up:', error);
+        }
+    };
+
+    if (profilePicture) {
+        reader.readAsDataURL(profilePicture);
+    }
+    else {        
+        const defaultProfilePicturePath = './images/profile-pictures/defaultProfile.png';
+
+        fetch(defaultProfilePicturePath)
+            .then(response => response.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const defaultProfilePicture = reader.result;
+
+                    console.log(defaultProfilePicture); // This will be the base64 encoded image
+                };
+                reader.readAsDataURL(blob);
+            })
+            .catch(error => console.error('Error fetching the default profile picture:', error));
+    }
+
+    // await fetch(`/api/signup/${rolePath}`, {
+    //     method: 'POST',
+    //     body: formData
+    // })
+    // .then(response => {
+    //     if (!response.ok) {
+    //         throw new Error(`HTTP error! Status: ${response.status}`);
+    //     }
+    //     return response.json();
+    // })
+    // .then(data => {
+    //     console.log("Token: " + data.token);
+    //     localStorage.setItem('token', data.token);
+        
+    //     // Clear input fields
+    //     document.getElementById('signup-username').value = '';
+    //     document.getElementById('signup-email').value = '';
+    //     document.getElementById('signup-password').value = '';
+    //     if(document.getElementById('signup-country')) document.getElementById('signup-country').value = '';
+    //     if(document.getElementById('signup-org-number')) document.getElementById('signup-org-number').value = '';
+    //     document.getElementById('profile-picture').value = '';
+    // })
+    // .catch(error => {
+    //     console.error('Error:', error);
+    // });
 }

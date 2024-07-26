@@ -9,14 +9,14 @@ class Token {
         this.expiresAt = expiresAt;
     }
 
-    static async storeToken(user, token, expiresAt) {
+    static async storeToken(userId, token, expiresAt) {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
             const sqlQuery = `INSERT INTO Tokens (userId, token, expiresAt) VALUES (@userId, @token, @expiresAt)`;
     
             const request = connection.request();
-            request.input('userId', sql.Int, user.id);
+            request.input('userId', sql.Int, userId);
             request.input('token', sql.VarChar, token);
             request.input('expiresAt', sql.DateTime, expiresAt); // specify data type to avoid system misinterpretation
     

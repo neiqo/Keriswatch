@@ -8,7 +8,8 @@ const validateNormalUser = (req, res, next) => {
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
         country: Joi.string().min(2).max(50).required(),
-        role: Joi.string().required()
+        role: Joi.string().required(),
+        profilePicture: Joi.any()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -54,7 +55,8 @@ const validateOrganisation = (req, res, next) => {
         password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
         orgNumber: Joi.number().integer().required(),
-        role: Joi.string().required()
+        role: Joi.string().required(),
+        profilePicture: Joi.any()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });

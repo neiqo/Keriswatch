@@ -1,4 +1,29 @@
-document.addEventListener("DOMContentLoaded", function() {
+// import jwt_decode from 'jwt-decode'; // Import the jwt-decode module
+
+// const { log } = require("console");
+
+document.addEventListener("DOMContentLoaded", async function() {
+    // Function to fetch user profile picture
+    async function fetchProfilePicture(username) {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        try {
+            const response = await fetch(`/api/users/${username}/profilePicture`);
+
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            } else {
+                console.error('Failed to fetch profile picture');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching profile picture:', error);
+            return null;
+        }
+    }
+
     // Create the navbar element
     const navbar = document.createElement('nav');
     navbar.className = 'navbar navbar-expand-lg fixed-top navbar-light bg-light';
@@ -48,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // List items for navbar links
     const navItems = [
         { text: 'News', href: '#', active: false },
-        { text: 'Events', href: '#', active: false},
+        { text: 'Events', href: '#', active: false },
     ];
 
     navItems.forEach(item => {
@@ -62,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function() {
         li.appendChild(a);
         navbarList.appendChild(li);
     });
-
 
     // Create the search form
     const searchForm = document.createElement('form');
@@ -84,74 +108,6 @@ document.addEventListener("DOMContentLoaded", function() {
     navbarListRight.className = 'navbar-nav mb-2 mb-lg-0';
     collapseDiv.appendChild(navbarListRight);
 
-    // // Add notifications dropdown
-    // const notificationsItem = document.createElement('li');
-    // notificationsItem.className = 'nav-item dropdown';
-    // const notificationsLink = document.createElement('a');
-    // notificationsLink.className = 'nav-link dropdown-toggle hidden-arrow';
-    // notificationsLink.href = '#';
-    // notificationsLink.id = 'navbarDropdown';
-    // notificationsLink.role = 'button';
-    // notificationsLink.setAttribute('data-mdb-toggle', 'dropdown');
-    // notificationsLink.setAttribute('aria-expanded', 'false');
-    // const bellIcon = document.createElement('i');
-    // bellIcon.className = 'fas fa-bell';
-    // notificationsLink.appendChild(bellIcon);
-    // notificationsItem.appendChild(notificationsLink);
-    // const notificationsMenu = document.createElement('ul');
-    // notificationsMenu.className = 'dropdown-menu dropdown-menu-end notifications-list p-1';
-    // notificationsMenu.setAttribute('aria-labelledby', 'navbarDropdown');
-    // notificationsItem.appendChild(notificationsMenu);
-
-    // // Notifications dropdown items
-    // const notifications = [
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Slides/img%20(15).jpg', title: 'New', subtitle: 'Movie title', time: 'Today' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Slides/img%20(10).jpg', title: 'New', subtitle: 'Movie title', time: 'Today' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Slides/img%20(11).jpg', title: 'New', subtitle: 'Movie title', time: 'Today' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Slides/img%20(20).jpg', title: 'New', subtitle: 'Movie title', time: 'Today' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Slides/img%20(5).jpg', title: 'New', subtitle: 'Movie title', time: 'Today' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Slides/img%20(15).jpg', title: 'New', subtitle: 'Movie title', time: 'Today' }
-    // ];
-
-    // notifications.forEach(notification => {
-    //     const li = document.createElement('li');
-    //     const row = document.createElement('div');
-    //     row.className = 'row';
-    //     const colImg = document.createElement('div');
-    //     colImg.className = 'col-md';
-    //     const img = document.createElement('img');
-    //     img.src = notification.imgSrc;
-    //     img.height = 63;
-    //     img.width = 'auto';
-    //     img.className = 'd-block';
-    //     img.alt = '...';
-    //     colImg.appendChild(img);
-    //     row.appendChild(colImg);
-    //     const colText = document.createElement('div');
-    //     colText.className = 'col-md';
-    //     const pTitle = document.createElement('p');
-    //     pTitle.className = 'h6 mb-0';
-    //     pTitle.textContent = notification.title;
-    //     const pSubtitle = document.createElement('p');
-    //     pSubtitle.className = 'h6 mb-1';
-    //     pSubtitle.textContent = notification.subtitle;
-    //     const spanTime = document.createElement('span');
-    //     spanTime.className = 'small';
-    //     spanTime.textContent = notification.time;
-    //     colText.appendChild(pTitle);
-    //     colText.appendChild(pSubtitle);
-    //     colText.appendChild(spanTime);
-    //     row.appendChild(colText);
-    //     li.appendChild(row);
-    //     notificationsMenu.appendChild(li);
-    //     const divider = document.createElement('li');
-    //     divider.appendChild(document.createElement('hr'));
-    //     divider.className = 'dropdown-divider';
-    //     notificationsMenu.appendChild(divider);
-    // });
-
-    // navbarListRight.appendChild(notificationsItem);
-
     // Create user dropdown
     const userItem = document.createElement('li');
     userItem.className = 'nav-item dropdown';
@@ -168,37 +124,41 @@ document.addEventListener("DOMContentLoaded", function() {
     userItem.appendChild(userLink);
 
     // Default guest profile image
-    const defaultUserImg = './images/defaultProfile.png';
+    const defaultUserImg = './images/profile-pictures/defaultProfile.png';
     const defaultUserName = 'Guest';
 
-    // Check if user is logged in (example check)
-    const isLoggedIn = true; // Replace with your actual logic to check if user is logged in
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    let isLoggedIn = false;
+    let profilePictureUrl = defaultUserImg;
+    let username = defaultUserName;
 
-    if (isLoggedIn) {
-        // User is logged in (example scenario)
-        const userImg = 'https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg'; // Replace with actual user image
-        const userName = 'John Doe'; // Replace with actual user name
-        const userImgElem = document.createElement('img');
-        userImgElem.src = userImg;
-        userImgElem.className = 'rounded-circle img-fluid me-1';
-        userImgElem.height = 25;
-        userImgElem.width = 25;
-        userLink.appendChild(userImgElem);
-        const userNameElem = document.createElement('span');
-        userNameElem.textContent = userName;
-        userLink.appendChild(userNameElem);
-    } else {
-        // User is not logged in
-        const defaultUserImgElem = document.createElement('img');
-        defaultUserImgElem.src = defaultUserImg;
-        defaultUserImgElem.className = 'rounded-circle img-fluid me-1';
-        defaultUserImgElem.height = 25;
-        defaultUserImgElem.width = 25;
-        userLink.appendChild(defaultUserImgElem);
-        const defaultUserNameElem = document.createElement('span');
-        defaultUserNameElem.textContent = defaultUserName;
-        userLink.appendChild(defaultUserNameElem);
+    if (token) {
+        try {
+            // Log the content of the token before decoding
+            console.log('Token:', token);
+            
+            const payload = jwt_decode(token);
+            console.log(payload);
+            isLoggedIn = true;
+            username = payload.username;
+            const profilePicture = await fetchProfilePicture(username);
+            profilePictureUrl = profilePicture ? `data:image/png;base64,${profilePicture}` : defaultUserImg;
+        } catch (error) {
+            console.error('Error parsing token:', error);
+        }
     }
+
+    const userImgElem = document.createElement('img');
+    userImgElem.src = profilePictureUrl;
+    userImgElem.className = 'rounded-circle img-fluid me-1';
+    userImgElem.height = 25;
+    userImgElem.width = 25;
+    userLink.appendChild(userImgElem);
+
+    const userNameElem = document.createElement('span');
+    userNameElem.textContent = username;
+    userLink.appendChild(userNameElem);
 
     // Create dropdown menu
     const dropdownMenu = document.createElement('div');
@@ -213,42 +173,55 @@ document.addEventListener("DOMContentLoaded", function() {
         { text: 'Log Out', href: '#', id: 'logout' }
     ];
 
+    if (!token) {
+        accountItems.pop(); // Remove the logout item
+        const loginItem = { text: 'Log In', href: 'login.html' };
+        accountItems.push(loginItem);
+    }
+    
     accountItems.forEach(item => {
         const dropdownItem = document.createElement('a');
         dropdownItem.className = 'dropdown-item';
         dropdownItem.href = item.href;
         dropdownItem.textContent = item.text;
+
+        if (item.id) {
+            dropdownItem.id = item.id;
+        }
+
+        if (item.class) {
+            dropdownItem.className += item.class;
+        }
         dropdownMenu.appendChild(dropdownItem);
+
+        // Attach event listener if the item is the logout button
+        if (item.id === 'logout') {
+            dropdownItem.addEventListener('click', async (event) => {
+                event.preventDefault();
+                await logoutUser();
+                console.log('Logged out');
+            });
+        }
     });
-
-
-    const logoutItem = document.getElementById('logout');
-    if (logoutItem) {
-        logoutItem.addEventListener('click', async (event) => {
-            event.preventDefault();
-            await logoutUser();
-        });
-    }
 
     async function logoutUser() {
         try {
-            // Clear the token from localStorage
-            localStorage.removeItem('token');
-    
             // Call the API logout function
             const response = await fetch('/api/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `${token}`
                 }
             });
-    
+
             if (response.ok) {
+                // Clear the token from localStorage
+                localStorage.removeItem('token');
+                window.alert('Logged out successfully');
+
                 // Redirect to the login page or home page
                 window.location.href = './index.html';
-                window.alert('Logged out successfully');
-                
             } else {
                 console.error('Failed to log out');
             }
@@ -258,58 +231,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     navbarListRight.appendChild(userItem);
-
-    // // User dropdown items
-    // const users = [
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Avatars/img%20(4).jpg', name: 'User 1' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Avatars/img%20(6).jpg', name: 'User 2' },
-    //     { imgSrc: 'https://mdbootstrap.com/img/Photos/Avatars/img%20(3).jpg', name: 'User 3' }
-    // ];
-
-    // users.forEach(user => {
-    //     const li = document.createElement('li');
-    //     li.className = 'my-2 d-flex align-items-center';
-    //     const img = document.createElement('img');
-    //     img.src = user.imgSrc;
-    //     img.className = 'rounded-circle img-fluid me-1';
-    //     img.height = 25;
-    //     img.width = 25;
-    //     li.appendChild(img);
-    //     const span = document.createElement('span');
-    //     span.textContent = user.name;
-    //     li.appendChild(span);
-    //     userMenu.appendChild(li);
-    // });
-
-    // const manageProfiles = document.createElement('li');
-    // const manageLink = document.createElement('a');
-    // manageLink.className = 'dropdown-item';
-    // manageLink.href = '#';
-    // manageLink.textContent = 'Manage Profiles';
-    // manageProfiles.appendChild(manageLink);
-    // userMenu.appendChild(manageProfiles);
-    // const divider = document.createElement('li');
-    // divider.appendChild(document.createElement('hr'));
-    // divider.className = 'dropdown-divider';
-    // userMenu.appendChild(divider);
-
-    // const accountItems = [
-    //     { text: 'Your Account', href: '#' },
-    //     { text: 'Help', href: '#' },
-    //     { text: 'Log Out', href: '#' }
-    // ];
-
-    // accountItems.forEach(item => {
-    //     const li = document.createElement('li');
-    //     const a = document.createElement('a');
-    //     a.className = 'dropdown-item';
-    //     a.href = item.href;
-    //     a.textContent = item.text;
-    //     li.appendChild(a);
-    //     userMenu.appendChild(li);
-    // });
-
-    // navbarListRight.appendChild(userItem);
 
     // Append the navbar to the body
     document.body.appendChild(navbar);

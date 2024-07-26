@@ -18,7 +18,7 @@ CREATE TABLE Users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     role VARCHAR(30) NOT NULL CHECK (role IN ('Organisation', 'Admin', 'NormalUser')),
-    profilePicture VARCHAR(255) NOT NULL DEFAULT 'defaultProfile.png'
+    profilePicture VARBINARY(MAX) NULL
 );
 
 CREATE TABLE Admin (
