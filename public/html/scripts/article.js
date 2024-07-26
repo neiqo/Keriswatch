@@ -54,11 +54,10 @@ function displayArticle(article) {
                 <p class="article-author"><strong>Author:</strong> ${article.Author}</p>
                 <p class="article-publisher"><strong>Published by:</strong> ${article.Publisher}</p>
                 <p class="article-publishDate"><strong>Published on </strong> ${formattedDate} at ${formattedTime}</p>
+                <button class="edit-body-btn" data-article-id="${article.articleID}">Edit Body</button> <!-- New button to edit body -->
                 <button class="edit-tags-btn" data-article-id="${article.articleID}">Edit Tags</button>
                 <div id="edit-tags-container"></div> <!-- Container for the input field -->
                 <button class="delete-article-btn" data-article-id="${article.articleID}">Delete news article</button>
-                <button class="edit-body-btn" data-article-id="${article.articleID}">Edit Body</button> <!-- New button to edit body -->
-                <div id="edit-body-container"></div> <!-- Container for the body edit input field -->
                 <p class="article-tags-title">Related Topics</p>
                 <hr class="tags-line">
                 <div class="article-tags">${tags}</div>
@@ -68,7 +67,6 @@ function displayArticle(article) {
 
     setupArticleInteractions(article);
 }
-
 function setupArticleInteractions(article) {
     const deleteButton = document.querySelector('.delete-article-btn');
     deleteButton.addEventListener('click', async (event) => {
@@ -89,92 +87,113 @@ function setupArticleInteractions(article) {
     });
 
     const editTagsButton = document.querySelector('.edit-tags-btn');
+    const tagsModal = document.getElementById('edit-tags-modal');
+    const closeTagsModalButton = document.getElementById('close-tags-modal');
+    const saveTagsButton = document.getElementById('save-tags-btn');
+    const newTagsInput = document.getElementById('new-tags-input');
+
     editTagsButton.addEventListener('click', () => {
-        const editTagsContainer = document.getElementById('edit-tags-container');
-        if (editTagsContainer) {
-            editTagsContainer.innerHTML = `
-                <input type="text" id="new-tags-input" value="${article.Tags}" placeholder="Enter new tags">
-                <button id="save-tags-btn">Save Tags</button>
-            `;
+        // Set input value to current tags
+        newTagsInput.value = article.Tags;
+        // Show the modal
+        tagsModal.style.display = 'block';
+    });
 
-            const saveTagsButton = document.getElementById('save-tags-btn');
-            saveTagsButton.addEventListener('click', async () => {
-                const newTagsInput = document.getElementById('new-tags-input');
-                const newTags = newTagsInput.value.trim();
+    closeTagsModalButton.addEventListener('click', () => {
+        // Hide the modal
+        tagsModal.style.display = 'none';
+    });
 
-                if (newTags !== "") {
-                    const articleID = editTagsButton.getAttribute('data-article-id');
-                    try {
-                        const response = await fetch(`/articles/${articleID}/editTags`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ newTags: newTags })
-                        });
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        const updatedArticle = await response.json();
-                        console.log('Updated article:', updatedArticle);
-                        alert('Tags updated successfully');
-                        article.Tags = updatedArticle.Tags; // Update local article object
-                        location.reload();
-                    } catch (error) {
-                        console.error('Error updating tags:', error);
-                        alert('Error updating tags. Please try again later.');
-                    }
-                } else {
-                    alert('Please enter valid tags.');
+    window.addEventListener('click', (event) => {
+        if (event.target === tagsModal) {
+            // Hide the modal if user clicks outside of the modal content
+            tagsModal.style.display = 'none';
+        }
+    });
+
+    saveTagsButton.addEventListener('click', async () => {
+        const newTags = newTagsInput.value.trim();
+
+        if (newTags !== "") {
+            const articleID = editTagsButton.getAttribute('data-article-id');
+            try {
+                const response = await fetch(`/articles/${articleID}/editTags`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newTags: newTags })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            });
+                const updatedArticle = await response.json();
+                console.log('Updated article:', updatedArticle);
+                alert('Tags updated successfully');
+                article.Tags = updatedArticle.Tags; // Update local article object
+                location.reload();
+            } catch (error) {
+                console.error('Error updating tags:', error);
+                alert('Error updating tags. Please try again later.');
+            }
         } else {
-            console.error('Error: edit-tags-container not found.');
+            alert('Please enter valid tags.');
         }
     });
 
     const editBodyButton = document.querySelector('.edit-body-btn');
+    const bodyModal = document.getElementById('edit-body-modal');
+    const closeBodyModalButton = document.getElementById('close-body-modal');
+    const saveBodyButton = document.getElementById('save-body-btn');
+    const newBodyInput = document.getElementById('new-body-input');
+
     editBodyButton.addEventListener('click', () => {
-        const editBodyContainer = document.getElementById('edit-body-container');
-        if (editBodyContainer) {
-            editBodyContainer.innerHTML = `
-                <textarea id="new-body-input" placeholder="Edit article body">${article.Body}</textarea>
-                <button id="save-body-btn">Save Body</button>
-            `;
+        // Set textarea value to current article body
+        newBodyInput.value = article.Body;
+        // Show the modal
+        bodyModal.style.display = 'block';
+    });
 
-            const saveBodyButton = document.getElementById('save-body-btn');
-            saveBodyButton.addEventListener('click', async () => {
-                const newBodyInput = document.getElementById('new-body-input');
-                const newBody = newBodyInput.value.trim();
+    closeBodyModalButton.addEventListener('click', () => {
+        // Hide the modal
+        bodyModal.style.display = 'none';
+    });
 
-                if (newBody !== "") {
-                    const articleID = editBodyButton.getAttribute('data-article-id');
-                    try {
-                        const response = await fetch(`/articles/${articleID}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ Body: newBody })
-                        });
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        alert('Article body updated successfully');
-                        location.reload();
-                    } catch (error) {
-                        console.error('Error updating article body:', error);
-                        alert('Error updating article body. Please try again later.');
-                    }
-                } else {
-                    alert('Please enter valid article body.');
+    window.addEventListener('click', (event) => {
+        if (event.target === bodyModal) {
+            // Hide the modal if user clicks outside of the modal content
+            bodyModal.style.display = 'none';
+        }
+    });
+
+    saveBodyButton.addEventListener('click', async () => {
+        const newBody = newBodyInput.value.trim();
+
+        if (newBody !== "") {
+            const articleID = editBodyButton.getAttribute('data-article-id');
+            try {
+                const response = await fetch(`/articles/${articleID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ Body: newBody })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            });
+                alert('Article body updated successfully');
+                location.reload();
+            } catch (error) {
+                console.error('Error updating article body:', error);
+                alert('Error updating article body. Please try again later.');
+            }
         } else {
-            console.error('Error: edit-body-container not found.');
+            alert('Please enter a valid body.');
         }
     });
 }
+
 
 async function fetchAllArticlesAndFilter(sector, currentArticleID) {
     try {
@@ -202,7 +221,6 @@ async function fetchAllArticlesAndFilter(sector, currentArticleID) {
 function displayRelatedNews(articles) {
     const relatedNewsContainer = document.getElementById('related-news');
 
-
     articles.forEach(article => {
         const articleElement = document.createElement('div');
         articleElement.className = 'related-article-container';
@@ -219,7 +237,7 @@ function displayRelatedNews(articles) {
             hour: '2-digit',
             minute: '2-digit'
         });
-        
+
         articleElement.innerHTML = `
         <a href="./article.html?id=${article.articleID}" class="related-article-link">
             <div class="related-article-content">
