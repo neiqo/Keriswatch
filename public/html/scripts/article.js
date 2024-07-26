@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
         const article = await response.json();
         displayArticle(article);
+        fetchAllArticlesAndFilter(article.Sector, articleID);  // Pass articleID here
     } catch (error) {
         console.error('Error fetching article:', error);
         alert('Error fetching article. Please try again later.');
@@ -59,11 +60,14 @@ function displayArticle(article) {
                 <p class="article-tags-title">Related Topics</p>
                 <hr class="tags-line">
                 <div class="article-tags">${tags}</div>
-
             </div>
         </div>
     `;
 
+    setupArticleInteractions(article);
+}
+
+function setupArticleInteractions(article) {
     const deleteButton = document.querySelector('.delete-article-btn');
     deleteButton.addEventListener('click', async (event) => {
         const articleID = event.target.getAttribute('data-article-id');
@@ -125,5 +129,60 @@ function displayArticle(article) {
         } else {
             console.error('Error: edit-tags-container not found.');
         }
+    });
+}
+
+async function fetchAllArticlesAndFilter(sector, currentArticleID) {
+    try {
+        const response = await fetch('/articles'); // Fetch all articles
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const allArticles = await response.json();
+
+        // Ensure currentArticleID is a string for comparison
+        const currentArticleIDStr = String(currentArticleID);
+
+        // Filter articles by sector and exclude the current article
+        const relatedArticles = allArticles.filter(article => 
+            article.Sector === sector && String(article.articleID) !== currentArticleIDStr
+        );
+
+        displayRelatedNews(relatedArticles);
+    } catch (error) {
+        console.error('Error fetching all articles:', error);
+        alert('Error fetching related news. Please try again later.');
+    }
+}
+
+function displayRelatedNews(articles) {
+    const relatedNewsContainer = document.getElementById('related-news');
+    relatedNewsContainer.innerHTML = '<h2>Related News</h2>';
+
+    articles.forEach(article => {
+        const articleElement = document.createElement('div');
+        articleElement.className = 'related-article-container';
+        articleElement.style.backgroundImage = `url('../images/articles/article-${article.articleID}/${article.imageFileNames[0]}')`;
+
+        // Format the publishDateTime
+        const publishDate = new Date(article.publishDateTime);
+        const formattedDate = publishDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        articleElement.innerHTML = `
+            <a href="article.html?id=${article.articleID}" class="related-article-link">
+                <div class="related-article-content">
+                    <p class="related-article-sector">${article.Sector}</p>
+                    <h2 class="related-article-title">${article.Title}</h2>
+                    <p class="related-article-publisher">${article.Publisher}</p>
+                    <p class="related-article-date">${formattedDate}</p>
+                </div>
+            </a>
+        `;
+
+        relatedNewsContainer.appendChild(articleElement);
     });
 }
