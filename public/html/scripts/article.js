@@ -46,7 +46,7 @@ function displayArticle(article) {
         <div id="article-content">
             <div id="left-column">
                 <img class="article-img-cover" src='../images/articles/article-${article.articleID}/${article.imageFileNames[0]}'></img>
-                <div class="article-body">${article.Body}</div>
+                <div class="article-body" id="article-body">${article.Body}</div>
                 <img class="article-img-body" src='../images/articles/article-${article.articleID}/${article.imageFileNames[1]}'></img>
                 <img class="article-img-body" src='../images/articles/article-${article.articleID}/${article.imageFileNames[2]}'></img>    
             </div>
@@ -57,6 +57,8 @@ function displayArticle(article) {
                 <button class="edit-tags-btn" data-article-id="${article.articleID}">Edit Tags</button>
                 <div id="edit-tags-container"></div> <!-- Container for the input field -->
                 <button class="delete-article-btn" data-article-id="${article.articleID}">Delete news article</button>
+                <button class="edit-body-btn" data-article-id="${article.articleID}">Edit Body</button> <!-- New button to edit body -->
+                <div id="edit-body-container"></div> <!-- Container for the body edit input field -->
                 <p class="article-tags-title">Related Topics</p>
                 <hr class="tags-line">
                 <div class="article-tags">${tags}</div>
@@ -128,6 +130,48 @@ function setupArticleInteractions(article) {
             });
         } else {
             console.error('Error: edit-tags-container not found.');
+        }
+    });
+
+    const editBodyButton = document.querySelector('.edit-body-btn');
+    editBodyButton.addEventListener('click', () => {
+        const editBodyContainer = document.getElementById('edit-body-container');
+        if (editBodyContainer) {
+            editBodyContainer.innerHTML = `
+                <textarea id="new-body-input" placeholder="Edit article body">${article.Body}</textarea>
+                <button id="save-body-btn">Save Body</button>
+            `;
+
+            const saveBodyButton = document.getElementById('save-body-btn');
+            saveBodyButton.addEventListener('click', async () => {
+                const newBodyInput = document.getElementById('new-body-input');
+                const newBody = newBodyInput.value.trim();
+
+                if (newBody !== "") {
+                    const articleID = editBodyButton.getAttribute('data-article-id');
+                    try {
+                        const response = await fetch(`/articles/${articleID}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ Body: newBody })
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        alert('Article body updated successfully');
+                        location.reload();
+                    } catch (error) {
+                        console.error('Error updating article body:', error);
+                        alert('Error updating article body. Please try again later.');
+                    }
+                } else {
+                    alert('Please enter valid article body.');
+                }
+            });
+        } else {
+            console.error('Error: edit-body-container not found.');
         }
     });
 }
