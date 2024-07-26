@@ -200,7 +200,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             dropdownItem.addEventListener('click', async (event) => {
                 event.preventDefault();
                 await logoutUser();
-                console.log('Logged out');
             });
         }
     });
@@ -212,7 +211,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
 

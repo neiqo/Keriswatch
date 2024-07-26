@@ -169,8 +169,7 @@ const userLogin = async (req,res) => {
 
 const userLogout = async (req, res) => {
     try {
-        const token = req.headers.authorization;
-        const decoded = jwt.decode(token);
+        const decoded = req.user;
         console.log("Decoded token in userLogout: " + decoded); // Debugging
         await Token.deleteToken(decoded.userId);
         res.status(200).send('User logged out successfully');
