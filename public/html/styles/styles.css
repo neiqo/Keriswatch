@@ -197,10 +197,6 @@ hr {
   margin-bottom: 20px;
 }
 
-area {
-  cursor: pointer;
-}
-
 #country-selector-container {
   width: 100%;
   text-align: left;
@@ -233,6 +229,12 @@ area {
   line-height: 30px;
   color: white;
   background-color: #5E6C5B;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
 }
 
 #sector-country-news-title {
