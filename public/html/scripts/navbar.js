@@ -72,8 +72,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // List items for navbar links
     const navItems = [
-        { text: 'News', href: '#', active: false },
-        { text: 'Events', href: '#', active: false },
+        { text: 'News', href: 'searchpage.html', active: false },
+        { text: 'Events', href: 'events.html', active: false },
     ];
 
     navItems.forEach(item => {
