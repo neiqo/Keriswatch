@@ -169,15 +169,19 @@ class Event {
       // Prepare the update query with dynamic fields
       const fields = Object.entries(newEventData);
       const updatedFields = fields
-        .filter(([key, value]) => value !== undefined && key !== 'imagePath' && key !== 'categoryName') // Filter out undefined values and imagePath
+        .filter(([key, value]) => value !== undefined && key !== 'imagePath' && key !== 'categoryId') // Filter out undefined values and imagePath
         .map(([key, value]) => `${key} = @${key}`);
 
       // Get the category ID if provided
-      if (newEventData.categoryName) {
-        const category = await Event.getCategory(newEventData.categoryName);
-        const categoryId = category.recordset[0].id;
-        updatedFields.push(`categoryId = @categoryId`);
-        request.input('categoryId', sql.Int, categoryId);
+      if (newEventData.categoryId) {
+        try {
+          const category = await Event.getEventCategory(newEventData.categoryId);
+          updatedFields.push(`categoryId = @categoryId`);
+          request.input('categoryId', sql.Int, category.id);
+        } catch (error) {
+          console.error("Error fetching event category:", error.message);
+          throw new Error(`Event category with ID ${newEventData.categoryId} does not exist`);
+        }
       }
 
       // Add the imagePath field to the query if a new image is provided
@@ -199,7 +203,7 @@ class Event {
 
       // Bind the parameters to the request
       fields.forEach(([key, value]) => {
-        if (key !== 'imagePath' && key !== 'categoryName') {
+        if (key !== 'imagePath' && key !== 'categoryId') {
           request.input(key, value);
         }
       });
@@ -425,7 +429,9 @@ class Event {
         // `;
 
         const query=`
-        SELECT e.id AS event_id, e.name, e.description, e.type, e.startDate, e.endDate, e.imagePath, u.userId AS user_id, u.username, u.email
+        SELECT e.id AS event_id, e.name, e.description, e.categoryId, e.startDate, e.endDate, e.imagePath,
+        e.locationName, e.address, e.postalCode, e.country, 
+        e.totalCapacity, u.userId AS user_id, u.username, u.email
           FROM Events e
           INNER JOIN EventUsers eu ON eu.event_id = e.id
           LEFT JOIN Users u ON eu.user_id = u.userId
@@ -446,6 +452,11 @@ class Event {
               startDate: row.startDate,
               endDate: row.endDate,
               imagePath: row.imagePath,
+              locationName: row.locationName,
+              address: row.address,
+              postalCode: row.postalCode,
+              country: row.country,
+              totalCapacity: row.totalCapacity,
               users: [],
             };
           }
@@ -466,54 +477,60 @@ class Event {
 
     //Get Specific Event with Users
     static async getSpecificEventwithUsers(eventId) {
-        const connection = await sql.connect(dbConfig);
+      const connection = await sql.connect(dbConfig);
 
-        try {
-          const query = `
-            SELECT e.id AS event_id, e.name, e.description, e.categoryId, e.startDate, e.endDate, e.imagePath, u.userId AS user_id, u.username, u.email
-            FROM Events e
-            INNER JOIN EventUsers eu ON eu.event_id = e.id
-            LEFT JOIN Users u ON eu.user_id = u.userId
-            WHERE e.id = @eventId;
-          `;
+      try {
+        const query = `
+          SELECT e.id AS event_id, e.name, e.description, e.categoryId, e.startDate, e.endDate, e.imagePath,
+          e.locationName, e.address, e.postalCode, e.country, 
+          e.totalCapacity, u.userId AS user_id, u.username, u.email
+          FROM Events e
+          INNER JOIN EventUsers eu ON eu.event_id = e.id
+          LEFT JOIN Users u ON eu.user_id = u.userId
+          WHERE e.id = @eventId;
+        `;
     
-          const request = await connection.request();
-          request.input("eventId", eventId);
-          const result = await request.query(query);
-    
-          connection.close();
-          // Group users and their books
-          //console.log(result.recordset);
+        const request = connection.request();
+        request.input("eventId", eventId);
 
-          // Modify this so that it doesnt loop but instead only show 1
-          const eventsWithUsers = {};
-          for (const row of result.recordset) {
-            const eventId = row.event_id;
-            if (!eventsWithUsers[eventId]) {
-              eventsWithUsers[eventId] = {
-                id: eventId,
-                name: row.name,
-                description: row.description,
-                categoryId: row.categoryId,
-                startDate: row.startDate,
-                endDate: row.endDate,
-                imagePath: row.imagePath,
-                users: [],
-              };
-            }
-            eventsWithUsers[eventId].users.push({
-              id: row.user_id,
-              username: row.username,
-              email: row.email,
-            });
+        const result = await request.query(query);
+    
+    
+        // Process the result set
+        const eventsWithUsers = {};
+        for (const row of result.recordset) {
+          const eventId = row.event_id;
+          if (!eventsWithUsers[eventId]) {
+            eventsWithUsers[eventId] = {
+              id: eventId,
+              name: row.name,
+              description: row.description,
+              categoryId: row.categoryId,
+              startDate: row.startDate,
+              endDate: row.endDate,
+              imagePath: row.imagePath,
+              locationName: row.locationName,
+              address: row.address,
+              postalCode: row.postalCode,
+              country: row.country,
+              totalCapacity: row.totalCapacity,
+              users: [],
+            };
           }
-    
-          return Object.values(eventsWithUsers);
-        } catch (error) {
-          throw new Error("Error fetching specific event with users");
-        } finally {
-          await connection.close();
+          eventsWithUsers[eventId].users.push({
+            id: row.user_id,
+            username: row.username,
+            email: row.email,
+          });
         }
+        
+        return Object.values(eventsWithUsers);
+      } catch (error) {
+        console.error("Error fetching specific event with users:", error);
+        throw new Error("Error fetching specific event with users");
+      } finally {
+        await connection.close();
+      }
     }
 
     //Adding user to an event and then displaying it using other functions
@@ -568,56 +585,6 @@ class Event {
         return this.getSpecificEventwithUsers(eventId);
     }
 
-    //Get Specific Event with Users
-    static async getSpecificEventwithUsers(userId) {
-      const connection = await sql.connect(dbConfig);
-
-      try {
-        const query = `
-          SELECT u.userId AS user_id, username, email, e.id AS event_id, name, categoryId, startDate, endDate, imagePath
-          FROM Users u
-          INNER JOIN EventUsers eu ON eu.user_id = u.userId
-          LEFT JOIN Events e ON eu.event_id = e.id
-          WHERE u.userId = @userId;
-        `;
-  
-        const request = await connection.request();
-        request.input("userId", userId);
-        const result = await request.query(query);
-  
-        connection.close();
-        // Group users and their books
-        //console.log(result.recordset);
-
-        // Modify this so that it doesnt loop but instead only show 1
-        const userWithEvents = {};
-        for (const row of result.recordset) {
-          const userId = row.user_id;
-          if (!userWithEvents[userId]) {
-            userWithEvents[userId] = {
-              id: userId,
-              username: row.username,
-              email: row.email,
-              events: [],
-            };
-          }
-          userWithEvents[userId].events.push({
-            id: row.event_id,
-            name: row.name,
-            categoryId: row.categoryId,
-            startDate: row.startDate,
-            endDate: row.endDate,
-            imagePath: row.imagePath
-          });
-        }
-  
-        return Object.values(userWithEvents);
-      } catch (error) {
-        throw new Error("Error fetching specific user with events");
-      } finally {
-        await connection.close();
-      }
-    }
   
   static async checkIfUserJoinedEvent(eventId, userId) {
     const connection = await sql.connect(dbConfig);
@@ -673,19 +640,22 @@ class Event {
     try {
       const connection = await sql.connect(dbConfig);
       const query = `
-      SELECT * from EventCategories
-      WHERE id = @id;   
+      SELECT * FROM EventCategories
+      WHERE id = @id;
       `;
-
+  
       const request = connection.request();
-      request.input("id", categoryId);
-      
+      request.input("id", sql.Int, categoryId);
+  
       const result = await request.query(query);
+      if (result.recordset.length === 0) {
+        throw new Error(`Event category with ID ${categoryId} does not exist`);
+      }
       return result.recordset[0];
-    }
-    catch (error) {
-      throw new Error("Error fetching event categories");
-    }
+    } catch (error) {
+      console.error(error.message);
+      throw error; // Re-throw the error for global error handling
+    } 
   }
 
   static async getNumberofUsersJoined(eventId) {

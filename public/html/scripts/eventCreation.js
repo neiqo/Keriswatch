@@ -150,7 +150,7 @@ async function createEvent(name, description, category, startdate, enddate, imag
 
     console.log('Sending event data:', formData); // Log the FormData being sent
 
-    const response = await fetch(`/api/events`, {
+    const response = await fetch(`/api/events/create`, {
         method: 'POST',
         body: formData
     });

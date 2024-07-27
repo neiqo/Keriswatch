@@ -53,7 +53,7 @@ const updateEvent = async (req, res) => {
   const newEventData = {
     name: req.body.name,
     description: req.body.description,
-    categoryName: req.body.categoryName,
+    categoryId: req.body.categoryId,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     locationName: req.body.locationName,
@@ -118,7 +118,7 @@ const getEvents = async (req, res) => {
 async function getEventswithUsers(req, res) {
   try {
     const events = await Event.getEventswithUsers();
-    res.json(events);
+    res.status(200).json(events);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching events with users" });
@@ -129,12 +129,13 @@ async function getEventswithUsers(req, res) {
 async function getSpecificEventwithUsers(req, res) {
   const eventId = parseInt(req.params.eventId);
 
+  console.log("eventId controller", eventId);
   try {
     const event = await Event.getSpecificEventwithUsers(eventId);
     if (!event) {
       return res.status(404).send("Event not found");
     }
-    res.json(event);
+    res.status(200).json(event);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching specific event with users" });

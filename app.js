@@ -7,6 +7,8 @@ const bodyParser = require("body-parser"); // Import body-parser
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json"); // Import generated spec
 
 // APPLICATION SETUP
 const app = express();
@@ -118,9 +120,8 @@ app.get("/api/events/:id/joined", eventsController.checkIfUserJoinedEvent);
 app.post("/api/events/:id/users", eventsController.addUsertoEvent);
 app.delete("/api/events/:id/users", eventsController.deleteUserfromEvent);
 
-app.get("/api/events/:id", eventsController.getEventById);
-app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
-app.post("/api/events", uploadEventImage.single("image"), validateEvent, eventsController.createEvent, (req, res) => {
+app.get("/api/event/:id", eventsController.getEventById);
+app.post("/api/events/create", uploadEventImage.single("image"), validateEvent, eventsController.createEvent, (req, res) => {
   // Handle the form data here
   console.log(req.body);
   res.status(200).send('Event created successfully');
@@ -134,7 +135,8 @@ next();
 }, eventsController.updateEvent);
 // app.delete("/api/events/:id", eventsController.deleteEvent);
 app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser); 
-app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
+// app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
+app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
 
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
@@ -158,6 +160,9 @@ app.delete("/bookmarks/:articleId", bookmarkController.deleteBookmark); // route
 
 // STATISTICS ROUTES
 app.get("/statistics/:country", statisticsController.getStatisticsByCountry);
+
+// Swagger documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // For database connection
 app.listen(port, async () => {

@@ -53,7 +53,7 @@ function getUserIdFromUrl() {
 }
 
 async function getEventDetails(eventId) {
-    const response = await fetch(`/api/events/${eventId}`, {
+    const response = await fetch(`/api/event/${eventId}`, {
                 method: 'GET'
     });
     const data = await response.json();
