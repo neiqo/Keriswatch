@@ -2,6 +2,7 @@ body {
     font-family: "Inter", sans-serif;
 }
 
+/* For articles ---------------------------------------------------------------------------------------------------*/
 /* Remove default link styling */
 .article-link {
   display: block;
@@ -33,7 +34,7 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 70%; /* Adjust height of the gradient overlay */
+  height: 80%; /* Adjust height of the gradient overlay */
   background: linear-gradient(to top, black, transparent); /* Gradient from black to transparent */
   z-index: 1; /* Ensures the gradient is above the background image but below the text */
 }

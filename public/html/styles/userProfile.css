@@ -2,19 +2,174 @@ body {
     font-family: "Inter", sans-serif;
 }
 
+#content {
+    margin: 70px;
+}
+
+#name_profile {
+    display: flex; 
+    align-items: center;
+}
+
+#profile-picture {
+    width: 250px;
+    height: 250px;
+    object-fit: cover; /* Ensure the image covers the area */
+    margin-right: 20px; /* Add space between the picture and the text */
+}
+
+#name_editprofile {
+    display: flex;
+    flex-direction: column;
+}
+
+.purple-btn {
+    width: 100%;
+    background-color: #7C6CC1;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.purple-btn:hover {
+    background-color: #5E4BA0;
+}
+
+
+
 .headerTitle {
     font-weight: bold;
     font-size: 1.8rem;
     color: black;
     align-items: left;
     text-align: left;
-  }  
+  }
 
-.name_profile{
-    margin-top: 70px;
+#bottom {
+    display: flex;
+    justify-content: space-between; /* Space out items horizontally */
+    gap: 20px;
 }
 
-.delete-user-btn {
+
+#bottom > div {
+    flex: 1;
+}
+
+/* For articles ---------------------------------------------------------------------------------------------------*/
+/* Remove default link styling */
+.article-link {
+    display: block;
+    text-decoration: none;
+    color: inherit; /* Inherit text color from parent */
+  }
+  
+  /* Preserve text color on hover */
+  .article-link:hover .article-title,
+  .article-link:hover .article-publisher,
+  .article-link:hover .article-sector {
+    color: inherit;
+  }
+  .article-container {
+    position: relative;
+    border: 2px solid black;
+    margin-bottom: 15px;
+    width: 350px;
+    height: 246px;
+    background-size: cover; /* Ensures the background image covers the container */
+    background-position: center; /* Centers the background image */
+    overflow: hidden; /* Ensures that the gradient does not overflow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+  }
+  
+  .article-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80%; /* Adjust height of the gradient overlay */
+    background: linear-gradient(to top, black, transparent); /* Gradient from black to transparent */
+    z-index: 1; /* Ensures the gradient is above the background image but below the text */
+  }
+  
+  .article-content {
+    position: relative;
+    padding: 10px;
+    padding-top: 37%;
+    color: white; /* Ensure text color contrasts with the background */
+    z-index: 2; /* Ensure the content is above the gradient */
+  }
+  
+  .article-title,
+  .article-author,
+  .article-country,
+  .article-publisher,
+  .article-sector,
+  .article-tags,
+  .article-body {
+    position: relative;
+    z-index: 2; 
+  }
+  
+  #row1 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: center;
+    margin-top: -5px;
+    width: 100%;
+  }
+  
+  #column1 {
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-bottom: -20px;
+    font-size: 0.7rem;
+    font-weight: 300;
+  }
+  
+  .article-publishTime {
+    margin-top: -20px;
+  }
+  
+  
+  
+  
+  .article-sector {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.85px;
+    font-size: 0.9rem;
+  }
+  
+  
+  .article-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Number of lines to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.25rem;
+    font-weight: 500;
+    height: 3em; /* Adjust according to the line height */
+    line-height: 1.5em; /* Adjust according to the font size */
+    margin-top: -5%;
+    margin-bottom: 1%;
+  }
+  
+  .article-publisher {
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+  
+
+.edit-profile-btn{
     margin: 0 auto;
     margin-top: 5px;
     width: 100%;
@@ -25,3 +180,64 @@ body {
     background-color: #D75757;
     color: white;
 }
+
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 10px;
+    background-color: #8CA690;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+input[type="text"], input[type="email"], input[type="password"], select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 10px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+

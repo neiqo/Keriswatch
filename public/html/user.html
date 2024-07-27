@@ -20,27 +20,70 @@
     <link rel="stylesheet" href="./styles/userProfile.css">
 </head>
 <body>
-    <!--<form id="userForm">
-        <label for="userId">Enter User ID:</label>
-        <input type="text" id="userId" name="userId" required>
-        <button type="submit">Submit</button>
-    </form>-->
+    <div id="content">
+        <div id="name_profile">
+            <div>
+                <!-- TODO: ensure user can see personal profile pictures, not just preset ones-->
+                <img id="profile-picture" alt="Profile Picture" />
+            </div>
+            <div id="name_editprofile">
+                <p class="headerTitle" id="profile_username"></p>
+                <button class="purple-btn" id="edit-profile-btn">Edit Account Details</button>
+            </div>
+        </div>
 
-    <div id="name_profile">
-        <img id="profile-picture" alt="Profile Picture" />
-        <div>
-            <p id="username"></p>
-            <button id="delete-user-btn">Delete User</button>
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Account Details</h2>
+                <p>Please enter the details you wish to update</p>
+                <div class="form-group">
+                    <label for="username">Username (cannot be changed)</label>
+                    <input type="text" id="username" name="username" disabled value="Bob">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="bob@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label for="country-selector">Country</label>
+                    <select id="country-selector" name="country">
+                        <option value="Singapore">Singapore</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Brunei">Brunei</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Laos">Laos</option>
+                        <option value="Myanmar">Myanmar</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="Thailand">Thailand</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <button class="purple-btn" id="update-btn">Update</button>
+            </div>
+        </div>
+    
+        <div id="bottom">
+            <div>
+                <p class="headerTitle">Your Bookmarks</p>
+                <div id="articles-list"></div> <!--displays all bookmarked articles, might need to change the style abit-->
+            </div>
+
+            <div>
+                <p class="headerTitle">Your Comments</p>
+                <div id="comments"> <!-- insert comments here-->
+                    Comments
+                </div>
+            </div>
         </div>
     </div>
 
-    <p class="headerTitle">Your Bookmarks</p>
-    <div id="articles-list"></div> <!--displays all bookmarked articles, might need to change the style abit-->
-
-    <p class="headerTitle">Your Comments</p>
-    <div id="comments"> <!-- insert comments here-->
-        Comments
-    </div>
 
     <footer>
         <div id="column-footer">

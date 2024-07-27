@@ -14,7 +14,6 @@ const port = process.env.PORT || 3000; // Use environment variable or default po
 // SERVE STATIC FILES
 const staticMiddleware = express.static("public/html");
 
-
 // MIDDLEWARE CONFIGURATION
 // Increase payload size limit
 app.use(bodyParser.json({ limit: '50mb' }));

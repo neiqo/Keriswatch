@@ -193,38 +193,38 @@ const getUserByUsername =  async (req, res) => {
     }
 }
 
-const updateNormalUser =  async (req, res) => {
+const updateNormalUser = async (req, res) => {
     try {
-        // default null if no changes made
-        const { oldUsername, username = null, password = null, email = null, country = null } = req.body;
-        const user = { oldUsername, username, password, email, country };
+        const { oldUsername, email, password, country } = req.body;
 
-        // if username does not exist, throw error
-        let oldUserDetails = null;
-
-        console.log(user.oldUsername);
-
-        if ((oldUserDetails = await this.getUserByUsername(user.oldUsername)) == null) {
-            res.status(404).send('User does not exist');
-            throw new Error('User does not exist');
+        // Get the user details based on the username
+        const user = await User.getUserByUsername(oldUsername);
+        if (!user) {
+            return res.status(404).send('User not found');
         }
 
-        console.log(oldUserDetails);
+        // Update the user details
+        if (email) user.email = email;
+        if (password) {
+            const salt = await bcrypt.genSalt(10); 
+            user.password = await bcrypt.hash(password, salt);
+        }
+        if (country) user.country = country;
 
-        oldUserDetails['country'] = (await this.getNormalUserByUsername(user.oldUsername)).country;  // get country of user
+        // Save the updated user details
+        await NormalUser.updateAccountDetails(user);
 
-        const updatedUser = await NormalUser.updateAccountDetails(user, oldUserDetails);
-
+        // Generate a new token
         const payload = {
-            userId: updatedUser.userId,
-            role: oldUserDetails.role,
-            username: updatedUser.username,
+            userId: user.userId,
+            role: user.role,
+            username: user.username,
         };
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "3600s" });
 
         // Send status 200 OK with JSON response
-        res.status(200).json(token);
+        res.status(200).json({ token });
     } catch (error) {
         res.status(400).send('Error updating user: ' + error.message);
     }

@@ -26,14 +26,11 @@ const validateNormalUser = (req, res, next) => {
 
 // Middleware for validating updating NormalUser account details
 const validateUpdateNormalUser = (req, res, next) => {
-    console.log(req.body.username);
     const schema = Joi.object({
         oldUsername: Joi.string().min(3).max(30).required(),
-        username: Joi.string().min(3).max(30).required(),
-        password: Joi.string().min(6).max(50).required(),
         email: Joi.string().email().required(),
-        country: Joi.string().min(2).max(50).required(),
-        profilePicture: Joi.any()
+        password: Joi.string().min(6).max(50).required(),
+        country: Joi.string().min(2).max(50).required()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -41,7 +38,6 @@ const validateUpdateNormalUser = (req, res, next) => {
     if (validation.error) {
         const errors = validation.error.details.map(error => error.message);
         res.status(400).json({ message: 'Validation error', errors });
-        console.log(req.body.username);
         return;
     }
 

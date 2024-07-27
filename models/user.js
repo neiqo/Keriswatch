@@ -256,7 +256,7 @@ class NormalUser extends User {
     static async getNormalUserByUsername(username) {
         try {
             const connection = await sql.connect(dbConfig);
-            const sqlQuery = `SELECT * FROM NormalUser WHERE username = @Username`;
+            const sqlQuery = `SELECT * FROM User WHERE username = @Username`;
     
             console.log(username);
     
