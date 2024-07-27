@@ -9,22 +9,87 @@
     <title>Starter Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="./boostrap/bootstrap.min.css" rel="stylesheet">
-
+    <link href="./css/events.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="./styles/starter-template.css" rel="stylesheet">
-    <link rel="stylesheet" href="./styles/styles.css" />
 
   </head>
 
   <body>
-    <main role="main" class="container">
 
-    </main><!-- /.container -->
+    <div class="container">
+      <div class="sidebar">
+          <h2>Filter by:</h2>
+          <form>
+              <div class="filter-group">
+                  <h3>Country</h3>
+                  <label><input type="checkbox" name="country" value="Brunei"> Brunei</label>
+                  <label><input type="checkbox" name="country" value="Indonesia"> Indonesia</label>
+                  <label><input type="checkbox" name="country" value="Malaysia"> Malaysia</label>
+                  <label><input type="checkbox" name="country" value="Philippines"> Philippines</label>
+                  <label><input type="checkbox" name="country" value="Thailand"> Thailand</label>
+                  <label><input type="checkbox" name="country" value="Singapore"> Singapore</label>
+                  <label><input type="checkbox" name="country" value="Viet Nam"> Viet Nam</label>
+                  <label><input type="checkbox" name="country" value="Cambodia"> Cambodia</label>
+                  <label><input type="checkbox" name="country" value="Myanmar"> Myanmar</label>
+                  <label><input type="checkbox" name="country" value="Lao PDR"> Lao PDR</label>
+              </div>
+              <div class="filter-group">
+                  <h3>Industry</h3>
+                  <label><input type="checkbox" name="industry" value="Agriculture"> Agriculture</label>
+                  <label><input type="checkbox" name="industry" value="Services"> Services</label>
+                  <label><input type="checkbox" name="industry" value="Industry"> Industry</label>
+              </div>
+              <button type="submit">Submit</button>
+          </form>
+      </div>
+      <div id="event-list" class="content">
+          <!-- <div class="events">
+              <div class="event">
+                  <div class="event-info">
+                      <h3>Wed, 05 - Thu, 06 Jun 2024</h3>
+                      <h2>Digital Healthcare Innovation Summit East (DHIS)</h2>
+                      <p>Boston, USA</p>
+                      <p>Driving the Digital Health Revolution</p>
+                      <button class="interested">Interested <span>30</span></button>
+                  </div>
+                  <div class="event-image">
+                      <img src="https://via.placeholder.com/100" alt="Event Image">
+                  </div>
+              </div>
+          </div>
+          <div class="other-events">
+              <h2>Other Events</h2>
+              <div class="event">
+                  <div class="event-info">
+                      <h3>Wed, 05 - Thu, 06 Jun 2024</h3>
+                      <h2>Digital Healthcare Innovation Summit East (DHIS)</h2>
+                      <p>Boston, USA</p>
+                      <p>Driving the Digital Health Revolution</p>
+                  </div>
+                  <div class="event-image">
+                      <img src="https://via.placeholder.com/100" alt="Event Image">
+                  </div>
+              </div>
+          </div> -->
+      </div>
+  </div>
+  <!-- <div class="pagination">
+    <button id="prev-page" class="page-link" href="#" tabindex="-1">Previous</a>
+    <button id="next-page" class="page-link" href="#">Next</a> 
+
+      <button class="prev">Previous</button>
+      <button class="next">Next</button>
+  </div> -->
+
+
+    
+    <!-- <main role="main" class="container"></main> -->
+    <!-- /.container -->
 
     <!-- Section to contain event-->
-    <section id="event-list"></section>
+    <!-- <section id="event-list"></section> -->
     
+
     <a href="eventCreation.html">
       <button>Create Event</button>
     </a>
@@ -32,15 +97,17 @@
     <!-- bottom page navigation -->
     <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">
-        <li class="page-item">
-          <a id="prev-page" class="page-link" href="#" tabindex="-1">Previous</a>
+        <button id="prev-page" class="page-link" href="#" tabindex="-1">Previous</a>
+        <button id="next-page" class="page-link" href="#">Next</a>
+        <!-- <li class="page-item">
+          <button id="prev-page" class="page-link" href="#" tabindex="-1">Previous</a>
         </li>
         <li id="n1" class="page-item"><a class="page-link" href="#">1</a></li>
         <li id="n2" class="page-item"><a class="page-link" href="#">2</a></li>
         <li id="n3" class="page-item"><a class="page-link" href="#">3</a></li>
         <li class="page-item">
-          <a id="next-page" class="page-link" href="#">Next</a>
-        </li>
+          <button id="next-page" class="page-link" href="#">Next</a>
+        </li> -->
       </ul>
     </nav>
     

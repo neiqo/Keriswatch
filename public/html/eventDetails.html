@@ -9,38 +9,66 @@
 </head>
 
 <body>
-    <div class="event-container">
-        <div class="event-header">
-            <img id="image" src="logo.png" alt="DHIS Logo" class="event-logo">
-            <div class="event-details-header">
-                <h1 id="name">Digital Healthcare Innovation Summit East (DHIS)</h1>
-                <p id="eventDate" class="event-date"></p>
-                <p id="location" class="location">Mandarin Oriental, Boston, Boston, USA</p>
-                <div class="event-actions">
-                    <button id="joinButton" class="joinButton">Join ➔</button>
-                    <button id="deleteButton" class="deleteButton">Delete Event</button>
+    <div class="event-details">
+
+
+        <div class="event-container">
+            <div class="event-header">
+                <img id="image" src="logo.png" alt="DHIS Logo" class="event-logo">
+                <div class="event-details-header">
+                    <h1 id="name">Digital Healthcare Innovation Summit East (DHIS)</h1>
+                    <p id="eventDate" class="event-date"></p>
+                    <p id="location" class="location">Mandarin Oriental, Boston, Boston, USA</p>
+                    <div class="event-actions">
+                        <button id="joinButton" class="joinButton">Join ➔</button>
+                        <button id="deleteButton" class="deleteButton">Delete Event</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="event-main">
-            <div class="event-description">
-                <p id="description">
-                    Join healthcare visionaries and investors for an anticipated record-breaking year in Boston. Attend the Digital Healthcare Innovation Summit (DHIS) in Boston, MA. Explore crucial topics such as the influence of election outcomes on digital healthcare innovation, provider burnout, overarching trends in payors and providers, the integration of AI in healthcare, strategies for navigating startups through uncertain periods, concerns regarding underserved populations, regulatory adjustments, policy transitions, and women’s health. Participate in dynamic panel discussions, and interactive breakouts, and connect with industry leaders in this vibrant community. Seize the chance to network with investors, startups, tech companies, payors, providers, and seasoned advisors at this exclusive digital health event, spearheading innovation in healthcare. Don't miss this opportunity to contribute to the future of digital health - join us in Boston.
-                </p>
+            <div class="event-main">
+                <div class="event-description">
+                    <p id="description">
+                        Join healthcare visionaries and investors for an anticipated record-breaking year in Boston. Attend the Digital Healthcare Innovation Summit (DHIS) in Boston, MA. Explore crucial topics such as the influence of election outcomes on digital healthcare innovation, provider burnout, overarching trends in payors and providers, the integration of AI in healthcare, strategies for navigating startups through uncertain periods, concerns regarding underserved populations, regulatory adjustments, policy transitions, and women’s health. Participate in dynamic panel discussions, and interactive breakouts, and connect with industry leaders in this vibrant community. Seize the chance to network with investors, startups, tech companies, payors, providers, and seasoned advisors at this exclusive digital health event, spearheading innovation in healthcare. Don't miss this opportunity to contribute to the future of digital health - join us in Boston.
+                    </p>
+                </div>
+                <div class="event-info">
+                    <!-- <p><strong>Timings:</strong> 9:00 AM - 6:00 PM</p> -->
+                    <p><strong>Event Category:</strong> <span id="category">Trade Show</span></p>
+                    <p><strong>Entry Fees:</strong> Free</p>
+                    <p><strong>Total Capacity:</strong> <span id="noOfUsersJoined"></span>/<span id="totalCapacity">100</span></p>
+                    <!-- <p><strong>Location:</strong> Location</p> -->
+                </div>
+                <!-- <div class="event-gallery">
+                    <img src="image1.png" alt="Event Image 1">
+                    <img src="image2.png" alt="Event Image 2">
+                    <img src="image3.png" alt="Event Image 3">
+                </div> -->
             </div>
-            <div class="event-info">
-                <!-- <p><strong>Timings:</strong> 9:00 AM - 6:00 PM</p> -->
-                <p><strong>Event Category:</strong> <span id="category">Trade Show</span></p>
-                <p><strong>Entry Fees:</strong> Free</p>
-                <p><strong>Total Capacity:</strong> <span id="noOfUsersJoined"></span>/<span id="totalCapacity">100</span></p>
-                <!-- <p><strong>Location:</strong> Location</p> -->
+            <div id="related-events" class="related-events">
+                <h2>Related Events</h2>
+                <!-- <div class="related-event-item">
+                    <p>Jul 30 2024</p>
+                    <p>Automotive Lightweight Trade Fair</p>
+                    <p>Shanghai, China</p>
+                </div>
+                <div class="related-event-item">
+                    <p>Jul 30 2024</p>
+                    <p>Automotive Lightweight Trade Fair</p>
+                    <p>Shanghai, China</p>
+                </div>
+                <div class="related-event-item">
+                    <p>Jul 30 2024</p>
+                    <p>Automotive Lightweight Trade Fair</p>
+                    <p>Shanghai, China</p>
+                </div>
+                <div class="related-event-item">
+                    <p>Jul 30 2024</p>
+                    <p>Automotive Lightweight Trade Fair</p>
+                    <p>Shanghai, China</p>
+                </div> -->
             </div>
-            <!-- <div class="event-gallery">
-                <img src="image1.png" alt="Event Image 1">
-                <img src="image2.png" alt="Event Image 2">
-                <img src="image3.png" alt="Event Image 3">
-            </div> -->
         </div>
+
         <div class="event-organizer">
             <img src="facebook.png" alt="Facebook Logo" class="organizer-logo">
             <div class="organizer-details">
@@ -50,31 +78,7 @@
                 <p>150 Total Events</p>
             </div>
         </div>
-        <div id="related-events" class="related-events">
-            <h2>Related Events</h2>
-            <div class="related-event-item">
-                <p>Jul 30 2024</p>
-                <p>Automotive Lightweight Trade Fair</p>
-                <p>Shanghai, China</p>
-            </div>
-            <div class="related-event-item">
-                <p>Jul 30 2024</p>
-                <p>Automotive Lightweight Trade Fair</p>
-                <p>Shanghai, China</p>
-            </div>
-            <div class="related-event-item">
-                <p>Jul 30 2024</p>
-                <p>Automotive Lightweight Trade Fair</p>
-                <p>Shanghai, China</p>
-            </div>
-            <div class="related-event-item">
-                <p>Jul 30 2024</p>
-                <p>Automotive Lightweight Trade Fair</p>
-                <p>Shanghai, China</p>
-            </div>
-        </div>
     </div>
-
     <script src="/scripts/eventDetails.js"></script>
 
 </body>

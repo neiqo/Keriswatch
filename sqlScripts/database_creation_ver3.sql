@@ -71,6 +71,9 @@ IF OBJECT_ID('dbo.NormalUser', 'U') IS NOT NULL
 IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
     DROP TABLE dbo.Users;
 
+IF OBJECT_ID('dbo.EventCategories', 'U') IS NOT NULL
+	DROP TABLE dbo.EventCategories;
+
 IF OBJECT_ID('dbo.Events', 'U') IS NOT NULL
     DROP TABLE dbo.Events;
 
@@ -96,7 +99,7 @@ CREATE TABLE Users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     role VARCHAR(30) NOT NULL CHECK (role IN ('Organisation', 'Admin', 'NormalUser')),
-    profilePicture VARCHAR(255) NOT NULL DEFAULT 'defaultProfile.png'
+    profilePicture VARBINARY(MAX) NULL
 );
 
 CREATE TABLE Admin (
@@ -207,26 +210,6 @@ CREATE INDEX idx_user_id ON Bookmarks (userId);
 CREATE INDEX idx_article_id ON Bookmarks (articleId);
 CREATE INDEX idx_bookmarkDateTime ON Bookmarks (bookmarkDateTime);
 
--- From Vincent
-CREATE TABLE Events (
-  id INT IDENTITY(1,1) PRIMARY KEY,
-  name VARCHAR(30) NOT NULL UNIQUE, 
-  description VARCHAR(200) NULL,
-  type VARCHAR(10) NULL,
-  startDate DATE NULL,
-  endDate DATE NULL,
-  createdDate DATETIME NULL,
-  modifiedDate DATETIME NULL,
-  imagePath VARCHAR(255) NULL
-);
-
-CREATE TABLE EventUsers (
-    id INT PRIMARY KEY IDENTITY,
-    event_id INT,
-    user_id INT,
-    CONSTRAINT FK_EventUsers_Event FOREIGN KEY (event_id) REFERENCES Events(id),
-    CONSTRAINT FK_EventUsers_User FOREIGN KEY (user_id) REFERENCES Users(userId)
-);
 
 -- Insert Admin Users
 INSERT INTO Users (username, password, email, role) VALUES 
@@ -592,14 +575,55 @@ VALUES (1, 5),
 
 -- Inserting data for Events
 
-INSERT INTO Events (name, description, type, startDate, endDate, createdDate, modifiedDate, imagePath)
-VALUES 
-	('MET 2024', 'India Largest Exhibition on Materials, Engineering & Technology', 'Exhibition', '2024-06-20', '2024-06-21', GETDATE(), NULL, '\images\events\AluminiumExpo.jpg'),
-	('Aluminium Expo', 'Leading aluminium industry tradeshow', 'Misc', '2024-05-2', '2024-05-10', GETDATE(), NULL, '\images\events\FACTECH2024.jpg'),
-	('FacTech 2024', 'FACTECH 2023 provides an open platform for people from various backgrounds to express their ideas and develop themselves and their businesses.', 'Misc', '2024-05-1', '2024-05-2', GETDATE(), NULL, '\images\events\GreenVehicleExpo.jpg'),
-	('Green Vehicle Expo 2024', ' The Green Vehicle Expo, promoted by the Government of India, serves as a platform for the Made in India and Make in India concepts. ', 'Expo', '2024-05-2', '2024-05-10', GETDATE(), NULL, '\images\events\MET_2024.jpg');
+-- From Vincent
+CREATE TABLE EventCategories (
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  description VARCHAR(200) NULL
+);
 
--- Inserting data for EventUsers
+CREATE TABLE Events (
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  name VARCHAR(30) NOT NULL UNIQUE, 
+  description VARCHAR(200) NULL,
+  categoryId INT NULL,
+  startDate DATE NULL,
+  endDate DATE NULL,
+  createdDate DATETIME NULL,
+  modifiedDate DATETIME NULL,
+  imagePath VARCHAR(255) NULL,
+  locationName VARCHAR(100) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  postalCode VARCHAR(20) NOT NULL,
+  country VARCHAR(50) NOT NULL,
+  totalCapacity INT NOT NULL,
+  FOREIGN KEY (categoryId) REFERENCES EventCategories(id),
+);
+
+CREATE TABLE EventUsers (
+  id INT PRIMARY KEY IDENTITY,
+  event_id INT,
+  user_id INT,
+  CONSTRAINT FK_EventUsers_Event FOREIGN KEY (event_id) REFERENCES Events(id),
+  CONSTRAINT FK_EventUsers_User FOREIGN KEY (user_id) REFERENCES Users(userId)
+);
+
+INSERT INTO EventCategories (name, description)
+VALUES 
+('Tech Conference', 'Events related to technology conferences and summits'),
+('Workshop', 'Hands-on workshops and training sessions in various industries'),
+('Networking Event', 'Events aimed at professional networking'),
+('Webinar', 'Online seminars and presentations in tech and related fields'),
+('Product Launch', 'Events focused on launching new products and innovations');
+
+INSERT INTO Events (name, description, categoryId, startDate, endDate, createdDate, modifiedDate, imagePath, locationName, address, postalCode, country, totalCapacity)
+VALUES
+('Tech Conference 2024', 'A conference for tech enthusiasts and professionals.', 1, '2024-09-15', '2024-09-17', GETDATE(), GETDATE(), '\\images\\tech_conference.jpg', 'Tech Hall', '123 Tech Street', '12345', 'Singapore', 500),
+('Workshop on AI', 'A workshop focused on Artificial Intelligence and its applications.', 2, '2024-10-10', '2024-10-12', GETDATE(), GETDATE(), '\\images\\ai_workshop.jpg', 'Innovation Center', '456 AI Avenue', '67890', 'Singapore', 200),
+('Networking Event', 'An event to network with industry professionals.', 3, '2024-11-05', '2024-11-05', GETDATE(), GETDATE(), '\\images\\networking_event.jpg', 'Business Hub', '789 Networking Road', '11223', 'Singapore', 300),
+('Developer Summit', 'A summit for software developers to share knowledge and skills.', 1, '2024-12-01', '2024-12-03', GETDATE(), GETDATE(), '\\images\\dev_summit.jpg', 'Dev Center', '321 Dev Lane', '33445', 'Singapore', 400),
+('Cybersecurity Seminar', 'A seminar on the latest trends in cybersecurity.', 4, '2024-08-20', '2024-08-20', GETDATE(), GETDATE(), '\\images\\cybersecurity_seminar.jpg', 'Security Hall', '654 Cyber Street', '55667', 'Singapore', 250);
+
 INSERT INTO EventUsers(event_id, user_id)
 VALUES 
 (1,1),
@@ -607,4 +631,4 @@ VALUES
 (1,3),
 (2,1),
 (2,2),
-(3,1);
+(3,1)

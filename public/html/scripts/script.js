@@ -25,41 +25,56 @@ async function fetchEvents(pageNumber) {
         const container = document.getElementById("event-list");
         container.innerHTML = "";
 
-        // Use Document Fragment for better performance
-        const fragment = document.createDocumentFragment();
-
         currentData.forEach((event) => {
+            console.log(event);
             const eventItem = document.createElement("div");
-            eventItem.classList.add("event"); // Add css
+            eventItem.classList.add("event");
+
+            const eventInfo = document.createElement("div");
+            eventInfo.classList.add("event-info");
+
+            const date = document.createElement("h3");
+            date.textContent = `${event.startDate} - ${event.endDate}`;
 
             const name = document.createElement("h2");
             name.textContent = event.name;
-            const description = document.createElement("h2");
-            description.textContent = event.description;
-            const type = document.createElement("h2");
-            type.textContent = event.type;
-            const startdate = document.createElement("h2");
-            startdate.textContent = event.startDate;
-            const enddate = document.createElement("h2");
-            enddate.textContent = event.endDate;
 
-            eventItem.appendChild(name);
-            eventItem.appendChild(description);
-            eventItem.appendChild(type);
-            eventItem.appendChild(startdate);
-            eventItem.appendChild(enddate);
+            const location = document.createElement("p");
+            location.textContent = event.address + ', ' + event.postalCode + ', ' + event.country || "Location not provided"; // Assuming event object has a location property
+
+            const description = document.createElement("p");
+            description.textContent = event.description;
+
+            const interestedButton = document.createElement("button");
+            interestedButton.classList.add("interested");
+            interestedButton.innerHTML = `Interested`; // Assuming event object has an interestedCount property
+
+            eventInfo.appendChild(name);
+            eventInfo.appendChild(date);
+            eventInfo.appendChild(location);
+            // eventInfo.appendChild(description);
+            eventInfo.appendChild(interestedButton);
+
+            const eventImage = document.createElement("div");
+            eventImage.classList.add("event-image");
+
+            const img = document.createElement("img");
+            img.src = event.imagepath || "https://via.placeholder.com/100"; // Assuming event object has an imageUrl property
+            img.alt = "Event Image";
+
+            eventImage.appendChild(img);
+
+            eventItem.appendChild(eventImage);
+            eventItem.appendChild(eventInfo);
 
             eventItem.addEventListener("click", () => {
                 // Handle event click
-                // Redirect to event details page or show a modal
                 console.log(`Clicked event: ${event.id}`);
                 window.location.href = `/events/${event.id}`; // Example URL
             });
 
-            fragment.appendChild(eventItem);
+            container.appendChild(eventItem);
         });
-
-        container.appendChild(fragment);
 
         // Update UI for pagination
         updateButton(nextData.length);
@@ -69,6 +84,7 @@ async function fetchEvents(pageNumber) {
         isFetching = false; // Reset fetching flag
     }
 }
+
 
 //Handle pagination clicks 
 

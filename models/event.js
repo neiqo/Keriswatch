@@ -107,10 +107,10 @@ class Event {
 
         // Check if an image was uploaded
         if (newEventData.imagePath) {
-          const newFilePath = path.join("/html/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
+          const newFilePath = path.join("/images/events", `Image_${eventId}${path.extname(newEventData.imagePath)}`);
           const oldFilePath = path.join(__dirname, "../public/html", newEventData.imagePath);
           // Rename the file to include the event ID
-          fs.renameSync(oldFilePath, path.join(__dirname, "../public", newFilePath));
+          fs.renameSync(oldFilePath, path.join(__dirname, "../public/html", newFilePath));
 
           // Update the event with the new file path
           const updateQuery = `
@@ -185,7 +185,7 @@ class Event {
       let newImagePath;
       if (newEventData.imagePath) {
         // Make sure to use the relative path for the new image
-        relativeImagePath = `/html/images/events/Image_${id}${path.extname(newEventData.imagePath)}`;
+        relativeImagePath = `/images/events/Image_${id}${path.extname(newEventData.imagePath)}`;
         newImagePath = newEventData.imagePath; // Store the original path
         updatedFields.push(`imagePath = @imagePath`);
       }
@@ -332,7 +332,7 @@ class Event {
         const connection = await sql.connect(dbConfig);
 
         try {
-            const perPage = 2; // Events per page
+            const perPage = 8; // Events per page
 
             // Get total number of events
             const pageCount = Math.ceil(Event.totalCount / perPage);
