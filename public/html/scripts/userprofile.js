@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // Decode JWT
     const decoded = jwt_decode(token);
-
     const username = decoded.username;
 
     // Function to fetch user profile picture
