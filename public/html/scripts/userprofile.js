@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             const response = await fetch(`/api/users/${username}/profilePicture`);
             if (response.ok) {
                 const data = await response.json();
-                return data.profilePicture;
+                return data;
             } else {
                 console.error('Failed to fetch profile picture');
                 return null;
@@ -52,11 +52,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     const user1 = await fetchUserDetails(username);
     if (user1) {
         document.getElementById('profile_username').textContent = 'Hello, ' + user1.username + '!';
+
+        console.log("username @ user1: " + username);
+
         const profilePicture = await fetchProfilePicture(username);
+
+        console.log("Profile picture: " + profilePicture);
+
+        const profilePictureElement = document.getElementById('account-profile-picture');
         if (profilePicture) {
-            document.getElementById('profile-picture').src = `data:image/jpeg;base64,${profilePicture}`;
+            profilePictureElement.src = `data:image/png;base64,${profilePicture}`;
         } else {
-            document.getElementById('profile-picture').src = `./images/profile-pictures/defaultProfile.png`;
+            profilePictureElement.src = `./images/profile-pictures/defaultProfile.png`;
         }
     }
 
