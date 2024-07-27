@@ -36,6 +36,8 @@ Keriswatch is ---
 		- module for debugging and logging
 7.  multer
 		- module for uploading files
+8.  JWT
+		- module for user authentication token
 
 ## Notes
 

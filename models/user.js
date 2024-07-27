@@ -1,5 +1,6 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
+const { profile } = require("console");
 
 class User {
     constructor(username, password, email) {
@@ -69,7 +70,7 @@ class User {
             const result = await request.query(sqlQuery);
             connection.close();
     
-            console.log("Result: " + result.recordset[0]); 
+            console.log("Result in getUserByUsername: " + result.recordset[0]); 
 
             if (!result || !result.recordset) return null; // if no user found, return null
     
@@ -81,6 +82,86 @@ class User {
         }
     }
 
+    static async getProfilePicture(userId) {
+        try {
+            const connection = await sql.connect(dbConfig);
+            console.log("UserID in getProfilePicture: " + userId);
+            const sqlQuery = `SELECT profilePicture FROM Users WHERE userId = @UserId`;
+
+            const request = connection.request();
+            request.input('UserId', sql.Int, userId);
+
+            const result = await request.query(sqlQuery);
+            connection.close();
+
+            if (!result) return null; // if no user found, return null
+
+            console.log("Result: " + result.recordset[0]);
+            const profilePicture = result.recordset[0] ? result.recordset[0].profilePicture.toString('base64') : null;
+
+            return profilePicture;
+        } catch (error) {
+            console.error('Error getting profile picture:', error);
+            return null;
+        }
+    }
+
+    static async getAllEvents() {
+        let connection;
+
+        try {
+            connection = await sql.connect(dbConfig);
+            const sqlQuery = `
+                SELECT 
+                    e.eventId, 
+                    e.eventName, 
+                    e.eventDesc, 
+                    e.eventOverview, 
+                    e.eventCategory, 
+                    e.eventReports, 
+                    e.eventTime, 
+                    e.creatorId, 
+                    u.name AS creatorName,
+                    e.cost,
+                    e.eventImage
+                FROM Events e
+                JOIN Users u ON e.creatorId = u.userId
+            `;
+            const request = connection.request(); 
+            const result = await request.query(sqlQuery);
+
+            const events = result.recordset.map(record => {
+                const eventImageBase64 = record.eventImage ? record.eventImage.toString('base64') : null;
+                return new EventModel(
+                    record.eventId,
+                    record.eventName,
+                    record.eventDesc,
+                    record.eventOverview,
+                    record.eventCategory,
+                    record.eventReports,
+                    record.eventTime,
+                    record.creatorId,
+                    record.creatorName,
+                    record.cost,
+                    eventImageBase64
+                );
+            });
+            
+            return events;
+        } catch (error) {
+            console.error('Error getting events:', error);
+            throw new Error("Error getting events");
+        } finally {
+            if (connection) {
+                try {
+                    await connection.close();
+                } catch (closeError) {
+                    console.error('Error closing the connection:', closeError);
+                }
+            }
+        }
+    }
+
     static async uploadProfilePicture(userId, profilePicture) { 
         try {
             const connection = await sql.connect(dbConfig);
@@ -88,8 +169,9 @@ class User {
 
             const request = connection.request();
             request.input('UserId', sql.Int, userId);
-            request.input('ProfilePicture', sql.VarChar, profilePicture);
-            
+            // request.input('ProfilePicture', sql.VarChar, profilePicture);
+            request.input("ProfilePicture", sql.VarBinary(sql.MAX), profilePicture);
+
             const result = await request.query(sqlQuery);
             connection.close();
 

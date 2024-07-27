@@ -15,7 +15,7 @@ const getAllArticles = async (req, res) => {
 };
 
 async function searchArticles(req, res) {
-  const { query } = req.query;
+  const { query, sector, country } = req.query;
 
   try {
     const connection = await sql.connect(dbConfig);
@@ -33,20 +33,38 @@ async function searchArticles(req, res) {
         i.ImageFileName AS imageFileNames
       FROM Articles a
       LEFT JOIN ArticleImages i ON a.articleID = i.ArticleID
-      WHERE 
-        a.Author LIKE '%' + @query + '%' OR
-        a.Publisher LIKE '%' + @query + '%' OR
-        a.Country LIKE '%' + @query + '%' OR
-        a.Sector LIKE '%' + @query + '%' OR
-        a.Title LIKE '%' + @query + '%' OR
-        a.Body LIKE '%' + @query + '%' OR
-        a.Tags LIKE '%' + @query + '%'
+      WHERE 1=1
     `;
 
+    if (query) {
+      sqlQuery += `
+        AND (
+          a.Author LIKE '%' + @query + '%' OR
+          a.Publisher LIKE '%' + @query + '%' OR
+          a.Country LIKE '%' + @query + '%' OR
+          a.Sector LIKE '%' + @query + '%' OR
+          a.Title LIKE '%' + @query + '%' OR
+          a.Body LIKE '%' + @query + '%' OR
+          a.Tags LIKE '%' + @query + '%'
+        )
+      `;
+    }
+
+    if (sector) {
+      sqlQuery += " AND a.Sector = @sector";
+    }
+
+    if (country) {
+      sqlQuery += " AND a.Country = @country";
+    }
+
     const request = connection.request();
-    request.input('query', sql.VarChar, query);
+    if (query) request.input('query', sql.VarChar, query);
+    if (sector) request.input('sector', sql.VarChar, sector);
+    if (country) request.input('country', sql.VarChar, country);
 
     const result = await request.query(sqlQuery);
+
 
     const articlesMap = {};
     result.recordset.forEach(row => {
@@ -77,6 +95,9 @@ async function searchArticles(req, res) {
     res.status(500).json({ error: "Error searching articles" });
   }
 }
+
+
+
 
 const addArticle = async (req, res) => {
   const transaction = new sql.Transaction();
