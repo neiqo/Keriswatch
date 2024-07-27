@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // Add dropdown items
     const accountItems = [
-        { text: 'Your Account', href: '#' },
+        { text: 'Your Account', href: 'user.html' },
         { text: 'Help', href: '#' },
         { text: 'Log Out', href: '#', id: 'logout' }
     ];

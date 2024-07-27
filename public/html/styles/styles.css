@@ -2,6 +2,7 @@ body {
     font-family: "Inter", sans-serif;
 }
 
+/* For articles ---------------------------------------------------------------------------------------------------*/
 /* Remove default link styling */
 .article-link {
   display: block;
