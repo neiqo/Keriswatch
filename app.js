@@ -126,6 +126,9 @@ app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEv
 
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
+const mapController = require("./controllers/mapController");
+// MAP ROUTES
+app.get('/getLocationData', mapController.getLocationData);
 
 // ARTICLE ROUTES
 app.get("/search", articlesController.searchArticles); // route for searching articles
