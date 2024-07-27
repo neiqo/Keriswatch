@@ -117,7 +117,7 @@ body {
 }
 
 .event-image img {
-    max-width: 100%;
+    width: 300px;
     height: auto;
     border-radius: 5px;
 }

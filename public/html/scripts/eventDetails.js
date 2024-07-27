@@ -58,9 +58,9 @@ async function getEventDetails(eventId) {
     });
     const data = await response.json();
     
-    console.log(data);
+    // console.log(data);
     image.src = data.imagepath;
-    console.log(data.imagepath);
+    console.log("imagepath", + data.imagepath);
     name.textContent = data.name;
 
     const startDateObj = new Date(data.startDate);

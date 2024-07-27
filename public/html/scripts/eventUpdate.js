@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch event details
     async function getEventDetails(eventId) {
         try {
-            const response = await fetch(`/api/events/${eventId}`, { method: 'GET' });
+            const response = await fetch(`/api/event/${eventId}`, { method: 'GET' });
             if (!response.ok) {
                 throw new Error('Error fetching event details');
             }

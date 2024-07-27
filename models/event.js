@@ -217,7 +217,7 @@ class Event {
 
       // Save the new file
       if (newEventData.imagePath) {
-        const newFilePath = path.join(__dirname, "..", "public", relativeImagePath);
+        const newFilePath = path.join(__dirname, "..", "public/html", relativeImagePath);
 
         // Ensure the destination directory exists
         const destDir = path.dirname(newFilePath);
@@ -228,7 +228,7 @@ class Event {
         // Use the original path directly if it's absolute
         let sourceFilePath = newImagePath;
         if (!path.isAbsolute(newImagePath)) {
-          sourceFilePath = path.join(__dirname, "..", "public", newImagePath);
+          sourceFilePath = path.join(__dirname, "..", "public/html", newImagePath);
         }
 
         if (!fs.existsSync(sourceFilePath)) {
