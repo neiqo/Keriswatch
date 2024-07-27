@@ -94,7 +94,7 @@ app.get('/events', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
 // });
 
-app.get("/events/:id/user/:userId", (req, res) => {
+app.get("/events/:id", (req, res) => {
   res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
 });
 
@@ -114,9 +114,9 @@ app.get("/api/events/with-users", eventsController.getEventswithUsers);
 // app.post("/api/events/with-users", eventsController.addUsertoEvent);
 // app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
 app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
-app.get("/api/events/:id/user/:userId/joined", eventsController.checkIfUserJoinedEvent);
-app.post("/api/events/:id/user/:userId", eventsController.addUsertoEvent);
-app.delete("/api/events/:id/user/:userId", eventsController.deleteUserfromEvent);
+app.get("/api/events/:id/joined", eventsController.checkIfUserJoinedEvent);
+app.post("/api/events/:id/users", eventsController.addUsertoEvent);
+app.delete("/api/events/:id/users", eventsController.deleteUserfromEvent);
 
 app.get("/api/events/:id", eventsController.getEventById);
 app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
@@ -131,7 +131,8 @@ next();
 }, validateUpdateEvent, (req, res, next) => {
 console.log('Passed validateUpdateEvent middleware');
 next();
-}, eventsController.updateEvent);// app.delete("/api/events/:id", eventsController.deleteEvent);
+}, eventsController.updateEvent);
+// app.delete("/api/events/:id", eventsController.deleteEvent);
 app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser); 
 app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
 

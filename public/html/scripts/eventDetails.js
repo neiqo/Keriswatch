@@ -35,7 +35,7 @@ function getEventIdFromUrl() {
     if (!eventId) {
         const path = window.location.pathname;
         const pathParts = path.split('/');
-        eventId = pathParts[pathParts.length - 3];
+        eventId = pathParts[pathParts.length - 1];
     }
     return eventId ? parseInt(eventId) : null;
 }
@@ -71,18 +71,23 @@ async function getEventDetails(eventId) {
     
     let dateDisplayText = '';
 
-    // Check if both dates are in the same year and month
-    if (startDateObj.getFullYear() === endDateObj.getFullYear()) {
-        if (startDateObj.getMonth() === endDateObj.getMonth()) {
-            // Same month and year
-            dateDisplayText = `${startDateObj.getDate()} - ${endDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
-        } else {
-            // Different month, same year
-            dateDisplayText = `${startDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} - ${endDateObj.getDate()} ${endDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
-        }
+     // Check if startDate and endDate are the same
+    if (startDateObj.toDateString() === endDateObj.toDateString()) {
+        dateDisplayText = `${startDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
     } else {
-        // Different year
-        dateDisplayText = `${formatDate(startDateObj)} - ${formatDate(endDateObj)}`;
+        // Check if both dates are in the same year and month
+        if (startDateObj.getFullYear() === endDateObj.getFullYear()) {
+            if (startDateObj.getMonth() === endDateObj.getMonth()) {
+                // Same month and year
+                dateDisplayText = `${startDateObj.getDate()} - ${endDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
+            } else {
+                // Different month, same year
+                dateDisplayText = `${startDateObj.getDate()} ${startDateObj.toLocaleDateString('en-US', { month: 'short' })} - ${endDateObj.getDate()} ${endDateObj.toLocaleDateString('en-US', { month: 'short' })} ${startDateObj.getFullYear()}`;
+            }
+        } else {
+            // Different year
+            dateDisplayText = `${formatDate(startDateObj)} - ${formatDate(endDateObj)}`;
+        }
     }
 
     eventDate.textContent = dateDisplayText;
@@ -113,7 +118,12 @@ checkIfUserJoinedEvent(eventId, userId);
 
 async function checkIfUserJoinedEvent(eventId, userId) {
     try {
-        const response = await fetch(`/api/events/${eventId}/user/${userId}/joined`, { method: 'GET' });
+        const response = await fetch(`/api/events/${eventId}/joined`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         const data = await response.json();
 
         console.log(data);
@@ -194,10 +204,11 @@ async function addUsertoEvent(eventId, userId) {
             return;
         }
 
-        const response = await fetch(`/api/events/${eventId}/user/${userId}`, {
+        const response = await fetch(`/api/events/${eventId}/users`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
         const data = await response.json();
@@ -235,10 +246,11 @@ async function deleteUserFromEvent(eventId, userId) {
             return;
         }
         
-        const response = await fetch(`/api/events/${eventId}/user/${userId}`, {
+        const response = await fetch(`/api/events/${eventId}/users`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
 
@@ -340,5 +352,27 @@ async function getRelatedEvent(eventId, categoryId) {
         
     } catch (error) {
         console.error("Error getting related events:", error);
+    }
+}
+
+deleteButton.addEventListener("click", () => {
+    deleteEvent(eventId);
+});
+
+async function deleteEvent(eventId) {
+    try {
+        const response = await fetch(`/api/events/${eventId}/with-users`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        // const data = await response.json();
+        // console.log(data);
+        alert("Event deleted successfully");
+        window.location.href = '/events';
+    }
+    catch (error) {
+        console.error("Error deleting event:", error);
     }
 }

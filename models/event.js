@@ -388,19 +388,19 @@ class Event {
     }
 
     //Delete User and Event
-    static async deleteUserandEvent(id) {
-      const connection = await sql.connect(dbConfig);
+    // static async deleteUserandEvent(id) {
+    //   const connection = await sql.connect(dbConfig);
 
-      const sqlQuery = `DELETE FROM EventUsers WHERE user_id = @id;
-                        DELETE FROM Users WHERE id = @id;`; // Parameterized query
+    //   const sqlQuery = `DELETE FROM EventUsers WHERE user_id = @id;
+    //                     DELETE FROM Users WHERE id = @id;`; // Parameterized query
 
-      const request = connection.request();
-      request.input("id", id);
-      const result = await request.query(sqlQuery);
+    //   const request = connection.request();
+    //   request.input("id", id);
+    //   const result = await request.query(sqlQuery);
 
-      connection.close();
-      return result.rowsAffected > 0;
-    }
+    //   connection.close();
+    //   return result.rowsAffected > 0;
+    // }
     
     //Total number of events
     static async totalCount() {

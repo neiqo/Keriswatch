@@ -1,6 +1,8 @@
 const { get } = require("https");
 const Event = require("../models/event");
 const { parse } = require("path");
+const jwt = require('jsonwebtoken');
+
 
 // Controller to get all events
 const getAllEvents = async (req, res) => {
@@ -141,38 +143,80 @@ async function getSpecificEventwithUsers(req, res) {
 
 // Controller to add user to event
 async function addUsertoEvent(req, res) {
-  // for /events/:eventId/with-users/:userId
-  const eventId = parseInt(req.params.id);
-  const userId = parseInt(req.params.userId);
+  // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+  
+  const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+  const token = parsedJsonToken.token;
+  console.log("token", token);
 
-  // for /events/with-users?eventId=3&user_id=2
-  // const eventId = req.query.eventId;
-  // const userId = req.query.userId;
+  console.log("authHeader", authHeader);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  // const token = authHeader.split(' ')[1];
+  // console.log("token", token);
 
   try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Extract userId from the decoded token
+    const userId = decoded.userId;
+    
+    // Extract eventId from the request parameters
+    const eventId = parseInt(req.params.id);
+
+    console.log("userId", userId);
+    console.log("eventId", eventId);
+
+    // Add user to event
     const event = await Event.addUsertoEvent(eventId, userId);
-    res.json(event);
-  }
-  catch (error) {
+    
+    res.status(201).json(event);
+  } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching events with users" });
+    res.status(500).json({ message: 'Error adding user to event' });
   }
 };
 
 // Controller to delete user from event
 async function deleteUserfromEvent(req, res) {
-  const eventId = parseInt(req.params.id);
-  const userId = parseInt(req.params.userId);
+  // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+
+  console.log("authHeader", authHeader);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+  const token = parsedJsonToken.token;
+  console.log("token", token);
 
   try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Extract userId from the decoded token
+    const userId = decoded.userId;
+    
+    // Extract eventId from the request parameters
+    const eventId = parseInt(req.params.id);
+
+    console.log("userId", userId);
+    console.log("eventId", eventId);
+
+    // Delete user from event
     const event = await Event.deleteUserfromEvent(eventId, userId);
     res.json(event);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting user from event" });
   }
 }
+
 
 // Controller to get specific event with users
 async function getSpecificUserwithEvents(req, res) {
@@ -190,19 +234,42 @@ async function getSpecificUserwithEvents(req, res) {
   }
 };
 
+// Controller to check if user joined event
 async function checkIfUserJoinedEvent(req, res) {
-  const eventId = parseInt(req.params.id);
-  const userId = parseInt(req.params.userId);
+  // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+
+  console.log("authHeader", authHeader);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+  const token = parsedJsonToken.token;
+  console.log("token", token);
 
   try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Extract userId from the decoded token
+    const userId = decoded.userId;
+    
+    // Extract eventId from the request parameters
+    const eventId = parseInt(req.params.id);
+
+    console.log("userId", userId);
+    console.log("eventId", eventId);
+
+    // Check if user joined the event
     const event = await Event.checkIfUserJoinedEvent(eventId, userId);
     res.status(200).json(event);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching events with users" });
+    res.status(500).json({ message: "Error checking if user joined event" });
   }
 }
+
 
 async function getEventCategory(req, res) {
   try {
