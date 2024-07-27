@@ -48,7 +48,6 @@ app.get('/login', (req, res) => {
 
 app.post('/api/login', authUser.validateLogin, userController.userLogin);
 app.post('/api/logout', verifyJWT, userController.userLogout);
-app.delete('/api/token', tokenController.deleteToken);
 
 // Specific-user routes
 app.get('/api/users/:username', userController.getUserByUsername);
@@ -67,6 +66,9 @@ app.get('/api/users', userController.getAllUsers);
 
 // Get specific user profile picture
 app.get('/api/users/:username/profilePicture', userController.getProfilePicture);
+
+// TOKEN ROUTES
+app.delete('/api/token', tokenController.deleteToken);
 
 // COMMENT ROUTES
 app.get('/api/:articleId/comments', CommentController.getArticleComments);

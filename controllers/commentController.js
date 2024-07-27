@@ -5,7 +5,7 @@ const getArticleComments =  async (req, res) => {
     try {
         const articleId = req.params.articleId;
         const comments = await Comment.getCommentsByArticleId(articleId);
-        res.json(comments);
+        res.status(201).json(comments);
     } catch (error) {
         res.status(500).send('Error fetching comments: ' + error.message);
     }

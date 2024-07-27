@@ -562,6 +562,14 @@ VALUES
 (30, '2.jpg'),
 (30, '3.jpg');
 
+-- Insert Dummy Comments
+INSERT INTO Comments (userId, articleId, content, parentId, createdAt, upvotes, downvotes)
+VALUES 
+(1, 1, 'This is a top-level comment.', NULL, '2023-07-25T12:00:00', 5, 2),
+(2, 1, 'This is a reply to the top-level comment.', 1, '2023-07-25T13:00:00', 2, 0),
+(3, 1, 'Admin replying to the top-level comment.', 1, '2023-07-25T14:00:00', 10, 1),
+(4, 1, 'Another top-level comment.', NULL, '2023-07-25T15:00:00', 3, 1),
+(1, 1, 'Replying to the second top-level comment.', 4, '2023-07-25T16:00:00', 1, 0);
 
 -- Inserting bookmark values into the database
 INSERT INTO Bookmarks (userId, articleId)
