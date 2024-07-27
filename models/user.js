@@ -94,10 +94,11 @@ class User {
             const result = await request.query(sqlQuery);
             connection.close();
 
-            if (!result) return null; // if no user found, return null
+            if (!result || !result.recordset[0].profilePicture) return null; // if no user found, return null
 
             console.log("Result: " + result.recordset[0]);
-            const profilePicture = result.recordset[0] ? result.recordset[0].profilePicture.toString('base64') : null;
+
+            const profilePicture = result.recordset[0].profilePicture.toString('base64');
 
             return profilePicture;
         } catch (error) {
