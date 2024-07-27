@@ -76,13 +76,26 @@ app.post('/api/comments/:commentId/upvote', verifyJWT, CommentController.upvoteC
 app.post('/api/comments/:commentId/downvote', verifyJWT, CommentController.downvoteComment);
 
 // EVENT ROUTES
-app.get('/events', (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/html/events.html'));
-  console.log(path.join(__dirname + '/public/html/events.html'));
+app.get('/events/joined/:userId', (req, res) => { //not done yet
+  res.sendFile(path.join(__dirname, 'public/html', 'eventsJoined.html'));
 });
 
-app.get("/events/:id", (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/html/eventDetails.html'));
+// app.get('/events/:id/join', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public/html', 'eventJoin.html'));
+// });
+
+
+app.get('/events', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/html', 'events.html'));
+  // console.log(path.join(__dirname, 'public/html', 'events.html'));
+});
+
+// app.get("/events/:id", (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
+// });
+
+app.get("/events/:id/user/:userId", (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
 });
 
 app.get('/events/:id/update', (req, res) => {
@@ -94,11 +107,16 @@ app.get('/events/:id/update', (req, res) => {
 
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);
+app.get("/api/events/category/:categoryId", eventsController.getEventCategory);
+app.get("/api/events/:eventId/related/category/:categoryId", eventsController.getRelatedEvent);
 //app.get("/api/events/search", eventsController.searchEvents);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
-app.post("/api/events/with-users", eventsController.addUsertoEvent);
-app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
-
+// app.post("/api/events/with-users", eventsController.addUsertoEvent);
+// app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
+app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
+app.get("/api/events/:id/user/:userId/joined", eventsController.checkIfUserJoinedEvent);
+app.post("/api/events/:id/user/:userId", eventsController.addUsertoEvent);
+app.delete("/api/events/:id/user/:userId", eventsController.deleteUserfromEvent);
 
 app.get("/api/events/:id", eventsController.getEventById);
 app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
@@ -114,9 +132,14 @@ next();
 console.log('Passed validateUpdateEvent middleware');
 next();
 }, eventsController.updateEvent);// app.delete("/api/events/:id", eventsController.deleteEvent);
-app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);  
+app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser); 
+app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
+
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
+const mapController = require("./controllers/mapController");
+// MAP ROUTES
+app.get('/getLocationData', mapController.getLocationData);
 
 // ARTICLE ROUTES
 app.get("/search", articlesController.searchArticles); // route for searching articles
