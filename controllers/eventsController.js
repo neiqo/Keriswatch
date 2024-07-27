@@ -1,4 +1,6 @@
+const { get } = require("https");
 const Event = require("../models/event");
+const { parse } = require("path");
 
 // Controller to get all events
 const getAllEvents = async (req, res) => {
@@ -30,6 +32,8 @@ const getEventById = async (req, res) => {
 // Controller to create event
 const createEvent = async (req, res) => {
   const newEvent = req.body;
+
+  console.log("new event", newEvent);
   try {
     const createdEvent = await Event.createEvent(newEvent);
     res.status(201).json(createdEvent);
@@ -47,9 +51,14 @@ const updateEvent = async (req, res) => {
   const newEventData = {
     name: req.body.name,
     description: req.body.description,
-    type: req.body.type,
+    categoryName: req.body.categoryName,
     startDate: req.body.startDate,
-    endDate: req.body.endDate
+    endDate: req.body.endDate,
+    locationName: req.body.locationName,
+    address: req.body.address,
+    postalCode: req.body.postalCode,
+    country: req.body.country,
+    totalCapacity: req.body.totalCapacity
   };
 
   // If an image is uploaded, include it in newEventData
@@ -71,21 +80,6 @@ const updateEvent = async (req, res) => {
   }
 };
 
-// Controller to delete event
-const deleteEvent = async (req, res) => {
-  const EventId = parseInt(req.params.id);
-
-  try {
-    const success = await Event.deleteEvent(EventId);
-    if (!success) {
-      return res.status(404).send("Event not found");
-    }
-    res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error deleting event");
-  }
-}
 
 //To delete event from eventuser table and event table
 const deleteEventandUser = async (req, res) => {
@@ -148,12 +142,12 @@ async function getSpecificEventwithUsers(req, res) {
 // Controller to add user to event
 async function addUsertoEvent(req, res) {
   // for /events/:eventId/with-users/:userId
-  //const eventId = parseInt(req.params.eventId);
-  //const userId = parseInt(req.params.userId);
+  const eventId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
 
   // for /events/with-users?eventId=3&user_id=2
-  const eventId = req.query.eventId;
-  const userId = req.query.userId;
+  // const eventId = req.query.eventId;
+  // const userId = req.query.userId;
 
   try {
     const event = await Event.addUsertoEvent(eventId, userId);
@@ -167,8 +161,8 @@ async function addUsertoEvent(req, res) {
 
 // Controller to delete user from event
 async function deleteUserfromEvent(req, res) {
-  const eventId = req.query.eventId;
-  const userId = req.query.userId;
+  const eventId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
 
   try {
     const event = await Event.deleteUserfromEvent(eventId, userId);
@@ -180,12 +174,79 @@ async function deleteUserfromEvent(req, res) {
   }
 }
 
+// Controller to get specific event with users
+async function getSpecificUserwithEvents(req, res) {
+  const userId = parseInt(req.params.userId);
+
+  try {
+    const user = await Event.getSpecificEventwithUsers(userId);
+    if (!user) {
+      return res.status(404).send("Event not found");
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching specific user with events" });
+  }
+};
+
+async function checkIfUserJoinedEvent(req, res) {
+  const eventId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
+
+  try {
+    const event = await Event.checkIfUserJoinedEvent(eventId, userId);
+    res.status(200).json(event);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching events with users" });
+  }
+}
+
+async function getEventCategory(req, res) {
+  try {
+    const categoryId = parseInt(req.params.categoryId);
+    const category = await Event.getEventCategory(categoryId);
+    res.status(200).json(category);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching event category" });
+  }
+}
+
+async function getNumberofUsersJoined(req, res) {
+  try {
+    const eventId = parseInt(req.params.id);
+    const users = await Event.getNumberofUsersJoined(eventId);
+    res.status(200).json(users);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching number of users joined" });
+  }
+}
+
+async function getRelatedEvent(req, res) {
+  try {
+    const eventId = parseInt(req.params.eventId);
+    const categoryId = parseInt(req.params.categoryId);
+    const events = await Event.getRelatedEvent(eventId, categoryId);
+    res.status(200).json(events);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching related events" });
+  }
+
+}
+
 module.exports = {
   getAllEvents,
   getEventById,
   createEvent,
   updateEvent,
-  //deleteEvent,
   deleteEventandUser,
   //deleteUserandEvent,
   getEvents,
@@ -193,5 +254,10 @@ module.exports = {
   getEventswithUsers,
   getSpecificEventwithUsers,
   addUsertoEvent,
-  deleteUserfromEvent
+  deleteUserfromEvent,
+  getSpecificUserwithEvents,
+  checkIfUserJoinedEvent, //redundant
+  getEventCategory, // can be combined for id and  name
+  getNumberofUsersJoined, //redundant???
+  getRelatedEvent
 };

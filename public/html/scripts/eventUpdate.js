@@ -1,5 +1,6 @@
 // // Purpose: To create a new event and send it to the server
 
+
 // const { func } = require("joi");
 
 
@@ -220,14 +221,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Error fetching event details');
             }
             const data = await response.json();
-            populateForm(data);
+            const category = await getEventCategory(data.categoryId);
+            // const location = await getEventLocation(data.locationId);
+            populateForm(data, category, location);
         } catch (error) {
             console.error(error);
         }
     }
 
     // Populate form with event details
-    function populateForm(data) {
+    function populateForm(data, category, location) {
+        //data
         document.getElementById('name').value = data.name;
         document.getElementById('description').value = data.description;
 
@@ -243,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('startdate').value = formattedStartDate;
         document.getElementById('enddate').value = formattedEndDate;
 
-        document.getElementById('type').value = data.type;
+        // document.getElementById('type').value = data.type;
 
 
         const imageContainer = document.getElementById('imageContainer');
@@ -258,17 +262,39 @@ document.addEventListener('DOMContentLoaded', function() {
     
         document.getElementById('image').textContent = data.imagepath;
     
+
+        //category
+        document.getElementById('category').value = category.id;
+
+        //location
+        document.getElementById('locationName').value = data.locationName;
+        document.getElementById('address').value = data.address;    
+        document.getElementById('postalCode').value = data.postalCode;
+        console.log("country", location.country);   
+        document.getElementById('country').value = data.country;
+        document.getElementById('totalCapacity').value = data.totalCapacity;
         // Handle image display if needed
     }
 
     function getValue() {
         let nameValue = form.elements['name'].value;
         let descriptionValue = form.elements['description'].value;
-        let typeValue = form.elements['type'].value;
+        // let typeValue = form.elements['type'].value;
         let startdateValue = form.elements['startdate'].value;
         let enddateValue = form.elements['enddate'].value;
         let imagefile = form.elements['image'].files[0];
     
+        //category
+        let categoryValue = form.elements['category'].value;
+
+        //location
+        let locationNameValue = form.elements['locationName'].value;
+        let addressValue = form.elements['address'].value;
+        let postalCodeValue = form.elements['postalCode'].value;
+        let countryValue = form.elements['country'].value;
+        
+        let totalCapacityValue = form.elements['totalCapacity'].value;
+
         console.log(startdateValue);
         // Validate startdate and enddate
         if (!validateDates(startdateValue, enddateValue)) {
@@ -278,11 +304,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
         console.log(nameValue);
         console.log(descriptionValue);
-        console.log(typeValue);
+        // console.log(typeValue);
         console.log(startdateValue);
         console.log(enddateValue);
         console.log(imagefile);
-        updateEvent(nameValue, descriptionValue, typeValue, startdateValue, enddateValue, imagefile);
+        updateEvent(nameValue, descriptionValue, categoryValue, startdateValue, enddateValue, imagefile, locationNameValue, addressValue, postalCodeValue, countryValue, totalCapacityValue);
     }
     
     
@@ -308,13 +334,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return true; // Valid dates
     }
     
-    async function updateEvent(name, description, type, startdate, enddate, imagefile) {
+    async function updateEvent(name, description, category, startdate, enddate, imagefile, locationName, address, postalCode, country, totalCapacity) {
         const formData = new FormData();
         formData.append("name", name);
         formData.append("description", description);
-        formData.append("type", type);
+        // formData.append("type", type);
+        formData.append("categoryId", category);
         formData.append("startDate", startdate);
         formData.append("endDate", enddate);
+        formData.append("locationName", locationName);
+        formData.append("address", address);
+        formData.append("postalCode", postalCode);
+        formData.append("country", country);
+        formData.append("totalCapacity", totalCapacity);    
         // formData.append("image", imagefile); // Assuming imageFile is the File object
     
         if (imagefile) {
@@ -411,4 +443,26 @@ function previewImage(event) {
         imagePreview.style.display = 'none';
     }
 }
+
+async function getEventCategory(categoryId) {
+    try {
+        const response = await fetch(`/api/events/category/${categoryId}`, { method: 'GET' });
+        const data = await response.json();
+        return data;
+    }   
+    catch (error) {
+        console.error(error);
+    }
+}
+
+// async function getEventLocation(locationId) {
+//     try {
+//         const response = await fetch(`/api/events/location/${locationId}`, { method: 'GET' });
+//         const data = await response.json();
+//         return data;
+//     }
+//     catch (error) {
+//         console.error(error);
+//     }
+// }
 
