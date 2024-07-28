@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/dist/mdb5/standard/core.min.css">
+    <link rel="stylesheet" id="roboto-subset.css-css" 
+    href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/mdb5/fonts/roboto-subset.css?ver=3.9.0-update.5"
+    type="text/css" media="all">
+    <link rel="stylesheet" type="text/css" href="./styles/navbar.css"/>
+    <link rel="stylesheet" href="./styles/footer.css">
+    <link rel="stylesheet" href="./styles/userProfile.css">
+</head>
+<body>
+    <div id="content">
+        <div id="name_profile">
+            <div>
+                <img id="account-profile-picture" alt="Profile Picture" />
+            </div>
+            <div id="name_editprofile">
+                <p class="headerTitle" id="profile_username"></p>
+                <button class="purple-btn" id="edit-profile-btn">Edit Account Details</button>
+                <button class="purple-btn" id="edit-pic-btn">Edit Account Picture</button>
+            </div>
+        </div>
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Account Details</h2>
+                <p>Please enter the details you wish to update</p>
+                <div class="form-group">
+                    <label for="username">Username (cannot be changed)</label>
+                    <input type="text" id="username" name="username" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="country-selector">Country</label>
+                    <select id="country-selector" name="country">
+                        <option value="Singapore">Singapore</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Brunei">Brunei</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Laos">Laos</option>
+                        <option value="Myanmar">Myanmar</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="Thailand">Thailand</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <button class="purple-btn" id="update-btn">Update</button>
+            </div>
+        </div>
+
+        <div id="profilePicModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-profile-pic">&times;</span>
+                <h2>Edit Account Picture</h2>
+                <p>Please upload a new profile picture</p>
+                <div class="form-group">
+                    <label for="profile-pic">Upload New Profile Picture</label>
+                    <input type="file" id="profile-pic" name="profile-pic" accept="image/*">
+                </div>
+                <button class="purple-btn" id="upload-pic-btn">Upload Picture</button>
+            </div>
+        </div>
+    
+        <div id="bottom">
+            <div>
+                <p class="headerTitle">Your Articles</p>
+                <div id="articles-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div id="column-footer">
+            <div>
+                <h3 class="paraTitle-footer">Contact</h3>
+                <p>+6589217943<br>
+                1 Paya Lebar Link #11-03<br>PLQ 1, Paya Lebar Quarter<br>Singapore 408533</p>
+            </div>
+            <div>
+                <h3 class="paraTitle-footer">Organisations</h3>
+                <a href="./login.html">Login</a>
+            </div>
+        </div>
+
+        <div id="column-footer">
+            <div>
+                <h3 class="paraTitle-footer">Sections</h3>
+                <a href="./index.html">Home</a> <br>
+                <a href="./searchpage.html">Articles</a> <br>
+                <a href="./events.html">Events</a> <br>
+                <a href="./credits.html">Credits</a>
+            </div>
+            <div>
+                <h3 class="paraTitle-footer">Staffs</h3>
+                <a href="./login.html">Login</a>
+            </div>
+        </div>
+
+        <div id="column-footer">
+            <h1 class="headerTitle-footer">KERISWATCH</h1>
+            <h3 class="paraTitle-footer">About Us</h3>
+            <p>Welcome to KERISWATCH! Our website is dedicated to providing an in-depth look at the industrial landscape of ASEAN countries. Whether you are a researcher, policy-maker, student, or simply interested in the industrial development of Southeast Asia, our platform provides valuable insights to help you understand the industrial dynamics within ASEAN.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script type="module" src="./scripts/checkToken.js"></script>
+    <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/organisation.js"></script>
+</body>
+</html>

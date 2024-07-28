@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     let isLoggedIn = false;
     let profilePictureUrl = defaultUserImg;
     let username = defaultUserName;
+    let role = "NormalUser"
 
     if (token) {
         try {
@@ -155,6 +156,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             console.log(payload);
             isLoggedIn = true;
             username = payload.username;
+            role = payload.role;
             const profilePicture = await fetchProfilePicture(username);
             profilePictureUrl = profilePicture ? `data:image/png;base64,${profilePicture}` : defaultUserImg;
         } catch (error) {
@@ -183,10 +185,17 @@ document.addEventListener("DOMContentLoaded", async function() {
     const accountItems = [];
 
     if (token) {
-        accountItems.push(
-            { text: 'Your Account', href: 'user.html' },
-            { text: 'Log Out', href: '#', id: 'logout' }
-        );
+        if (role == "Organisation"){
+            accountItems.push(
+                { text: 'Organisation Dashboard', href: 'organisation.html' },
+                { text: 'Log Out', href: '#', id: 'logout' }
+            );
+        } else {
+            accountItems.push(
+                { text: 'Your Account', href: 'user.html' },
+                { text: 'Log Out', href: '#', id: 'logout' }
+            );
+        }
     } else {
         accountItems.push({ text: 'Log In', href: 'login.html' });
     }
