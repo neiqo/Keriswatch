@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", async function() {
             emailCell.textContent = user.email;
             row.appendChild(emailCell);
 
+            const roleCell = document.createElement('td');
+            roleCell.textContent = user.country ? 'NormalUser' : 'Organisation';
+            row.appendChild(roleCell);
+
             const countryCell = document.createElement('td');
             countryCell.textContent = user.country ? user.country : '-';
             row.appendChild(countryCell);
