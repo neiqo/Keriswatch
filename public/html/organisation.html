@@ -80,7 +80,64 @@
                 <button class="purple-btn" id="upload-pic-btn">Upload Picture</button>
             </div>
         </div>
-    
+
+        <div id="addArticleSection">
+            <h2>Add New Article</h2>
+            <form id="addArticleForm" enctype="multipart/form-data">
+                <div>Author:
+                    <label for="Author">Author:</label>
+                    <input type="text" id="Author" name="Author" required>
+                </div>
+                <div>Country:
+                    <label for="Country">Country:</label>
+                    <select id="Country" name="Country" required>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Brunei">Brunei</option>
+                        <option value="Myanmar">Myanmar</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Laos">Laos</option>
+                    </select>
+                </div>
+                <div>Sector:
+                    <label for="Sector">Sector:</label>
+                    <select id="Sector" name="Sector" required>
+                        <option value="Manufacture">Manufacture</option>
+                        <option value="Services">Services</option>
+                        <option value="Agriculture">Agriculture</option>
+                    </select>
+                </div>
+                <div>Title:
+                    <label for="Title">Title:</label>
+                    <input type="text" id="Title" name="Title" required>
+                </div>
+                <div>Body:
+                    <label for="Body">Body:</label>
+                    <textarea id="Body" name="Body" required></textarea>
+                </div>
+                <div>Publish Date and Time
+                    <label for="publishDateTime">Publish Date and Time:</label>
+                    <input type="datetime-local" id="publishDateTime" name="publishDateTime" required>
+                </div>
+                <div>Tags:
+                    <label for="Tags">Tags:</label>
+                    <input type="text" id="Tags" name="Tags">
+                </div>
+                <div id="imageInputs"></div>
+                <div>
+                    <button type="button" id="addImageButton">Add Image</button>
+                </div>
+                <div>
+                    <button type="submit">Add Article</button>
+                </div>
+            </form>
+        </div>
+        
+
         <div id="bottom">
             <div>
                 <p class="headerTitle">Your Articles</p>
