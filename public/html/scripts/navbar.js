@@ -194,9 +194,14 @@ document.addEventListener("DOMContentLoaded", async function() {
                 { text: 'Organisation Dashboard', href: 'organisation.html' },
                 { text: 'Log Out', href: '#', id: 'logout' }
             );
-        } else {
+        } else if (role == "NormalUser") {
             accountItems.push(
                 { text: 'Your Account', href: 'user.html' },
+                { text: 'Log Out', href: '#', id: 'logout' }
+            );
+        } else {
+            accountItems.push(
+                { text: 'Admin Dashboard', href: 'admin.html' },
                 { text: 'Log Out', href: '#', id: 'logout' }
             );
         }
