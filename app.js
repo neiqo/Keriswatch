@@ -67,8 +67,8 @@ app.get('/api/users', userController.getAllUsers);
 app.get('/api/users/:username/profilePicture', userController.getProfilePicture);
 
 app.get('/users/:username', (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/html/userProfile.html'));
-  console.log(path.join(__dirname + '/public/html/userProfile.html'));
+  res.sendFile(path.join(__dirname + '/public/html/user.html'));
+  console.log(path.join(__dirname + '/public/html/user.html'));
 });
 
 // TOKEN ROUTES
