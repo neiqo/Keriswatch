@@ -82,6 +82,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     }
 
+    // For updating user details
+
     // Get the modal
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("edit-profile-btn");
@@ -143,4 +145,64 @@ document.addEventListener("DOMContentLoaded", async function() {
             console.error('One or more input elements are missing');
         }
     }
+
+    // For updating user profile picture
+    // Get the modals
+    var accountDetailsModal = document.getElementById("accountDetailsModal");
+    var profilePicModal = document.getElementById("profilePicModal");
+
+    // Get the buttons that open the modals
+    var editProfileBtn = document.getElementById("edit-profile-btn");
+    var editPicBtn = document.getElementById("edit-pic-btn");
+
+    // Get the <span> elements that close the modals
+    var closeAccountDetails = document.getElementById("close-account-details");
+    var closeProfilePic = document.getElementById("close-profile-pic");
+
+    // When the user clicks on the button, open the respective modal
+    editProfileBtn.onclick = function() {
+        accountDetailsModal.style.display = "block";
+    }
+
+    editPicBtn.onclick = function() {
+        profilePicModal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the respective modal
+    closeAccountDetails.onclick = function() {
+        accountDetailsModal.style.display = "none";
+    }
+
+    closeProfilePic.onclick = function() {
+        profilePicModal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modals, close them
+    window.onclick = function(event) {
+        if (event.target == accountDetailsModal) {
+            accountDetailsModal.style.display = "none";
+        }
+        if (event.target == profilePicModal) {
+            profilePicModal.style.display = "none";
+        }
+    }
+
+    // Handle the upload picture button click
+    document.getElementById("upload-pic-btn").onclick = function() {
+        var fileInput = document.getElementById("profile-pic");
+        var file = fileInput.files[0];
+
+        if (file) {
+            // Upload logic here!
+
+            alert("Profile picture uploaded successfully!");
+        } else {
+            alert("Please select a picture to upload.");
+        }
+
+        // Close the modal
+        profilePicModal.style.display = "none";
+    }
+
+    
 });
