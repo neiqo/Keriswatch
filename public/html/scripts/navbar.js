@@ -5,14 +5,25 @@
 document.addEventListener("DOMContentLoaded", async function() {
     // Function to fetch user profile picture
     async function fetchProfilePicture(username) {
-        const token = localStorage.getItem('token');
+        const tokenObj = JSON.parse(localStorage.getItem('token'));
+        const token = tokenObj ? tokenObj.token : null;
         if (!token) return null;
 
         try {
             const response = await fetch(`/api/users/${username}/profilePicture`);
 
             if (response.ok) {
+                if (response == null) {
+                    console.log("Use default profile picture");
+                    return null;
+                }
+                console.log("Response : " + response);
+
                 const data = await response.json();
+                if (data === null) {
+                    console.log("Profile picture not found, using default");
+                    return null;
+                }
                 return data;
             } else {
                 console.error('Failed to fetch profile picture');
@@ -129,7 +140,8 @@ document.addEventListener("DOMContentLoaded", async function() {
     const defaultUserName = 'Guest';
 
     // Check if user is logged in
-    const token = localStorage.getItem('token');
+    const tokenObj = JSON.parse(localStorage.getItem('token'));
+    const token = tokenObj ? tokenObj.token : null;
     let isLoggedIn = false;
     let profilePictureUrl = defaultUserImg;
     let username = defaultUserName;
@@ -168,16 +180,15 @@ document.addEventListener("DOMContentLoaded", async function() {
     userItem.appendChild(dropdownMenu);
 
     // Add dropdown items
-    const accountItems = [
-        { text: 'Your Account', href: 'user.html' },
-        { text: 'Help', href: '#' },
-        { text: 'Log Out', href: '#', id: 'logout' }
-    ];
+    const accountItems = [];
 
-    if (!token) {
-        accountItems.pop(); // Remove the logout item
-        const loginItem = { text: 'Log In', href: 'login.html' };
-        accountItems.push(loginItem);
+    if (token) {
+        accountItems.push(
+            { text: 'Your Account', href: 'user.html' },
+            { text: 'Log Out', href: '#', id: 'logout' }
+        );
+    } else {
+        accountItems.push({ text: 'Log In', href: 'login.html' });
     }
     
     accountItems.forEach(item => {

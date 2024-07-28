@@ -1,7 +1,5 @@
 require('dotenv').config();
-const { json } = require('body-parser');
 const jwt = require("jsonwebtoken"); // Import the jsonwebtoken library for handling JWTs
-const { listenerCount } = require('process');
 
 const secretKey = process.env.JWT_SECRET; // Retrieve the secret key for signing/verifying tokens from environment variables
 
@@ -9,18 +7,19 @@ const verifyJWT = (req, res, next) => {
     // Extract the token from the Authorization header if it exists
     const tokenString = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-
+    console.log("Token string: " + tokenString);
 
     // Parse the JSON object to extract the token
-    let token;
-    try {
-        const tokenObject = JSON.parse(tokenString);
-        token = tokenObject.token;
-    } catch (error) {
-        return res.status(400).json({ message: "Invalid token format" });
-    }
+    let token = tokenString;
+    // try {
+    //     console.log("Token object: " + tokenObject);
+    //     const tokenObject = JSON.parse(tokenString);
+    //     token = tokenObject.token || tokenObject;
+    // } catch (error) {
+    //     return res.status(400).json({ message: "Invalid token format" });
+    // }
 
-    console.log(token);
+    console.log("Token in verifyJWT: " + token);
   // If no token is provided, return an Unauthorised error response
   if (!token) {
     return res.status(401).json({ message: "Unauthorised" });
@@ -37,7 +36,7 @@ const verifyJWT = (req, res, next) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    console.log("Decoded" + decoded);
+    console.log("Decoded in verifyJWT: " + decoded);
 
     // Define the roles authorised to access specific endpoints
     const authorisedRoles = {
@@ -73,7 +72,7 @@ const verifyJWT = (req, res, next) => {
     }
 
     // If authorised, attach the decoded token to the request object for use in subsequent middleware or route handlers
-    req.user = decoded;
+    req.decodedUser = decoded;
     next(); // Proceed to the next middleware or route handler
   });
 }

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function() {
-    const token = localStorage.getItem('token');
+    const token = JSON.parse(localStorage.getItem('token'));
     if (!token) {
         console.error('No token found');
         return;
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         if (profilePicture) {
             profilePictureElement.src = `data:image/png;base64,${profilePicture}`;
         } else {
-            profilePictureElement.src = `./images/profile-pictures/defaultProfile.png`;
+            profilePictureElement.src = `./images/profile-pictures/defaultProfile-black.png`;
         }
     }
 
