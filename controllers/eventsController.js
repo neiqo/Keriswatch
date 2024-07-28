@@ -146,18 +146,26 @@ async function getSpecificEventwithUsers(req, res) {
 async function addUsertoEvent(req, res) {
   // Extract the token from the Authorization header
   const authHeader = req.headers.authorization;
-  
-  const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
-  const token = parsedJsonToken.token;
-  console.log("token", token);
 
   console.log("authHeader", authHeader);
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  // const token = authHeader.split(' ')[1];
-  // console.log("token", token);
+  let token;
+  try {
+    // Attempt to parse the token as JSON
+    // If successful, the token is in the format { "token": "
+    // For Web Application
+    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+    token = parsedJsonToken.token;
+    console.log("Parsed JSON token:", token);
+  } catch (error) {
+    // If parsing fails, assume the token is a plain string
+    // For Swagger 
+    token = authHeader.split(' ')[1];
+    console.log("Plain token:", token);
+  }
 
   try {
     // Verify and decode the token
@@ -192,9 +200,20 @@ async function deleteUserfromEvent(req, res) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
-  const token = parsedJsonToken.token;
-  console.log("token", token);
+  let token;
+  try {
+    // Attempt to parse the token as JSON
+    // If successful, the token is in the format { "token": "
+    // For Web Application
+    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+    token = parsedJsonToken.token;
+    console.log("Parsed JSON token:", token);
+  } catch (error) {
+    // If parsing fails, assume the token is a plain string
+    // For Swagger 
+    token = authHeader.split(' ')[1];
+    console.log("Plain token:", token);
+  }
 
   try {
     // Verify and decode the token
@@ -245,9 +264,20 @@ async function checkIfUserJoinedEvent(req, res) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
-  const token = parsedJsonToken.token;
-  console.log("token", token);
+  let token;
+  try {
+    // Attempt to parse the token as JSON
+    // If successful, the token is in the format { "token": "
+    // For Web Application
+    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+    token = parsedJsonToken.token;
+    console.log("Parsed JSON token:", token);
+  } catch (error) {
+    // If parsing fails, assume the token is a plain string
+    // For Swagger 
+    token = authHeader.split(' ')[1];
+    console.log("Plain token:", token);
+  }
 
   try {
     // Verify and decode the token
@@ -324,8 +354,8 @@ module.exports = {
   addUsertoEvent,
   deleteUserfromEvent,
   getSpecificUserwithEvents,
-  checkIfUserJoinedEvent, //redundant
-  getEventCategory, // can be combined for id and  name
-  getNumberofUsersJoined, //redundant???
+  checkIfUserJoinedEvent, 
+  getEventCategory, 
+  getNumberofUsersJoined, 
   getRelatedEvent
 };

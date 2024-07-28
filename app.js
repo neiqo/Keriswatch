@@ -112,13 +112,12 @@ app.get("/api/events/category/:categoryId", eventsController.getEventCategory);
 app.get("/api/events/:eventId/related/category/:categoryId", eventsController.getRelatedEvent);
 //app.get("/api/events/search", eventsController.searchEvents);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
-// app.post("/api/events/with-users", eventsController.addUsertoEvent);
-// app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
-app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
+app.post("/api/events/with-users", eventsController.addUsertoEvent);
+app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
 app.get("/api/events/:id/joined", eventsController.checkIfUserJoinedEvent);
+app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
 app.post("/api/events/:id/users", eventsController.addUsertoEvent);
 app.delete("/api/events/:id/users", eventsController.deleteUserfromEvent);
-
 app.get("/api/event/:id", eventsController.getEventById);
 app.post("/api/events/create", uploadEventImage.single("image"), validateEvent, eventsController.createEvent, (req, res) => {
   // Handle the form data here

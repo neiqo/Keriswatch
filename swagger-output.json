@@ -105,29 +105,34 @@
         }
       },
       "/events/{id}/users": {
-        "get": {
-          "description": "Get number of users joined event",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "404": {
-              "description": "Not Found"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
+      "get": {
+        "description": "Get number of users joined event",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
-        "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
           "description": "Add user to event",
           "parameters": [
             {
@@ -135,18 +140,6 @@
               "in": "path",
               "required": true,
               "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "example": "any"
-                  }
-                }
-              }
             }
           ],
           "responses": {
@@ -159,7 +152,12 @@
             "500": {
               "description": "Internal Server Error"
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         },
         "delete": {
           "description": "Delete user from event",
@@ -181,7 +179,12 @@
             "500": {
               "description": "Internal Server Error"
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/events/{id}/joined": {
@@ -205,7 +208,12 @@
             "500": {
               "description": "Internal Server Error"
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/event/{id}": {
@@ -482,6 +490,14 @@
             }
           }
         }
+      }
+    },
+    "securityDefinitions": {
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter 'Bearer' [space] and then your token in the text input below. Example: 'Bearer abcdef12345'"
       }
     }
   }

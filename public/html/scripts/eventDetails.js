@@ -345,7 +345,7 @@ async function getRelatedEvent(eventId, categoryId) {
             relatedEvent.appendChild(location);
 
             relatedEvent.addEventListener("click", () => {
-                window.location.href = `/events/${eventId}/user/${userId}`;
+                window.location.href = `/events/${eventId}`;
             });
             relatedEvents.appendChild(relatedEvent);
         });
