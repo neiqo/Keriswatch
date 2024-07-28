@@ -1,3 +1,4 @@
+
 // import jwt_decode from 'jwt-decode'; // Import the jwt-decode module
 
 // const { log } = require("console");
@@ -57,7 +58,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     brandLink.href = '/index.html';
     const brandImg = document.createElement('img');
     brandImg.src = '/images/keriswatch.png';
-
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
     brandImg.loading = 'lazy';
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             username = payload.username;
             role = payload.role;
             const profilePicture = await fetchProfilePicture(username);
-            profilePictureUrl = profilePicture ? `data:image/png;base64,${profilePicture}` : defaultUserImg;
+            profilePictureUrl = profilePicture ? `data:/image/png;base64,${profilePicture}` : defaultUserImg;
         } catch (error) {
             console.error('Error parsing token:', error);
         }
@@ -192,8 +192,8 @@ document.addEventListener("DOMContentLoaded", async function() {
     dropdownMenu.setAttribute('aria-labelledby', 'navbarDropdown');
     userItem.appendChild(dropdownMenu);
 
-    // Add dropdown items
-    const accountItems = [];
+     // Add dropdown items
+     const accountItems = [];
 
     if (token) {
         if (role == "Organisation"){
@@ -201,14 +201,19 @@ document.addEventListener("DOMContentLoaded", async function() {
                 { text: 'Organisation Dashboard', href: 'organisation.html' },
                 { text: 'Log Out', href: '#', id: 'logout' }
             );
-        } else {
+        } else if (role == "NormalUser") {
             accountItems.push(
                 { text: 'Your Account', href: 'user.html' },
                 { text: 'Log Out', href: '#', id: 'logout' }
             );
+        } else {
+            accountItems.push(
+                { text: 'Admin Dashboard', href: 'admin.html' },
+                { text: 'Log Out', href: '#', id: 'logout' }
+            );
         }
     } else {
-        accountItems.push({ text: 'Log In', href: 'login.html' });
+        accountItems.push({ text: 'Log In', href: '/login.html' });
     }
     
     accountItems.forEach(item => {
@@ -276,4 +281,3 @@ document.addEventListener("DOMContentLoaded", async function() {
         window.location.href = `/articleSearchPage.html?${searchParams.toString()}`;
     });
 });
-
