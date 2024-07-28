@@ -11,10 +11,15 @@ const validateUpdateEvent = (req, res, next) => {
 
     const schema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
-        description: Joi.string().min(3).max(50).required(),
-        type: Joi.string().min(3).max(50).required(),
+        description: Joi.string().min(3).max(500).required(),
+        categoryId: Joi.number().integer().min(1).required(),
         startDate: Joi.date().iso().required(),
-        endDate: Joi.date().iso().required()
+        endDate: Joi.date().iso().required(),
+        locationName: Joi.string().min(1).max(50).required(),
+        address: Joi.string().min(1).max(50).required(),
+        postalCode: Joi.string().min(1).max(50).required(),
+        country: Joi.string().min(1).max(50).required(),
+        totalCapacity: Joi.number().integer().min(1).required()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -49,7 +54,7 @@ const validateUpdateEvent = (req, res, next) => {
 
     if (req.file) {
         console.log('File is present');
-        const imagePath = path.join("/images/events", req.file.originalname);
+        const imagePath = path.join("/html/images/events", req.file.originalname);
         req.body.imagePath = imagePath;
         req.file.path = path.join(__dirname, "../public", imagePath);
     } else {

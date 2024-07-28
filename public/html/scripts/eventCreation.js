@@ -54,12 +54,22 @@ let form = document.getElementById("event-form");
 
 
 function getValue() {
+
+    // Event values
     let nameValue = form.elements['name'].value;
     let descriptionValue = form.elements['description'].value;
-    let typeValue = form.elements['type'].value;
+    let categoryValue = form.elements['category'].value;
     let startdateValue = form.elements['startdate'].value;
     let enddateValue = form.elements['enddate'].value;
+    
+    // Location values
+    let locationNameValue = form.elements['locationName'].value;
+    let addressValue = form.elements['address'].value;
+    let postalCodeValue = form.elements['postalCode'].value;
+    let countryValue = form.elements['country'].value;
+    let totalCapacityValue = form.elements['totalCapacity'].value;
 
+    // Image file
     let imagefile = form.elements['image'].files[0];
 
     // Validate startdate and enddate
@@ -70,11 +80,28 @@ function getValue() {
 
     console.log(nameValue);
     console.log(descriptionValue);
-    console.log(typeValue);
+    console.log(categoryValue);
     console.log(startdateValue);
     console.log(enddateValue);
     console.log(imagefile);
-    createEvent(nameValue, descriptionValue, typeValue, startdateValue, enddateValue, imagefile);
+    console.log(locationNameValue);
+    console.log(addressValue);
+    console.log(postalCodeValue);
+    console.log(countryValue);
+    // createLocation(locationNameValue, addressValue, postalCodeValue, countryValue);
+    createEvent(
+        nameValue,
+        descriptionValue,
+        categoryValue,
+        startdateValue,
+        enddateValue,
+        imagefile,
+        locationNameValue,
+        addressValue,
+        postalCodeValue,
+        countryValue,
+        totalCapacityValue
+    );
 }
 
 
@@ -100,26 +127,60 @@ function validateDates(startdate, enddate) {
     return true; // Valid dates
 }
 
-async function createEvent(name, description, type, startdate, enddate, imagefile) {
+async function createEvent(name, description, category, startdate, enddate, imagefile, locationName, address, postalCode, country, totalCapacity) {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("type", type);
+    formData.append("categoryId", category);
     formData.append("startDate", startdate);
     formData.append("endDate", enddate);
     formData.append("image", imagefile); // Assuming imageFile is the File object
 
+    console.log(`Type of locationName: ${typeof locationName}`);
+    console.log(`Type of address: ${typeof address}`);
+    console.log(`Type of postalCode: ${typeof postalCode}`);
+    console.log(`Type of country: ${typeof country}`);
+
+    // Append location details
+    formData.append("locationName", locationName);
+    formData.append("address", address);
+    formData.append("postalCode", postalCode);
+    formData.append("country", country);
+    formData.append("totalCapacity", totalCapacity);
+
     console.log('Sending event data:', formData); // Log the FormData being sent
 
-    const response = await fetch(`/api/events`, {
-        method: 'POST',
-        body: formData
-    });
-    
-    if (!response.ok) {
-        throw new Error(`Error creating event: ${response.statusText}`);
-    }
+    try {
+        const response = await fetch(`/api/events/create`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+        });
 
+        if (!response.ok) {
+            switch (response.status) {
+                case 400:
+                    throw new Error("Invalid event data provided.");
+                case 401:
+                    throw new Error("You are not authorized to perform this action. Please log in.");
+                case 403:
+                    throw new Error("You do not have permission to perform this action.");
+                case 500:
+                    throw new Error("Internal Server Error. Please try again later.");
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
+        }
+
+        alert("Event created successfully");
+        window.location.href = '/events'; // Redirect to the events page
+    } catch (error) {
+        console.error("Error creating event:", error);
+        alert(`Error creating event: ${error.message}`);
+    }
     //Do i need to keep it?
     //const createdEvent = await response.json();
 };

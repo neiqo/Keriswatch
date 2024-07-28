@@ -1,5 +1,6 @@
 // // Purpose: To create a new event and send it to the server
 
+
 // const { func } = require("joi");
 
 
@@ -215,19 +216,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch event details
     async function getEventDetails(eventId) {
         try {
-            const response = await fetch(`/api/events/${eventId}`, { method: 'GET' });
+            const response = await fetch(`/api/event/${eventId}`, { method: 'GET' });
             if (!response.ok) {
                 throw new Error('Error fetching event details');
             }
             const data = await response.json();
-            populateForm(data);
+            const category = await getEventCategory(data.categoryId);
+            // const location = await getEventLocation(data.locationId);
+            populateForm(data, category, location);
         } catch (error) {
             console.error(error);
         }
     }
 
     // Populate form with event details
-    function populateForm(data) {
+    function populateForm(data, category, location) {
+        //data
         document.getElementById('name').value = data.name;
         document.getElementById('description').value = data.description;
 
@@ -243,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('startdate').value = formattedStartDate;
         document.getElementById('enddate').value = formattedEndDate;
 
-        document.getElementById('type').value = data.type;
+        // document.getElementById('type').value = data.type;
 
 
         const imageContainer = document.getElementById('imageContainer');
@@ -258,17 +262,39 @@ document.addEventListener('DOMContentLoaded', function() {
     
         document.getElementById('image').textContent = data.imagepath;
     
+
+        //category
+        document.getElementById('category').value = category.id;
+
+        //location
+        document.getElementById('locationName').value = data.locationName;
+        document.getElementById('address').value = data.address;    
+        document.getElementById('postalCode').value = data.postalCode;
+        console.log("country", location.country);   
+        document.getElementById('country').value = data.country;
+        document.getElementById('totalCapacity').value = data.totalCapacity;
         // Handle image display if needed
     }
 
     function getValue() {
         let nameValue = form.elements['name'].value;
         let descriptionValue = form.elements['description'].value;
-        let typeValue = form.elements['type'].value;
+        // let typeValue = form.elements['type'].value;
         let startdateValue = form.elements['startdate'].value;
         let enddateValue = form.elements['enddate'].value;
         let imagefile = form.elements['image'].files[0];
     
+        //category
+        let categoryValue = form.elements['category'].value;
+
+        //location
+        let locationNameValue = form.elements['locationName'].value;
+        let addressValue = form.elements['address'].value;
+        let postalCodeValue = form.elements['postalCode'].value;
+        let countryValue = form.elements['country'].value;
+        
+        let totalCapacityValue = form.elements['totalCapacity'].value;
+
         console.log(startdateValue);
         // Validate startdate and enddate
         if (!validateDates(startdateValue, enddateValue)) {
@@ -278,11 +304,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
         console.log(nameValue);
         console.log(descriptionValue);
-        console.log(typeValue);
+        // console.log(typeValue);
         console.log(startdateValue);
         console.log(enddateValue);
         console.log(imagefile);
-        updateEvent(nameValue, descriptionValue, typeValue, startdateValue, enddateValue, imagefile);
+        updateEvent(nameValue, descriptionValue, categoryValue, startdateValue, enddateValue, imagefile, locationNameValue, addressValue, postalCodeValue, countryValue, totalCapacityValue);
     }
     
     
@@ -308,42 +334,64 @@ document.addEventListener('DOMContentLoaded', function() {
         return true; // Valid dates
     }
     
-    async function updateEvent(name, description, type, startdate, enddate, imagefile) {
+    async function updateEvent(name, description, category, startdate, enddate, imagefile, locationName, address, postalCode, country, totalCapacity) {
         const formData = new FormData();
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("type", type);
-        formData.append("startDate", startdate);
-        formData.append("endDate", enddate);
-        // formData.append("image", imagefile); // Assuming imageFile is the File object
-    
-        if (imagefile) {
-            formData.append("image", imagefile); // Assuming imageFile is the File object
-        }
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("categoryId", category);
+    formData.append("startDate", startdate);
+    formData.append("endDate", enddate);
+    formData.append("locationName", locationName);
+    formData.append("address", address);
+    formData.append("postalCode", postalCode);
+    formData.append("country", country);
+    formData.append("totalCapacity", totalCapacity);
 
-        console.log('Sending event data:', formData); // Log the FormData being sent
-        console.log(formData.get('name'));
-        console.log(formData.get('description'));
-        console.log(formData.get('type'));
-        console.log(formData.get('startDate'));
-        console.log(formData.get('endDate'));
-        console.log(formData.get('image'));
-        let count = 0;
-        for (let pair of formData.entries()) {
-            console.log(pair[0]+ ', ' + pair[1]); 
-            count++;
-        }
-        console.log('Total entries in formData:', count);
-        // console.log(formData.get('image'));
+    if (imagefile) {
+        formData.append("image", imagefile); // Assuming imageFile is the File object
+    }
 
+    console.log('Sending event data:', formData); // Log the FormData being sent
+    let count = 0;
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+        count++;
+    }
+    console.log('Total entries in formData:', count);
+
+    try {
         const response = await fetch(`/api/events/${eventId}`, {
             method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: formData
         });
-        
+
         if (!response.ok) {
-            throw new Error(`Error updating event: ${response.statusText}`);
+            switch (response.status) {
+                case 400:
+                    throw new Error("Invalid event data provided.");
+                case 401:
+                    throw new Error("You are not authorized to perform this action. Please log in.");
+                case 403:
+                    throw new Error("You do not have permission to perform this action.");
+                case 404:
+                    throw new Error("Event not found.");
+                case 500:
+                    throw new Error("Internal Server Error. Please try again later.");
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
         }
+
+        alert("Event updated successfully");
+        window.location.href = `/events/${eventId}`; // Redirect to the updated event page
+    } catch (error) {
+        console.error("Error updating event:", error);
+        alert(`Error updating event: ${error.message}`);
+    }
     
         //Do i need to keep it?
         //const createdEvent = await response.json();
@@ -411,4 +459,26 @@ function previewImage(event) {
         imagePreview.style.display = 'none';
     }
 }
+
+async function getEventCategory(categoryId) {
+    try {
+        const response = await fetch(`/api/events/category/${categoryId}`, { method: 'GET' });
+        const data = await response.json();
+        return data;
+    }   
+    catch (error) {
+        console.error(error);
+    }
+}
+
+// async function getEventLocation(locationId) {
+//     try {
+//         const response = await fetch(`/api/events/location/${locationId}`, { method: 'GET' });
+//         const data = await response.json();
+//         return data;
+//     }
+//     catch (error) {
+//         console.error(error);
+//     }
+// }
 
