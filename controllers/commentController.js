@@ -1,9 +1,13 @@
 const Comment = require('../models/comment');
 
-const getArticleComments =  async (req, res) => {
+const getArticleComments = async (req, res) => {
     const articleId = req.params.articleId;
     try {
         const comments = await Comment.getCommentsByArticleId(articleId);
+
+        if (!comments || comments.length === 0) {
+            return res.status(200).json([]);
+        }
 
         const updatedComments = comments.map(comment => {
             if (comment.profilePicture) {
@@ -12,13 +16,12 @@ const getArticleComments =  async (req, res) => {
             return comment;
         });
 
-        res.status(201).json(updatedComments);
+        res.status(200).json(updatedComments);
     } catch (error) {
         res.status(500).send('Error fetching comments: ' + error.message);
         throw error;
     }
-}
-
+};
 const createComment =  async (req, res) => {
     const token = req.decodedUser;
     try {
