@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", async function() {
-    const token = JSON.parse(localStorage.getItem('token'));
+    let tokenObj = localStorage.getItem('token') || null;
+    let token = null;
+    if (tokenObj) {
+        tokenObj = JSON.parse(tokenObj);
+        token = tokenObj.token;
+    }   
     if (!token) {
         console.error('No token found');
         return;

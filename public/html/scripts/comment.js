@@ -1,4 +1,10 @@
-let userToken = localStorage.getItem('token') || null;  // This will store the user's JWT after login
+let tokenObj = localStorage.getItem('token') || null;  // This will store the user's JWT after login
+let userToken;
+
+if (tokenObj) {
+    tokenObj = JSON.parse(tokenObj);
+    userToken = tokenObj.token;
+}   
 const urlParams = new URLSearchParams(window.location.search);
 const articleID = urlParams.get('id');
 console.log('Token:', userToken);
@@ -9,7 +15,6 @@ if (userToken) {
     payload = jwt_decode(userToken);
     console.log(payload);
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     loadComments();
@@ -210,19 +215,22 @@ function replyToComment(parentId) {
     });
 }
 
+
 function timeSince(date) {
-    
     const now = new Date();
     const past = new Date(date);
-    // Convert past date to Singapore time
-    const singaporeTime = past.toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
-    const singaporeDate = new Date(singaporeTime);
 
+    console.log("Before: " + past);
+    // Convert past date to Singapore time
+    const singaporeTimeZone = 'Asia/Singapore';
+    const singaporeDate = dateFnsTz.utcToZonedTime(past, singaporeTimeZone);
+
+    console.log("After: " + singaporeDate);
     const seconds = Math.floor((now - singaporeDate) / 1000);
     // Log the input date
     console.log("Input date:", date);
     console.log("Now:" + now);
-    console.log("Past:" + past);
+    console.log("Past:" + singaporeDate);
     console.log(seconds);
 
     let interval = seconds / 31536000;
@@ -237,241 +245,3 @@ function timeSince(date) {
     if (interval > 1) return Math.floor(interval) + ' minutes ago';
     return Math.floor(seconds) + ' seconds ago';
 }
-
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const commentsContainer = document.getElementById('comments-container');
-
-//     async function fetchComments(articleId) {
-//         const response = await fetch(`/api/comments?articleId=${articleId}`);
-//         const comments = await response.json();
-//         renderComments(comments);
-//     }
-
-//     function renderComment(comment, depth = 0) {
-//         if (depth > 2) return ''; // Limit to 3 levels deep
-
-//         const repliesHtml = comment.replies.map(reply => renderComment(reply, depth + 1)).join('');
-
-//         return `
-//             <div class="comment" data-id="${comment.commentId}" style="margin-left: ${depth * 20}px;">
-//                 <div class="comment-content">
-//                     <p>${comment.content}</p>
-//                     <div class="comment-actions">
-//                         <button class="upvote">Upvote (${comment.upvotes})</button>
-//                         <button class="downvote">Downvote (${comment.downvotes})</button>
-//                         <button class="reply">Reply</button>
-//                     </div>
-//                 </div>
-//                 <div class="replies">
-//                     ${repliesHtml}
-//                 </div>
-//                 <div class="reply-form">
-//                     <textarea placeholder="Write a reply..."></textarea>
-//                     <button class="submit-reply">Submit</button>
-//                     <button class="cancel-reply">Cancel</button>
-//                 </div>
-//             </div>
-//         `;
-//     }
-
-//     function renderComments(comments) {
-//         commentsContainer.innerHTML = comments.map(comment => renderComment(comment)).join('');
-//         attachEventListeners();
-//     }
-
-//     function attachEventListeners() {
-//         document.querySelectorAll('.upvote').forEach(button => {
-//             button.addEventListener('click', handleUpvote);
-//         });
-
-//         document.querySelectorAll('.downvote').forEach(button => {
-//             button.addEventListener('click', handleDownvote);
-//         });
-
-//         document.querySelectorAll('.reply').forEach(button => {
-//             button.addEventListener('click', handleReply);
-//         });
-
-//         document.querySelectorAll('.submit-reply').forEach(button => {
-//             button.addEventListener('click', handleSubmitReply);
-//         });
-
-//         document.querySelectorAll('.cancel-reply').forEach(button => {
-//             button.addEventListener('click', handleCancelReply);
-//         });
-//     }
-
-//     function handleUpvote(event) {
-//         const commentElement = event.target.closest('.comment');
-//         const commentId = commentElement.dataset.id;
-//         // Increment upvotes in database and re-render
-//         updateCommentData(commentId, 'upvote');
-//     }
-
-//     function handleDownvote(event) {
-//         const commentElement = event.target.closest('.comment');
-//         const commentId = commentElement.dataset.id;
-//         // Increment downvotes in database and re-render
-//         updateCommentData(commentId, 'downvote');
-//     }
-
-//     function handleReply(event) {
-//         const commentElement = event.target.closest('.comment');
-//         const replyForm = commentElement.querySelector('.reply-form');
-//         replyForm.style.display = 'block';
-//     }
-
-//     async function handleSubmitReply(event) {
-//         const replyForm = event.target.closest('.reply-form');
-//         const commentElement = event.target.closest('.comment');
-//         const commentId = commentElement.dataset.id;
-//         const textarea = replyForm.querySelector('textarea');
-//         const replyContent = textarea.value;
-//         if (replyContent) {
-//             // Add reply to database and re-render
-//             await addReplyToCommentData(commentId, replyContent);
-//             fetchComments(1); // Assuming articleId is 1 for now
-//         }
-//     }
-
-//     function handleCancelReply(event) {
-//         const replyForm = event.target.closest('.reply-form');
-//         replyForm.style.display = 'none';
-//     }
-
-//     async function updateCommentData(commentId, action) {
-//         await fetch(`/api/comments/${commentId}/${action}`, { method: 'POST' });
-//         fetchComments(1); // Assuming articleId is 1 for now
-//     }
-
-//     async function addReplyToCommentData(commentId, replyContent) {
-//         await fetch(`/api/comments`, {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({
-//                 userId: 1, // Assuming userId is 1 for now
-//                 articleId: 1, // Assuming articleId is 1 for now
-//                 content: replyContent,
-//                 parentId: commentId,
-//                 createdAt: new Date().toISOString(),
-//                 upvotes: 0,
-//                 downvotes: 0
-//             })
-//         });
-//     }
-
-//     fetchComments(1); // Assuming articleId is 1 for now
-// });
-
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const articleId = 1; // Assuming this is the article ID
-//     const userId = 1; // Replace with the logged-in user's ID
-//     const role = 'Admin'; // Replace with the logged-in user's role
-
-//     const commentsContainer = document.getElementById('comments-container');
-//     const commentContent = document.getElementById('comment-content');
-//     const submitComment = document.getElementById('submit-comment');
-
-//     async function fetchComments() {
-//         const response = await fetch(`/api/${articleId}/comments`);
-//         const comments = await response.json();
-//         displayComments(comments);
-//     }
-
-//     function displayComments(comments, parentElement = commentsContainer, parentId = null) {
-//         comments.forEach(comment => {
-//             if (comment.parentId === parentId) {
-//                 const commentElement = createCommentElement(comment);
-//                 parentElement.appendChild(commentElement);
-//                 displayComments(comments, commentElement.querySelector('.replies'), comment.commentId);
-//             }
-//         });
-//     }
-
-//     function createCommentElement(comment) {
-//         const commentElement = document.createElement('div');
-//         commentElement.classList.add('comment');
-//         commentElement.innerHTML = `
-//             <img src="${comment.profilePicture}" alt="${comment.username}'s profile picture" width="50" height="50">
-//             <div class="comment-content">
-//                 <strong>${comment.username}</strong>
-//                 <p>${comment.content}</p>
-//                 <div class="comment-actions">
-//                     <span class="upvote">Upvote (${comment.upvotes})</span>
-//                     <span class="downvote">Downvote (${comment.downvotes})</span>
-//                     ${comment.userId === userId || role === 'Admin' ? '<span class="delete">Delete</span>' : ''}
-//                     <span class="reply">Reply</span>
-//                 </div>
-//                 <div class="replies"></div>
-//             </div>
-//         `;
-
-//         commentElement.querySelector('.upvote').addEventListener('click', () => upvoteComment(comment.commentId));
-//         commentElement.querySelector('.downvote').addEventListener('click', () => downvoteComment(comment.commentId));
-//         if (commentElement.querySelector('.delete')) {
-//             commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.commentId));
-//         }
-//         commentElement.querySelector('.reply').addEventListener('click', () => showReplyForm(commentElement, comment.commentId));
-
-//         return commentElement;
-//     }
-
-//     function showReplyForm(commentElement, parentId) {
-//         const replyForm = document.createElement('div');
-//         replyForm.classList.add('reply');
-//         replyForm.innerHTML = `
-//             <textarea placeholder="Write a reply..."></textarea>
-//             <button>Submit</button>
-//         `;
-//         replyForm.querySelector('button').addEventListener('click', () => {
-//             const replyContent = replyForm.querySelector('textarea').value;
-//             submitCommentOrReply(replyContent, parentId);
-//             replyForm.remove();
-//         });
-
-//         commentElement.querySelector('.replies').appendChild(replyForm);
-//     }
-
-//     async function submitCommentOrReply(content, parentId = null) {
-//         const response = await fetch(`/api/comments`, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({
-//                 userId,
-//                 articleId,
-//                 content,
-//                 parentId
-//             })
-//         });
-//         const result = await response.json();
-//         if (result.commentId) {
-//             fetchComments();
-//         }
-//     }
-
-//     async function upvoteComment(commentId) {
-//         // Implement upvote functionality
-//     }
-
-//     async function downvoteComment(commentId) {
-//         // Implement downvote functionality
-//     }
-
-//     async function deleteComment(commentId) {
-//         // Implement delete functionality
-//     }
-
-//     submitComment.addEventListener('click', () => {
-//         const content = commentContent.value;
-//         if (content) {
-//             submitCommentOrReply(content);
-//             commentContent.value = '';
-//         }
-//     });
-
-//     fetchComments();
-// });
