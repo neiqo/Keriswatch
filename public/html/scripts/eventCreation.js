@@ -140,25 +140,47 @@ async function createEvent(name, description, category, startdate, enddate, imag
     console.log(`Type of address: ${typeof address}`);
     console.log(`Type of postalCode: ${typeof postalCode}`);
     console.log(`Type of country: ${typeof country}`);
+
     // Append location details
     formData.append("locationName", locationName);
     formData.append("address", address);
     formData.append("postalCode", postalCode);
     formData.append("country", country);
-
     formData.append("totalCapacity", totalCapacity);
 
     console.log('Sending event data:', formData); // Log the FormData being sent
 
-    const response = await fetch(`/api/events/create`, {
-        method: 'POST',
-        body: formData
-    });
-    
-    if (!response.ok) {
-        throw new Error(`Error creating event: ${response.statusText}`);
-    }
+    try {
+        const response = await fetch(`/api/events/create`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+        });
 
+        if (!response.ok) {
+            switch (response.status) {
+                case 400:
+                    throw new Error("Invalid event data provided.");
+                case 401:
+                    throw new Error("You are not authorized to perform this action. Please log in.");
+                case 403:
+                    throw new Error("You do not have permission to perform this action.");
+                case 500:
+                    throw new Error("Internal Server Error. Please try again later.");
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
+        }
+
+        alert("Event created successfully");
+        window.location.href = '/events'; // Redirect to the events page
+    } catch (error) {
+        console.error("Error creating event:", error);
+        alert(`Error creating event: ${error.message}`);
+    }
     //Do i need to keep it?
     //const createdEvent = await response.json();
 };

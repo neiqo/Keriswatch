@@ -12,14 +12,17 @@ const verifyJWT = (req, res, next) => {
 
 
     // Parse the JSON object to extract the token
-    let token;
+    let token = tokenString;
     try {
-        const tokenObject = JSON.parse(tokenString);
-        token = tokenObject.token;
+      // Attempt to parse the token as JSON
+      const tokenObject = JSON.parse(tokenString);
+      token = tokenObject.token;
     } catch (error) {
-        return res.status(400).json({ message: "Invalid token format" });
+        // If parsing fails, assume the token is a plain string
+        token = tokenString;
     }
 
+    // token = JSON.stringify(token);
     console.log(token);
   // If no token is provided, return an Unauthorised error response
   if (!token) {
@@ -50,6 +53,12 @@ const verifyJWT = (req, res, next) => {
       "/api/comments/[0-9]+/upvote": ["NormalUser", "Organisation", "Admin"],
       "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
       "/api/logout": ["NormalUser", "Organisation", "Admin"],
+      "/api/events": ["NormalUser", "Organisation", "Admin"],
+      // "/api/events/[0-9]+": ["NormalUser", "Organisation", "Admin"],
+      "/api/events/create": ["Organisation", "Admin"],
+      "/api/events/[0-9]+": ["Organisation", "Admin"],
+      "/api/events/with-users": ["Organisation", "Admin"],
+      "/api/events/[0-9]+/users": ["NormalUser", "Organisation"],
     };
 
     // Get the requested endpoint and the user's role from the decoded token

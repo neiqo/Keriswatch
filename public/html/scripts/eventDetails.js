@@ -124,35 +124,52 @@ async function checkIfUserJoinedEvent(eventId, userId) {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
-        const data = await response.json();
-
-        console.log(data);
-        console.log(eventId);
-
-        // Remove existing event listeners
-        const newButton = joinButton.cloneNode(true);
-        joinButton.parentNode.replaceChild(newButton, joinButton);
-        joinButton = newButton;
-
-        if (data === true) {
-            joinButton.textContent = "Joined";
-            // Optionally, add a class to style the button differently
-            joinButton.classList.add("joined");
-            joinButton.addEventListener("click", () => {
-                deleteUserFromEvent(eventId, userId);
-            });
+        if (!response.ok) {
+            switch (response.status) {
+                case 401:
+                    alert("You are not logged in. Please log in to join the event.");
+                    break;
+                    // alert("You are not authorized to perform this action. Please log in.");
+                    //window.location.href = '/login'; // Redirect to login page
+                case 403:
+                    alert("You do not have permission to check this event.");
+                    break;
+                case 404:
+                    alert("Event not found.");
+                    break;
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
         } else {
-            joinButton.textContent = "Join Now";
-            joinButton.classList.remove("joined");
-            joinButton.addEventListener("click", () => {
-                addUsertoEvent(eventId, userId);
-            });
+            const data = await response.json();
+
+            console.log(data);
+            console.log(eventId);
+
+            // Remove existing event listeners
+            const newButton = joinButton.cloneNode(true);
+            joinButton.parentNode.replaceChild(newButton, joinButton);
+            joinButton = newButton;
+
+            if (data === true) {
+                joinButton.textContent = "Joined";
+                // Optionally, add a class to style the button differently
+                joinButton.classList.add("joined");
+                joinButton.addEventListener("click", () => {
+                    deleteUserFromEvent(eventId, userId);
+                });
+            } else {
+                joinButton.textContent = "Join Now";
+                joinButton.classList.remove("joined");
+                joinButton.addEventListener("click", () => {
+                    addUsertoEvent(eventId, userId);
+                });
+            }
         }
-
-        
-
     } catch (error) {
         console.error("Error checking if user joined event:", error);
+        alert(`Error checking if user joined event: ${error.message}`);
     }
 
 }
@@ -167,33 +184,13 @@ let joinButton = document.getElementById("joinButton");
 
 async function addUsertoEvent(eventId, userId) {
     try {
-        // const response = await fetch(`/api/events/${eventId}/join`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ userId })
-        // });
         const numberOfUsersJoined = await getNumberofUsersJoined(eventId);
-        
+
         if (totalCapacityValue <= numberOfUsersJoined) {
-            console.log("totalCapacityValue", totalCapacityValue);
-            console.log("numberOfUsersJoined", numberOfUsersJoined);
             alert("Event is full");
             return;
         }
 
-        noOfUsersJoined.textContent = numberOfUsersJoined + 1;
-        // if (new Date() >= new Date(endDate.textContent)) {
-        //     alert("Event has already ended");
-        //     return;
-        // }
-        // else if (new Date() >= new Date(startDate.textContent)) {
-        //     alert("Event has already started");
-        //     return;
-        // }
-
-        //betterversion
-        // const startDateValue = new Date(startDate.textContent);
-        // const endDateValue = new Date(endDate.textContent);
         const currentDate = new Date();
 
         if (currentDate >= endDateValue) {
@@ -211,12 +208,31 @@ async function addUsertoEvent(eventId, userId) {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
-        const data = await response.json();
-        // console.log(data);
-        // Update button state after joining the event
-        checkIfUserJoinedEvent(eventId, userId);
+
+        if (!response.ok) {
+            switch (response.status) {
+                case 401:
+                    alert("You are not authorized to perform this action. Please log in.");
+                    window.location.href = '/login'; // Redirect to login page
+                    break;
+                case 403:
+                    alert("Only normal users and organisation have permission to perform this action.");
+                    break;
+                case 404:
+                    alert("Event not found.");
+                    break;
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
+        } else {
+            const data = await response.json();
+            noOfUsersJoined.textContent = numberOfUsersJoined + 1;
+            checkIfUserJoinedEvent(eventId, userId); // Update button state after joining the event
+        }
     } catch (error) {
         console.error("Error adding user to event:", error);
+        alert(`Error adding user to event: ${error.message}`);
     }
     //method1
     //if user is added to event, change button text to joined
@@ -229,23 +245,15 @@ async function addUsertoEvent(eventId, userId) {
 
 async function deleteUserFromEvent(eventId, userId) {
     try {
-        // const response = await fetch(`/api/events/${eventId}/join`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ userId })
-        // });
-        
-    
         const currentDate = new Date();
         if (currentDate >= startDateValue) {
-            alert("Event has already ended");
+            alert("Event has already started.");
+            return;
+        } else if (currentDate >= endDateValue) {
+            alert("Event is ongoing.");
             return;
         }
-        else if (currentDate >= endDateValue) {
-            alert("Event is ongoing");
-            return;
-        }
-        
+
         const response = await fetch(`/api/events/${eventId}/users`, {
             method: 'DELETE',
             headers: {
@@ -254,16 +262,31 @@ async function deleteUserFromEvent(eventId, userId) {
             }
         });
 
-        const numberOfUsersJoined = await getNumberofUsersJoined(eventId);
-
-        noOfUsersJoined.textContent = numberOfUsersJoined;
-
-        const data = await response.json();
-        // console.log(data);
-        // Update button state after joining the event
-        checkIfUserJoinedEvent(eventId, userId);
+        if (!response.ok) {
+            switch (response.status) {
+                case 401:
+                    alert("You are not authorized to perform this action. Please log in.");
+                    window.location.href = '/login'; // Redirect to login page
+                    break;
+                case 403:
+                    alert("Only normal users and organisation have permission to perform this action.");
+                    break;
+                case 404:
+                    alert("Event not found.");
+                    break;
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
+        } else {
+            const data = await response.json();
+            const numberOfUsersJoined = await getNumberofUsersJoined(eventId);
+            noOfUsersJoined.textContent = numberOfUsersJoined; // Update the number of users joined
+            checkIfUserJoinedEvent(eventId, userId); // Update button state after leaving the event
+        }
     } catch (error) {
-        console.error("Error adding user to event:", error);
+        console.error("Error removing user from event:", error);
+        alert(`Error removing user from event: ${error.message}`);
     }
     //method1
     //if user is added to event, change button text to joined
@@ -366,13 +389,27 @@ async function deleteEvent(eventId) {
         const response = await fetch(`/api/events/${eventId}/with-users`, {
             method: 'DELETE',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
-        // const data = await response.json();
-        // console.log(data);
-        alert("Event deleted successfully");
-        window.location.href = '/events';
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Unauthorized access
+                alert("You are not authorized to perform this action. Please log in.");
+                //window.location.href = '/login'; // Redirect to login page
+            } else if (response.status === 403) {
+                // Forbidden access
+                alert("You have permission to perform this action.");
+            } else {
+                // Other errors
+                const errorMessage = await response.text(); // Or response.json() if the error response is in JSON format
+                throw new Error(errorMessage);
+            }
+        } else {
+            alert("Event deleted successfully");
+            window.location.href = '/events';
+        }
     }
     catch (error) {
         console.error("Error deleting event:", error);

@@ -336,46 +336,62 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function updateEvent(name, description, category, startdate, enddate, imagefile, locationName, address, postalCode, country, totalCapacity) {
         const formData = new FormData();
-        formData.append("name", name);
-        formData.append("description", description);
-        // formData.append("type", type);
-        formData.append("categoryId", category);
-        formData.append("startDate", startdate);
-        formData.append("endDate", enddate);
-        formData.append("locationName", locationName);
-        formData.append("address", address);
-        formData.append("postalCode", postalCode);
-        formData.append("country", country);
-        formData.append("totalCapacity", totalCapacity);    
-        // formData.append("image", imagefile); // Assuming imageFile is the File object
-    
-        if (imagefile) {
-            formData.append("image", imagefile); // Assuming imageFile is the File object
-        }
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("categoryId", category);
+    formData.append("startDate", startdate);
+    formData.append("endDate", enddate);
+    formData.append("locationName", locationName);
+    formData.append("address", address);
+    formData.append("postalCode", postalCode);
+    formData.append("country", country);
+    formData.append("totalCapacity", totalCapacity);
 
-        console.log('Sending event data:', formData); // Log the FormData being sent
-        console.log(formData.get('name'));
-        console.log(formData.get('description'));
-        console.log(formData.get('type'));
-        console.log(formData.get('startDate'));
-        console.log(formData.get('endDate'));
-        console.log(formData.get('image'));
-        let count = 0;
-        for (let pair of formData.entries()) {
-            console.log(pair[0]+ ', ' + pair[1]); 
-            count++;
-        }
-        console.log('Total entries in formData:', count);
-        // console.log(formData.get('image'));
+    if (imagefile) {
+        formData.append("image", imagefile); // Assuming imageFile is the File object
+    }
 
+    console.log('Sending event data:', formData); // Log the FormData being sent
+    let count = 0;
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+        count++;
+    }
+    console.log('Total entries in formData:', count);
+
+    try {
         const response = await fetch(`/api/events/${eventId}`, {
             method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: formData
         });
-        
+
         if (!response.ok) {
-            throw new Error(`Error updating event: ${response.statusText}`);
+            switch (response.status) {
+                case 400:
+                    throw new Error("Invalid event data provided.");
+                case 401:
+                    throw new Error("You are not authorized to perform this action. Please log in.");
+                case 403:
+                    throw new Error("You do not have permission to perform this action.");
+                case 404:
+                    throw new Error("Event not found.");
+                case 500:
+                    throw new Error("Internal Server Error. Please try again later.");
+                default:
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+            }
         }
+
+        alert("Event updated successfully");
+        window.location.href = `/events/${eventId}`; // Redirect to the updated event page
+    } catch (error) {
+        console.error("Error updating event:", error);
+        alert(`Error updating event: ${error.message}`);
+    }
     
         //Do i need to keep it?
         //const createdEvent = await response.json();

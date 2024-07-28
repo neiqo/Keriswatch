@@ -35,8 +35,38 @@ const getEventById = async (req, res) => {
 const createEvent = async (req, res) => {
   const newEvent = req.body;
 
-  console.log("new event", newEvent);
+  // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  let token;
   try {
+    // Attempt to parse the token as JSON
+    // For Web Application
+    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+    token = parsedJsonToken.token;
+  } catch (error) {
+    // If parsing fails, assume the token is a plain string
+    // For Swagger 
+    token = authHeader.split(' ')[1];
+  }
+
+  try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Extract user role from the decoded token
+    const userRole = decoded.role;
+
+    // Check if the user has permission to create the event
+    if (!['Organisation', 'Admin'].includes(userRole)) {
+      return res.status(403).json({ message: 'Forbidden: You do not have the required permissions to create this event' });
+    }
+
+    console.log("new event", newEvent);
+
     const createdEvent = await Event.createEvent(newEvent);
     res.status(201).json(createdEvent);
   } catch (error) {
@@ -48,29 +78,59 @@ const createEvent = async (req, res) => {
 // Controller to update event
 const updateEvent = async (req, res) => {
   const eventId = parseInt(req.params.id);
-  console.log(eventId);
-  
-  const newEventData = {
-    name: req.body.name,
-    description: req.body.description,
-    categoryId: req.body.categoryId,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    locationName: req.body.locationName,
-    address: req.body.address,
-    postalCode: req.body.postalCode,
-    country: req.body.country,
-    totalCapacity: req.body.totalCapacity
-  };
 
-  // If an image is uploaded, include it in newEventData
-  if (req.file) {
-    newEventData.imagePath = req.file.path; // Assuming imagePath is the field to store the image path
+  // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
   }
 
-  console.log(newEventData);
+  let token;
+  try {
+    // Attempt to parse the token as JSON
+    // For Web Application
+    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+    token = parsedJsonToken.token;
+  } catch (error) {
+    // If parsing fails, assume the token is a plain string
+    // For Swagger 
+    token = authHeader.split(' ')[1];
+  }
 
   try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Extract user role from the decoded token
+    const userRole = decoded.role;
+
+    // Check if the user has permission to update the event
+    if (!['Organisation', 'Admin'].includes(userRole)) {
+      return res.status(403).json({ message: 'Forbidden: You do not have the required permissions to update this event' });
+    }
+
+    console.log(eventId);
+
+    const newEventData = {
+      name: req.body.name,
+      description: req.body.description,
+      categoryId: req.body.categoryId,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      locationName: req.body.locationName,
+      address: req.body.address,
+      postalCode: req.body.postalCode,
+      country: req.body.country,
+      totalCapacity: req.body.totalCapacity
+    };
+
+    // If an image is uploaded, include it in newEventData
+    if (req.file) {
+      newEventData.imagePath = req.file.path; // Assuming imagePath is the field to store the image path
+    }
+
+    console.log(newEventData);
+
     const updatedEvent = await Event.updateEvent(eventId, newEventData);
     if (!updatedEvent) {
       return res.status(404).send("Event not found");
@@ -86,12 +146,44 @@ const updateEvent = async (req, res) => {
 //To delete event from eventuser table and event table
 const deleteEventandUser = async (req, res) => {
   const EventId = parseInt(req.params.id);
+  
+  // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  let token;
+  try {
+    // Attempt to parse the token as JSON
+    // For Web Application
+    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
+    token = parsedJsonToken.token;
+  } catch (error) {
+    // If parsing fails, assume the token is a plain string
+    // For Swagger 
+    token = authHeader.split(' ')[1];
+  }
 
   try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Extract userId and role from the decoded token
+    const userId = decoded.userId;
+    const userRole = decoded.role;
+
+    // Check if the user has permission to delete the event
+    if (!['Organisation', 'Admin'].includes(userRole)) {
+      return res.status(403).json({ message: 'Forbidden: You do not have the required permissions to delete this event' });
+    }
+
+    // Proceed to delete the event and associated users
     const success = await Event.deleteEventandUser(EventId);
     if (!success) {
       return res.status(404).send("Event not found");
     }
+
     res.status(204).send();
   } catch (error) {
     console.error(error);
@@ -259,45 +351,50 @@ async function checkIfUserJoinedEvent(req, res) {
   // Extract the token from the Authorization header
   const authHeader = req.headers.authorization;
 
-  console.log("authHeader", authHeader);
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
   let token;
   try {
-    // Attempt to parse the token as JSON
-    // If successful, the token is in the format { "token": "
-    // For Web Application
-    const parsedJsonToken = JSON.parse(authHeader.split(' ')[1]);
-    token = parsedJsonToken.token;
-    console.log("Parsed JSON token:", token);
+    // Attempt to parse the token
+    const tokenPart = authHeader.split(' ')[1];
+    try {
+      // Try parsing the token as JSON (for Web Application)
+      const parsedJsonToken = JSON.parse(tokenPart);
+      token = parsedJsonToken.token;
+    } catch (jsonParseError) {
+      // If parsing fails, assume the token is a plain string (for Swagger)
+      token = tokenPart;
+    }
   } catch (error) {
-    // If parsing fails, assume the token is a plain string
-    // For Swagger 
-    token = authHeader.split(' ')[1];
-    console.log("Plain token:", token);
+    console.error("Token extraction error:", error);
+    return res.status(400).json({ message: 'Invalid token format' });
   }
 
   try {
     // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     // Extract userId from the decoded token
     const userId = decoded.userId;
-    
+
     // Extract eventId from the request parameters
     const eventId = parseInt(req.params.id);
 
-    console.log("userId", userId);
-    console.log("eventId", eventId);
-
     // Check if user joined the event
-    const event = await Event.checkIfUserJoinedEvent(eventId, userId);
-    res.status(200).json(event);
+    const eventJoined = await Event.checkIfUserJoinedEvent(eventId, userId);
+
+    res.status(200).json(eventJoined);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error checking if user joined event" });
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    } else if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    } else {
+      console.error("Error checking if user joined event:", error);
+      res.status(500).json({ message: "Error checking if user joined event" });
+    }
   }
 }
 

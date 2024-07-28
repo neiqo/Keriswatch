@@ -13,7 +13,7 @@
     "paths": {
       "/events": {
         "get": {
-          "description": "Get a list of events",
+          "description": "Get a list of events for pagination",
           "responses": {
             "200": {
               "description": "OK"
@@ -359,114 +359,124 @@
             "500": {
                 "description": "Internal Server Error"
             }
-           }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
-    },
+      },
       "/events/{id}": {
-    "put": {
-        "description": "Update an event",
-        "consumes": ["multipart/form-data"],
-        "parameters": [
-        {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "Event ID"
-        },
-        {
-            "name": "image",
-            "in": "formData",
-            "type": "file",
-            "required": false,
-            "description": "Event image file"
-        },
-        {
-            "name": "name",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Event name"
-        },
-        {
-            "name": "description",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Event description"
-        },
-        {
-            "name": "categoryId",
-            "in": "formData",
-            "type": "integer",
-            "required": true,
-            "description": "Category ID"
-        },
-        {
-            "name": "startDate",
-            "in": "formData",
-            "type": "string",
-            "format": "date-time",
-            "required": true,
-            "description": "Start date of the event (e.g. 2024-09-27)"
-        },
-        {
-            "name": "endDate",
-            "in": "formData",
-            "type": "string",
-            "format": "date-time",
-            "required": true,
-            "description": "End date of the event (e.g. 2024-09-28)"
-        },
-        {
-            "name": "locationName",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Location name"
-        },
-        {
-            "name": "address",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Address"
-        },
-        {
-            "name": "postalCode",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Postal code"
-        },
-        {
-            "name": "country",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Country"
-        },
-        {
-            "name": "totalCapacity",
-            "in": "formData",
-            "type": "integer",
-            "required": true,
-            "description": "Total capacity"
+      "put": {
+          "description": "Update an event",
+          "consumes": ["multipart/form-data"],
+          "parameters": [
+            {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "type": "string",
+                "description": "Event ID"
+            },
+            {
+                "name": "image",
+                "in": "formData",
+                "type": "file",
+                "required": false,
+                "description": "Event image file"
+            },
+            {
+                "name": "name",
+                "in": "formData",
+                "type": "string",
+                "required": true,
+                "description": "Event name"
+            },
+            {
+                "name": "description",
+                "in": "formData",
+                "type": "string",
+                "required": true,
+                "description": "Event description"
+            },
+            {
+                "name": "categoryId",
+                "in": "formData",
+                "type": "integer",
+                "required": true,
+                "description": "Category ID"
+            },
+            {
+                "name": "startDate",
+                "in": "formData",
+                "type": "string",
+                "format": "date-time",
+                "required": true,
+                "description": "Start date of the event (e.g. 2024-09-27)"
+            },
+            {
+                "name": "endDate",
+                "in": "formData",
+                "type": "string",
+                "format": "date-time",
+                "required": true,
+                "description": "End date of the event (e.g. 2024-09-28)"
+            },
+            {
+                "name": "locationName",
+                "in": "formData",
+                "type": "string",
+                "required": true,
+                "description": "Location name"
+            },
+            {
+                "name": "address",
+                "in": "formData",
+                "type": "string",
+                "required": true,
+                "description": "Address"
+            },
+            {
+                "name": "postalCode",
+                "in": "formData",
+                "type": "string",
+                "required": true,
+                "description": "Postal code"
+            },
+            {
+                "name": "country",
+                "in": "formData",
+                "type": "string",
+                "required": true,
+                "description": "Country"
+            },
+            {
+                "name": "totalCapacity",
+                "in": "formData",
+                "type": "integer",
+                "required": true,
+                "description": "Total capacity"
+            }
+            ],
+            "responses": {
+            "200": {
+                "description": "Event updated successfully"
+            },
+            "400": {
+                "description": "Bad Request"
+            },
+            "500": {
+                "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
-        ],
-        "responses": {
-        "200": {
-            "description": "Event updated successfully"
-        },
-        "400": {
-            "description": "Bad Request"
-        },
-        "500": {
-            "description": "Internal Server Error"
-        }
-        }
-      }
-    },
+      },
       "/events/{id}/with-users": {
         "delete": {
           "description": "Delete an event and its users",
@@ -488,7 +498,12 @@
             "500": {
               "description": "Internal Server Error"
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       }
     },

@@ -36,12 +36,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     // Create the brand link
     const brandLink = document.createElement('a');
     brandLink.className = 'navbar-brand';
-    brandLink.href = 'index.html';
+    brandLink.href = '/index.html';
     const brandImg = document.createElement('img');
-    brandImg.src = './images/keriswatch.png';
-    brandImg.onerror = function() {
-        brandImg.src = '/images/keriswatch.png';
-    };    
+    brandImg.src = '/images/keriswatch.png';
 
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
@@ -76,8 +73,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // List items for navbar links
     const navItems = [
-        { text: 'News', href: 'searchpage.html', active: false },
-        { text: 'Events', href: 'events.html', active: false },
+        { text: 'News', href: '/searchpage.html', active: false },
+        { text: 'Events', href: '/events.html', active: false },
     ];
 
     navItems.forEach(item => {
@@ -129,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     userItem.appendChild(userLink);
 
     // Default guest profile image
-    const defaultUserImg = './images/profile-pictures/defaultProfile.png';
+    const defaultUserImg = '/images/profile-pictures/defaultProfile.png';
     const defaultUserName = 'Guest';
 
     // Check if user is logged in
@@ -156,9 +153,9 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     const userImgElem = document.createElement('img');
     userImgElem.src = profilePictureUrl;
-    userImgElem.onerror = function() {
-        userImgElem.src = '/images/profile-pictures/defaultProfile.png';
-    };
+    // userImgElem.onerror = function() {
+    //     userImgElem.src = '/images/profile-pictures/defaultProfile.png';
+    // };
     userImgElem.className = 'rounded-circle img-fluid me-1';
     userImgElem.height = 25;
     userImgElem.width = 25;
@@ -228,7 +225,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 window.alert('Logged out successfully');
 
                 // Redirect to the login page or home page
-                window.location.href = './index.html';
+                window.location.href = '/index.html';
             } else {
                 console.error('Failed to log out');
             }
