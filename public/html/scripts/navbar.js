@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     brandLink.href = '/index.html';
     const brandImg = document.createElement('img');
     brandImg.src = '/images/keriswatch.png';
-
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
     brandImg.loading = 'lazy';
@@ -166,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             username = payload.username;
             role = payload.role;
             const profilePicture = await fetchProfilePicture(username);
-            profilePictureUrl = profilePicture ? `data:image/png;base64,${profilePicture}` : defaultUserImg;
+            profilePictureUrl = profilePicture ? `data:/image/png;base64,${profilePicture}` : defaultUserImg;
         } catch (error) {
             console.error('Error parsing token:', error);
         }
@@ -208,7 +207,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             );
         }
     } else {
-        accountItems.push({ text: 'Log In', href: 'login.html' });
+        accountItems.push({ text: 'Log In', href: '/login.html' });
     }
     
     accountItems.forEach(item => {
