@@ -48,7 +48,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     const brandLink = document.createElement('a');
     brandLink.className = 'navbar-brand';
     brandLink.href = '/index.html';
+    brandLink.href = '/index.html';
     const brandImg = document.createElement('img');
+    brandImg.src = '/images/keriswatch.png';
     brandImg.src = '/images/keriswatch.png';
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
@@ -83,6 +85,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // List items for navbar links
     const navItems = [
+        { text: 'News', href: '/articleSearchPage.html', active: false },
+        { text: 'Events', href: '/events.html', active: false },
         { text: 'News', href: '/articleSearchPage.html', active: false },
         { text: 'Events', href: '/events.html', active: false },
     ];
@@ -198,6 +202,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     } else {
         accountItems.push({ text: 'Log In', href: '/login.html' });
+        accountItems.push({ text: 'Log In', href: '/login.html' });
     }
     
     accountItems.forEach(item => {
@@ -262,6 +267,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         const searchParams = new URLSearchParams(formData); // Convert to URL-encoded string
     
         // Redirect to searchpage.html with search parameters
+        window.location.href = `/articleSearchPage.html?${searchParams.toString()}`;
         window.location.href = `/articleSearchPage.html?${searchParams.toString()}`;
     });
 });
