@@ -86,12 +86,12 @@ function displayArticles(articles, elementId, bookmarkedArticleIds, token, userI
 
       // Format the publishDateTime
       const publishDate = new Date(article.publishDateTime);
-      const formattedDate = publishDate.toLocaleDateString('en-US', {
+      const formattedDate = publishDate.toLocaleDateString('en-UK', {
           year: 'numeric',
           month: 'numeric',
           day: 'numeric'
       });
-      const formattedTime = publishDate.toLocaleTimeString('en-US', {
+      const formattedTime = publishDate.toLocaleTimeString('en-UK', {
           hour: '2-digit',
           minute: '2-digit'
       });
@@ -158,7 +158,7 @@ function displayArticles(articles, elementId, bookmarkedArticleIds, token, userI
 
 function displayRecentArticles(articles, elementId, numArticles, bookmarkedArticleIds, token, userId, userRole) {
   // Sort articles by date in descending order
-  const sortedArticles = articles.sort((a, b) => new Date(b.PublishedDate) - new Date(a.PublishedDate));
+  const sortedArticles = articles.sort((a, b) => new Date(b.publishDateTime) - new Date(a.publishDateTime));
 
   // Select the top 'numArticles' recent articles
   const recentArticles = sortedArticles.slice(0, numArticles);
