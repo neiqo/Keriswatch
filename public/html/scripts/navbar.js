@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // List items for navbar links
     const navItems = [
-        { text: 'News', href: 'searchpage.html', active: false },
+        { text: 'News', href: 'articleSearchPage.html', active: false },
         { text: 'Events', href: 'events.html', active: false },
     ];
 
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         const searchParams = new URLSearchParams(formData); // Convert to URL-encoded string
     
         // Redirect to searchpage.html with search parameters
-        window.location.href = `searchpage.html?${searchParams.toString()}`;
+        window.location.href = `articleSearchPage.html?${searchParams.toString()}`;
     });
 });
 

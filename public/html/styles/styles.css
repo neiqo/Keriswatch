@@ -279,6 +279,12 @@ hr {
   align-items: center;
 }
 
+#agriculture-container, #services-container, #manufacture-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .paraTitle {
   font-weight: bold;
   font-size: 1.3rem;
