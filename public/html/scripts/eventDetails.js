@@ -415,3 +415,8 @@ async function deleteEvent(eventId) {
         console.error("Error deleting event:", error);
     }
 }
+
+const updateButton = document.getElementById("updateButton");
+updateButton.addEventListener("click", () => {
+    window.location.href = `/events/${eventId}/update`;
+});

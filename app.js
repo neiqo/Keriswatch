@@ -108,7 +108,6 @@ app.get("/api/events/all", eventsController.getAllEvents);
 app.get("/api/events/category/:categoryId", eventsController.getEventCategory);
 app.get("/api/events/:eventId/related/category/:categoryId", eventsController.getRelatedEvent);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
-app.delete("/api/events/with-users", verifyJWT, eventsController.deleteEventandUser);
 app.get("/api/events/:id/joined", eventsController.checkIfUserJoinedEvent);
 app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
 app.post("/api/events/:id/users", verifyJWT, eventsController.addUsertoEvent);

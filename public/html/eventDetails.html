@@ -11,12 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/styles/navbar.css"/>
     <link href="/styles/eventCreationBootstrap.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/eventDetails.css">
+    <link rel="stylesheet" href="/styles/eventDetails.css">
 </head>
 
 <body>
     <div class="event-details">
-
 
         <div class="event-container">
             <div class="event-header">
@@ -28,6 +27,7 @@
                     <div class="event-actions">
                         <button id="joinButton" class="joinButton">Join Now</button>
                         <button id="deleteButton" class="deleteButton">Delete Event</button>
+                        <button id="updateButton" class="updateButton">Update Event</button>
                     </div>
                 </div>
             </div>
@@ -38,52 +38,15 @@
                     </p>
                 </div>
                 <div class="event-info">
-                    <!-- <p><strong>Timings:</strong> 9:00 AM - 6:00 PM</p> -->
                     <p><strong>Event Category:</strong> <span id="category">Trade Show</span></p>
                     <p><strong>Entry Fees:</strong> Free</p>
                     <p><strong>Total Capacity:</strong> <span id="noOfUsersJoined"></span>/<span id="totalCapacity">100</span></p>
-                    <!-- <p><strong>Location:</strong> Location</p> -->
                 </div>
-                <!-- <div class="event-gallery">
-                    <img src="image1.png" alt="Event Image 1">
-                    <img src="image2.png" alt="Event Image 2">
-                    <img src="image3.png" alt="Event Image 3">
-                </div> -->
             </div>
             <div id="related-events" class="related-events">
                 <h2>Related Events</h2>
-                <!-- <div class="related-event-item">
-                    <p>Jul 30 2024</p>
-                    <p>Automotive Lightweight Trade Fair</p>
-                    <p>Shanghai, China</p>
-                </div>
-                <div class="related-event-item">
-                    <p>Jul 30 2024</p>
-                    <p>Automotive Lightweight Trade Fair</p>
-                    <p>Shanghai, China</p>
-                </div>
-                <div class="related-event-item">
-                    <p>Jul 30 2024</p>
-                    <p>Automotive Lightweight Trade Fair</p>
-                    <p>Shanghai, China</p>
-                </div>
-                <div class="related-event-item">
-                    <p>Jul 30 2024</p>
-                    <p>Automotive Lightweight Trade Fair</p>
-                    <p>Shanghai, China</p>
-                </div> -->
             </div>
         </div>
-
-        <!-- <div class="event-organizer">
-            <img src="facebook.png" alt="Facebook Logo" class="organizer-logo">
-            <div class="organizer-details">
-                <p><strong>Organiser</strong></p>
-                <p>Facebook</p>
-                <p>USA</p>
-                <p>150 Total Events</p>
-            </div>
-        </div> -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>

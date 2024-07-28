@@ -201,17 +201,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function getEventIdFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
         let eventId = urlParams.get('id');
-        
+
         if (!eventId) {
             const path = window.location.pathname;
             const pathParts = path.split('/');
+            // The event ID is the second to last part in this URL structure
             if (pathParts.length > 2 && !isNaN(pathParts[pathParts.length - 2])) {
                 eventId = pathParts[pathParts.length - 2];
             }
         }
         console.log(eventId);
         return eventId ? parseInt(eventId) : null;
-    }
+    }   
 
     // Fetch event details
     async function getEventDetails(eventId) {
@@ -417,7 +418,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
         try {
             const response = await fetch(`/api/events/${eventId}/with-users`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
             });
             if (!response.ok) {
                 throw new Error('Error deleting event');

@@ -6,55 +6,29 @@ body {
 }
 
 .container {
-    display: flex;
     margin: 20px;
     margin-top: 80px;
+    text-align: center;
 }
 
-.sidebar {
-    width: 20%;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-right: 1px solid #ddd;
-}
-
-.sidebar h2, .sidebar h3 {
-    margin-top: 0;
-}
-
-.sidebar form {
-    display: flex;
-    flex-direction: column;
-}
-
-.filter-group {
+.header {
     margin-bottom: 20px;
 }
 
-.filter-group h3 {
-    margin-bottom: 10px;
-}
-
-.filter-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.sidebar button {
-    padding: 10px;
+.create-event-button {
+    padding: 10px 20px;
     background-color: #9b59b6;
     color: white;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.sidebar button:hover {
+.create-event-button:hover {
     background-color: #8e44ad;
 }
 
 .content {
-    flex: 1;
-    padding: 20px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 20px;

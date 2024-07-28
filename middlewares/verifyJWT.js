@@ -51,10 +51,12 @@ const verifyJWT = (req, res, next) => {
     "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
     "/api/logout": ["NormalUser", "Organisation", "Admin"],
     "/api/events": ["NormalUser", "Organisation", "Admin"],
-    // "/api/events/[0-9]+": ["NormalUser", "Organisation", "Admin"],
+
+    //Vincent
+    "/api/events/[0-9]+": ["NormalUser", "Organisation", "Admin"],
     "/api/events/create": ["Organisation", "Admin"],
     "/api/events/[0-9]+": ["Organisation", "Admin"],
-    "/api/events/with-users": ["Organisation", "Admin"],
+    "/api/events/[0-9]+/with-users": ["Organisation", "Admin"],
     "/api/events/[0-9]+/users": ["NormalUser", "Organisation"],
     
     //neil

@@ -1,49 +1,175 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
 .event-details {
     display: flex;
-    flex-direction: column;
-    padding: 5rem;
+    flex-direction: row;
+    margin-top: 50px;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.event-general {
-    border-radius: 0.5rem;
-    background-color: antiquewhite;
-    width: 50rem;
-    margin-bottom: 3rem;
+.event-container {
+    width: 75%;
+    margin: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-.event-information {
+.event-header {
     display: flex;
-    flex-direction: column;
-    padding-left: 3rem;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    color: black;
 }
 
-.event-information button {
-    width: 4rem;
+.event-logo {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
 }
 
-.event-about {
-    border-radius: 0.5rem;
-    width: 50rem;
-    height: 40rem;
-    background-color: antiquewhite;
-    margin-bottom: 3rem;
-    padding: 1.25rem;
+.event-details-header {
+    flex: 1;
 }
 
-.organiser-general {
+.event-details-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.event-details-header p {
+    margin: 5px 0;
+}
+
+.event-actions {
     display: flex;
-    flex-direction: column;
-    border-radius: 0.5rem;
-    width: 50rem;
-    height: 10rem;
-    background-color: antiquewhite;
-    padding: 1.25rem;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-/*.organiser details {}*/
+.joinButton, .deleteButton, .updateButton {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
 
-.organiser-information {
+.joinButton {
+    background-color: #28a745;
+    color: white;
+}
+
+.joinButton:hover {
+    background-color: #218838;
+}
+
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+.deleteButton:hover {
+    background-color: #c82333;
+}
+
+.updateButton {
+    background-color: #ffc107;
+    color: white;
+}
+
+.updateButton:hover {
+    background-color: #e0a800;
+}
+
+.event-main {
+    margin-top: 20px;
+}
+
+.event-description {
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.event-description p {
+    margin: 10px 0;
+}
+
+.event-info {
+    margin-top: 20px;
+    background-color: #e3f2fd;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.event-gallery {
     display: flex;
-    flex-direction: column;
-    padding-left: 3rem;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.event-gallery img {
+    width: calc(33.33% - 10px);
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.event-organizer {
+    width: 25%;
+    height: fit-content;
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.organizer-logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 20px;
+    border-radius: 50%;
+    border: 2px solid #3f51b5;
+}
+
+.organizer-details {
+    /* background-color: #fce4ec; */
+    border-radius: 8px;
+}
+
+.related-events {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+.related-events h2 {
+    color: #3f51b5;
+}
+
+.related-event-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.related-event-item p {
+    margin: 5px 0;
+    color: #777;
 }

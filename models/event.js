@@ -379,6 +379,7 @@ class Event {
     static async deleteEventandUser(id) {
       const connection = await sql.connect(dbConfig);
 
+      console.log("Deleting event with ID:", id);
       const sqlQuery = `DELETE FROM EventUsers WHERE event_id = @id; 
                         DELETE FROM Events WHERE id = @id;`; // Parameterized query
 

@@ -147,6 +147,7 @@ const updateEvent = async (req, res) => {
 const deleteEventandUser = async (req, res) => {
   const EventId = parseInt(req.params.id);
   
+  console.log("deleteeventid", EventId);
   // Extract the token from the Authorization header
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -330,21 +331,6 @@ async function deleteUserfromEvent(req, res) {
 }
 
 
-// Controller to get specific event with users
-async function getSpecificUserwithEvents(req, res) {
-  const userId = parseInt(req.params.userId);
-
-  try {
-    const user = await Event.getSpecificEventwithUsers(userId);
-    if (!user) {
-      return res.status(404).send("Event not found");
-    }
-    res.json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error fetching specific user with events" });
-  }
-};
 
 // Controller to check if user joined event
 async function checkIfUserJoinedEvent(req, res) {
@@ -450,7 +436,6 @@ module.exports = {
   getSpecificEventwithUsers,
   addUsertoEvent,
   deleteUserfromEvent,
-  getSpecificUserwithEvents,
   checkIfUserJoinedEvent, 
   getEventCategory, 
   getNumberofUsersJoined, 
