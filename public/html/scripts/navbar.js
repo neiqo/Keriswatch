@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     userItem.appendChild(userLink);
 
     // Default guest profile image
-    const defaultUserImg = 'images/profile-pictures/defaultProfile.png';
+    const defaultUserImg = '/images/profile-pictures/defaultProfile.png';
     const defaultUserName = 'Guest';
 
     // Check if user is logged in
