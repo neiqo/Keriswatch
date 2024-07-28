@@ -39,6 +39,10 @@ document.addEventListener("DOMContentLoaded", async function() {
     brandLink.href = 'index.html';
     const brandImg = document.createElement('img');
     brandImg.src = './images/keriswatch.png';
+    brandImg.onerror = function() {
+        brandImg.src = '/images/keriswatch.png';
+    };    
+
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
     brandImg.loading = 'lazy';
@@ -152,6 +156,9 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     const userImgElem = document.createElement('img');
     userImgElem.src = profilePictureUrl;
+    userImgElem.onerror = function() {
+        userImgElem.src = '/images/profile-pictures/defaultProfile.png';
+    };
     userImgElem.className = 'rounded-circle img-fluid me-1';
     userImgElem.height = 25;
     userImgElem.width = 25;
@@ -242,7 +249,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         const searchParams = new URLSearchParams(formData); // Convert to URL-encoded string
     
         // Redirect to searchpage.html with search parameters
-        window.location.href = `searchpage.html?${searchParams.toString()}`;
+        window.location.href = `/searchpage.html?${searchParams.toString()}`;
     });
 });
 

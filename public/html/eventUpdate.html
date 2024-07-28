@@ -11,10 +11,13 @@
         <title>Checkout example for Bootstrap</title>
 
         <!-- Bootstrap core CSS -->
-        <link href="/styles/eventCreationBootstrap.css" rel="stylesheet">
-        <link href="/styles/eventCreation.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
-        <link href="/styles/form-validation.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navbar.css"/>
+    <link href="/styles/eventCreationBootstrap.css" rel="stylesheet">
+    <link href="/styles/eventCreation.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/styles/form-validation.css" rel="stylesheet">
     </head>
   
     <body class="bg-light">
@@ -74,6 +77,10 @@
                         <option value="">Choose...</option>
                         <option value="1">Tech Conference</option>
                         <option value="2">Workshop</option>
+                        <option value="3">Networking Event</option>
+                        <option value="4">Webinar</option>
+                        <option value="5">Product Launch</option>
+
                         </select>
                         <div class="invalid-feedback">
                         Please select a valid event category.
@@ -130,6 +137,14 @@
                         <option value="">Choose...</option>
                         <option>Singapore</option>
                         <option>Malaysia</option>
+                        <option>Brunei</option>
+                        <option>Cambodia</option>
+                        <option>Indonesia</option>
+                        <option>Laos</option>
+                        <option>Myanmar</option>
+                        <option>Philippines</option>
+                        <option>Vietnam</option>
+                        <option>Thailand</option>
                         </select>
                         <div class="invalid-feedback">
                         Please select a country.
@@ -199,7 +214,8 @@
         <!-- <script src="../../../../assets/js/vendor/popper.min.js"></script>
         <script src="../../../../dist/js/bootstrap.min.js"></script>
         <script src="../../../../assets/js/vendor/holder.min.js"></script> -->
-        
+        <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+        <script type="module" src="/scripts/navbar.js"></script>
         <script src="/scripts/eventUpdate.js"></script>
 
 

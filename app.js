@@ -101,6 +101,7 @@ app.get("/events/:id", (req, res) => {
 });
 
 app.get('/events/:id/update', (req, res) => {
+  console.log(path.join(__dirname, 'public/html', 'eventUpdate.html'));
   res.sendFile(path.join(__dirname, 'public/html', 'eventUpdate.html'));
 });
 
