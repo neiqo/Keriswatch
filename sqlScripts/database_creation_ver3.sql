@@ -71,11 +71,11 @@ IF OBJECT_ID('dbo.NormalUser', 'U') IS NOT NULL
 IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
     DROP TABLE dbo.Users;
 
-IF OBJECT_ID('dbo.EventCategories', 'U') IS NOT NULL
-	DROP TABLE dbo.EventCategories;
-
 IF OBJECT_ID('dbo.Events', 'U') IS NOT NULL
     DROP TABLE dbo.Events;
+
+IF OBJECT_ID('dbo.EventCategories', 'U') IS NOT NULL
+	DROP TABLE dbo.EventCategories;
 
 IF OBJECT_ID('dbo.EventUsers', 'U') IS NOT NULL
     DROP TABLE dbo.EventUsers;
@@ -222,8 +222,8 @@ INSERT INTO Users (username, password, email, role) VALUES
 ('admin7', 'pass7', 'admin7@example.com', 'Admin'),
 ('admin8', 'pass8', 'admin8@example.com', 'Admin'),
 ('admin9', 'pass9', 'admin9@example.com', 'Admin'),
-('admin10', 'pass10', 'admin10@example.com', 'Admin');
-
+('admin10', 'pass10', 'admin10@example.com', 'Admin'),
+('ADforBEDpls',	'$2a$10$RLEeTB61FoK7vB6qtiiTSO3E3igTrTFHJqZzTwbEqDGDn1d4g9Pwe',	'ADforBEDpls@gmail.com', 'Admin');
 -- Insert into Admin table
 INSERT INTO Admin (userId) VALUES 
 ((SELECT userId FROM Users WHERE username = 'admin1')),
@@ -248,8 +248,8 @@ INSERT INTO Users (username, password, email, role) VALUES
 ('org7', 'pass7', 'org7@example.com', 'Organisation'),
 ('org8', 'pass8', 'org8@example.com', 'Organisation'),
 ('org9', 'pass9', 'org9@example.com', 'Organisation'),
-('org10', 'pass10', 'org10@example.com', 'Organisation');
-
+('org10', 'pass10', 'org10@example.com', 'Organisation'),
+('diontae', '$2a$10$xW2bKPhHcMMvR/IcYeLC9uFR2zGMTwJFlSK6vSfUuJHwGzaox4wrq', 'diontae@gmail.com', 'Organisation');
 -- Insert into Organisation table
 INSERT INTO Organisation (userId, orgNumber) VALUES 
 ((SELECT userId FROM Users WHERE username = 'org1'), 12345678),
@@ -261,8 +261,8 @@ INSERT INTO Organisation (userId, orgNumber) VALUES
 ((SELECT userId FROM Users WHERE username = 'org7'), 72345678),
 ((SELECT userId FROM Users WHERE username = 'org8'), 82345678),
 ((SELECT userId FROM Users WHERE username = 'org9'), 92345678),
-((SELECT userId FROM Users WHERE username = 'org10'), 02345678);
-
+((SELECT userId FROM Users WHERE username = 'org10'), 02345678),
+((SELECT userId FROM Users WHERE username = 'diontae'), 98765432);
 -- Insert Normal Users
 INSERT INTO Users (username, password, email, role) VALUES 
 ('user1', 'pass1', 'user1@example.com', 'NormalUser'),
@@ -274,8 +274,8 @@ INSERT INTO Users (username, password, email, role) VALUES
 ('user7', 'pass7', 'user7@example.com', 'NormalUser'),
 ('user8', 'pass8', 'user8@example.com', 'NormalUser'),
 ('user9', 'pass9', 'user9@example.com', 'NormalUser'),
-('user10', 'pass10', 'user10@example.com', 'NormalUser');
-
+('user10', 'pass10', 'user10@example.com', 'NormalUser'),
+('abcdef', '$2a$10$6D4EkNNK2AoqwOmbcoqop.EHaATdTaaWLVfh55F8PMuJhankhwy.y', 'abcdef@gmail.com', 'Organisation');
 -- Insert into NormalUser table
 INSERT INTO NormalUser (userId, country) VALUES 
 ((SELECT userId FROM Users WHERE username = 'user1'), 'Singapore'),
@@ -287,7 +287,8 @@ INSERT INTO NormalUser (userId, country) VALUES
 ((SELECT userId FROM Users WHERE username = 'user7'), 'Singapore'),
 ((SELECT userId FROM Users WHERE username = 'user8'), 'Malaysia'),
 ((SELECT userId FROM Users WHERE username = 'user9'), 'Indonesia'),
-((SELECT userId FROM Users WHERE username = 'user10'), 'Singapore');
+((SELECT userId FROM Users WHERE username = 'user10'), 'Singapore'),
+((SELECT userId FROM Users WHERE username = 'abcdef'), 'Singapore');
 
 -- Inserting data for Philippines
 INSERT INTO Articles (Author, Publisher, Country, Sector, Title, Body, publishDateTime, Tags)

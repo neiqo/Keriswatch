@@ -66,6 +66,11 @@ app.get('/api/users', userController.getAllUsers);
 // Get specific user profile picture
 app.get('/api/users/:username/profilePicture', userController.getProfilePicture);
 
+app.get('/users/:username', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/html/userProfile.html'));
+  console.log(path.join(__dirname + '/public/html/userProfile.html'));
+});
+
 // TOKEN ROUTES
 app.delete('/api/token', tokenController.deleteToken);
 
@@ -90,8 +95,6 @@ app.get('/events/:id/update', (req, res) => {
   res.sendFile(path.join(__dirname + '/public/html/eventUpdate.html'));
   console.log(path.join(__dirname + '/public/html/eventUpdate.html'));
 });
-
-
 
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);

@@ -1,6 +1,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-    function checkTokenExpiry() {
+    async function checkTokenExpiry() {
         const token = localStorage.getItem('token');
         if (!token) {
             // No token found, user is already logged out
@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
         if (currentTime >= tokenExpiry) {
             // Token has expired
+            await fetch('/api/token', {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }}); // Send a request to delete the token from the server
             localStorage.removeItem('token');
             alert('Your session has expired. You will be logged out.');
             window.location.reload(); // Refresh the page
