@@ -6,6 +6,14 @@ const Book = require("../models/book");
 // Mock the Book model
 jest.mock("../models/book"); // Replace with the actual path to your Book model
 
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  console.error.mockRestore();
+});
+
 describe("booksController.getAllBooks", () => {
   beforeEach(() => {
     jest.clearAllMocks(); // Clear mock calls before each test

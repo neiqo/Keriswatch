@@ -4,6 +4,14 @@ const sql = require("mssql");
 
 jest.mock("mssql"); // Mock the mssql library
 
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  console.error.mockRestore();
+});
+
 describe("Book.getAllBooks", () => {
   beforeEach(() => {
     jest.clearAllMocks();

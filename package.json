@@ -4,7 +4,7 @@
   "description": "BED Assg",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -28,10 +28,15 @@
     "multer": "^1.4.5-lts.1",
     "node": "^22.5.1",
     "node-fetch": "^3.3.2",
+    "node-mocks-http": "^1.15.0",
     "nodemon": "^3.1.4",
     "path": "^0.12.7",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1",
     "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
