@@ -184,24 +184,29 @@ document.addEventListener("DOMContentLoaded", async function() {
     dropdownMenu.setAttribute('aria-labelledby', 'navbarDropdown');
     userItem.appendChild(dropdownMenu);
 
-    // Add dropdown items
-    const accountItems = [];
+     // Add dropdown items
+     const accountItems = [];
 
-    if (token) {
-        if (role == "Organisation"){
-            accountItems.push(
-                { text: 'Organisation Dashboard', href: 'organisation.html' },
-                { text: 'Log Out', href: '#', id: 'logout' }
-            );
-        } else {
-            accountItems.push(
-                { text: 'Your Account', href: 'user.html' },
-                { text: 'Log Out', href: '#', id: 'logout' }
-            );
-        }
-    } else {
-        accountItems.push({ text: 'Log In', href: '/login.html' });
-    }
+     if (token) {
+         if (role == "Organisation"){
+             accountItems.push(
+                 { text: 'Organisation Dashboard', href: 'organisation.html' },
+                 { text: 'Log Out', href: '#', id: 'logout' }
+             );
+         } else if (role == "NormalUser") {
+             accountItems.push(
+                 { text: 'Your Account', href: 'user.html' },
+                 { text: 'Log Out', href: '#', id: 'logout' }
+             );
+         } else {
+             accountItems.push(
+                 { text: 'Admin Dashboard', href: 'admin.html' },
+                 { text: 'Log Out', href: '#', id: 'logout' }
+             );
+         }
+     } else {
+         accountItems.push({ text: 'Log In', href: '/login.html' });
+     }
     
     accountItems.forEach(item => {
         const dropdownItem = document.createElement('a');
