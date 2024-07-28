@@ -47,9 +47,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     // Create the brand link
     const brandLink = document.createElement('a');
     brandLink.className = 'navbar-brand';
-    brandLink.href = 'index.html';
+    brandLink.href = '/index.html';
     const brandImg = document.createElement('img');
-    brandImg.src = './images/keriswatch.png';
+    brandImg.src = '/images/keriswatch.png';
     brandImg.height = 30;
     brandImg.alt = 'Keriswatch Logo';
     brandImg.loading = 'lazy';
@@ -83,8 +83,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // List items for navbar links
     const navItems = [
-        { text: 'News', href: 'articleSearchPage.html', active: false },
-        { text: 'Events', href: 'events.html', active: false },
+        { text: 'News', href: '/articleSearchPage.html', active: false },
+        { text: 'Events', href: '/events.html', active: false },
     ];
 
     navItems.forEach(item => {
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     userItem.appendChild(userLink);
 
     // Default guest profile image
-    const defaultUserImg = './images/profile-pictures/defaultProfile.png';
+    const defaultUserImg = 'images/profile-pictures/defaultProfile.png';
     const defaultUserName = 'Guest';
 
     // Check if user is logged in
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             isLoggedIn = true;
             username = payload.username;
             const profilePicture = await fetchProfilePicture(username);
-            profilePictureUrl = profilePicture ? `data:image/png;base64,${profilePicture}` : defaultUserImg;
+            profilePictureUrl = profilePicture ? `data:/image/png;base64,${profilePicture}` : defaultUserImg;
         } catch (error) {
             console.error('Error parsing token:', error);
         }
@@ -184,11 +184,11 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     if (token) {
         accountItems.push(
-            { text: 'Your Account', href: 'user.html' },
+            { text: 'Your Account', href: `/users/${username}` },
             { text: 'Log Out', href: '#', id: 'logout' }
         );
     } else {
-        accountItems.push({ text: 'Log In', href: 'login.html' });
+        accountItems.push({ text: 'Log In', href: '/login.html' });
     }
     
     accountItems.forEach(item => {
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         const searchParams = new URLSearchParams(formData); // Convert to URL-encoded string
     
         // Redirect to searchpage.html with search parameters
-        window.location.href = `articleSearchPage.html?${searchParams.toString()}`;
+        window.location.href = `/articleSearchPage.html?${searchParams.toString()}`;
     });
 });
 
