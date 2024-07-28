@@ -62,6 +62,7 @@ class User {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
+            console.log("username in getUserbyUsername: " + username);
             const sqlQuery = `SELECT * FROM Users WHERE username = @Username`;
     
             const request = connection.request();
@@ -86,6 +87,8 @@ class User {
         try {
             const connection = await sql.connect(dbConfig);
             console.log("UserID in getProfilePicture: " + userId);
+            console.log(userId);
+
             const sqlQuery = `SELECT profilePicture FROM Users WHERE userId = @UserId`;
 
             const request = connection.request();
@@ -198,15 +201,15 @@ class NormalUser extends User {
         }
     }
 
-    static async getNormalUserByUsername(username) {
+    static async getNormalUserByUserId(userId) {
         try {
             const connection = await sql.connect(dbConfig);
-            const sqlQuery = `SELECT * FROM User WHERE username = @Username`;
+            const sqlQuery = `SELECT * FROM NormalUser WHERE username = @UserId`;
     
-            console.log("Username: " + username);
+            console.log("userId: " + userId);
     
             const request = connection.request();
-            request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
+            request.input('UserId', sql.Int, userId); // specify data type varchar to avoid system misinterpretation
     
             const result = await request.query(sqlQuery);
             connection.close();
@@ -223,7 +226,7 @@ class NormalUser extends User {
         }
     }
 
-    static async updateAccountDetails(user, oldUserDetails) {
+    static async updateAccountDetails(user) {
         let connection;
         let transaction;
 
@@ -235,11 +238,11 @@ class NormalUser extends User {
             await transaction.begin();
 
             const request = new sql.Request(transaction);
-            request.input('Username', sql.VarChar, user.username || oldUserDetails.username);
-            request.input('Password', sql.VarChar, user.password || oldUserDetails.password);
-            request.input('Email', sql.VarChar, user.email || oldUserDetails.email);
-            request.input('Country', sql.VarChar, user.country || oldUserDetails.country);
-            request.input('oldUsername', sql.VarChar, oldUserDetails.username);
+            request.input('Username', sql.VarChar, user.username);
+            request.input('Password', sql.VarChar, user.password);
+            request.input('Email', sql.VarChar, user.email);
+            request.input('Country', sql.VarChar, user.country);
+            request.input('oldUsername', sql.VarChar, user.oldUsername);
 
             // Update Users table
             const updateUserQuery = `UPDATE Users
@@ -262,7 +265,7 @@ class NormalUser extends User {
             await transaction.commit();
             connection.close();
 
-            return { success : true, message: 'User updated successfully', userId: userId, username : user.username || oldUserDetails.username};
+            return { success : true, message: 'User updated successfully', userId: userId, username : user.username};
         } catch (err) {
             await transaction.rollback();
             connection.close();
@@ -426,12 +429,12 @@ class Organisation extends User {
         }
     }
 
-    static async getOrganisationByUsername(username) {
+    static async getOrganisationByUserId(userId) {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM Organisation WHERE username = @Username`;
 
         const request = connection.request();
-        request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
+        request.input('userId', sql.Int, userId); // specify data type varchar to avoid system misinterpretation
 
         const result = await request.query(sqlQuery);
         connection.close();
@@ -444,7 +447,7 @@ class Organisation extends User {
         : null;
     }
 
-    static async updateAccountDetails(user, oldUserDetails) {
+    static async updateAccountDetails(user) {
         let connection;
         let transaction;
 
@@ -456,11 +459,11 @@ class Organisation extends User {
             await transaction.begin();
 
             const request = new sql.Request(transaction);
-            request.input('Username', sql.VarChar, user.username || oldUserDetails.username);
-            request.input('Password', sql.VarChar, user.password || oldUserDetails.password);
-            request.input('Email', sql.VarChar, user.email || oldUserDetails.email);
-            request.input('OrgNumber', sql.Int, user.orgNumber || oldUserDetails.orgNumber);
-            request.input('oldUsername', sql.VarChar, oldUserDetails.username);
+            request.input('Username', sql.VarChar, user.username);
+            request.input('Password', sql.VarChar, user.password);
+            request.input('Email', sql.VarChar, user.email);
+            request.input('OrgNumber', sql.Int, user.orgNumber);
+            request.input('oldUsername', sql.VarChar,user.oldUsername);
 
             // Update Users table
             const updateUserQuery = `UPDATE Users
@@ -483,7 +486,7 @@ class Organisation extends User {
             await transaction.commit();
             connection.close();
 
-            return { success : true, message: 'User updated successfully', userId: userId, username : user.username || oldUserDetails.username};
+            return { success : true, message: 'User updated successfully', userId: userId, username : user.username};
         } catch (err) {
             await transaction.rollback();
             connection.close();

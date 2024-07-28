@@ -5,8 +5,15 @@
 document.addEventListener("DOMContentLoaded", async function() {
     // Function to fetch user profile picture
     async function fetchProfilePicture(username) {
-        const tokenObj = JSON.parse(localStorage.getItem('token'));
-        const token = tokenObj ? tokenObj.token : null;
+        let tokenObj = localStorage.getItem('token') || null;
+        let token = null;
+        if (tokenObj) {
+            tokenObj = JSON.parse(tokenObj);
+            token = tokenObj.token;
+            if (!token) {
+                token = tokenObj; //tokenObj is a string
+            }
+        }   
         if (!token) return null;
 
         try {

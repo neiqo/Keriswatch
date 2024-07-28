@@ -11,13 +11,15 @@ const verifyJWT = (req, res, next) => {
 
     // Parse the JSON object to extract the token
     let token = tokenString;
-    // try {
-    //     console.log("Token object: " + tokenObject);
-    //     const tokenObject = JSON.parse(tokenString);
-    //     token = tokenObject.token || tokenObject;
-    // } catch (error) {
-    //     return res.status(400).json({ message: "Invalid token format" });
-    // }
+
+    try {
+      // Attempt to parse the token as JSON
+      const tokenObject = JSON.parse(tokenString);
+      token = tokenObject.token;
+    } catch (error) {
+        // If parsing fails, assume the token is a plain string
+        token = tokenString;
+    }
 
     console.log("Token in verifyJWT: " + token);
   // If no token is provided, return an Unauthorised error response
