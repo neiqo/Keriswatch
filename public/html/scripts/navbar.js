@@ -2,21 +2,22 @@
 // import jwt_decode from 'jwt-decode'; // Import the jwt-decode module
 
 // const { log } = require("console");
+let tokenObj = localStorage.getItem('token') || null;
+let token = null;
+if (tokenObj) {
+    tokenObj = JSON.parse(tokenObj);
+    token = tokenObj.token;
+    if (!token) {
+        token = tokenObj; //tokenObj is a string
+    }
+}   
+if (!token) {
+    console.error('No token found');
+}
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Function to fetch user profile picture
     async function fetchProfilePicture(username) {
-        let tokenObj = localStorage.getItem('token') || null;
-        let token = null;
-        if (tokenObj) {
-            tokenObj = JSON.parse(tokenObj);
-            token = tokenObj.token;
-            if (!token) {
-                token = tokenObj; //tokenObj is a string
-            }
-        }   
-        if (!token) return null;
-
         try {
             const response = await fetch(`/api/users/${username}/profilePicture`);
 
@@ -147,13 +148,10 @@ document.addEventListener("DOMContentLoaded", async function() {
     const defaultUserImg = '/images/profile-pictures/defaultProfile.png';
     const defaultUserName = 'Guest';
 
-    // Check if user is logged in
-    const tokenObj = JSON.parse(localStorage.getItem('token'));
-    const token = tokenObj ? tokenObj.token : null;
-    let isLoggedIn = false;
+    // Default user details
     let profilePictureUrl = defaultUserImg;
     let username = defaultUserName;
-    let role = "NormalUser"
+    let role;
 
     if (token) {
         try {
@@ -162,7 +160,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             
             const payload = jwt_decode(token);
             console.log(payload);
-            isLoggedIn = true;
             username = payload.username;
             role = payload.role;
             const profilePicture = await fetchProfilePicture(username);

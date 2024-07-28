@@ -71,7 +71,7 @@ class User {
             const result = await request.query(sqlQuery);
             connection.close();
     
-            console.log("Result in getUserByUsername: " + result.recordset[0]); 
+            console.log("Result in getUserByUsername: " + result); 
 
             if (!result || !result.recordset) return null; // if no user found, return null
     
