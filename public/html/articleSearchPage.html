@@ -21,37 +21,45 @@
     <link rel="stylesheet" href="./styles/searchPage.css">
 </head>
 <body>
-    <form id="searchForm">
-        <label for="query">Search:</label>
-        <input type="text" id="query" name="query">
-    
-        <label for="sector">Select Sector:</label>
-        <select id="sector" name="sector">
-            <option value="">All</option>
-            <option value="Agriculture">Agriculture</option>
-            <option value="Manufacture">Manufacture</option>
-            <option value="Services">Services</option>
-        </select>
+    <content id="searchContent">
+        <form id="searchPageForm">
+            <div id="search-container">
+                <label for="query">Search:</label>
+                <input type="text" id="query" name="query">
+            </div>
 
-        <label for="country">Select Country:</label>
-        <select id="country" name="country">
-            <option value="all">All Countries</option>
-            <option value="Singapore">Singapore</option>
-            <option value="Malaysia">Malaysia</option>
-            <option value="Brunei">Brunei</option>
-            <option value="Cambodia">Cambodia</option>
-            <option value="Indonesia">Indonesia</option>
-            <option value="Laos">Laos</option>
-            <option value="Myanmar">Myanmar</option>
-            <option value="Philippines">Philippines</option>
-            <option value="Vietnam">Vietnam</option>
-            <option value="Thailand">Thailand</option>
-        </select>
-    
-        <button type="submit">Search</button>
-    </form>
-    
-    <div id="searchResults"></div>
+            <div id="sector-container">
+                <label for="sector">Select Sector:</label>
+                <select id="sector" name="sector">
+                    <option value="">All</option>
+                    <option value="Agriculture">Agriculture</option>
+                    <option value="Manufacture">Manufacture</option>
+                    <option value="Services">Services</option>
+                </select>
+            </div>
+
+            <div id="country-container">
+                <label for="country">Select Country:</label>
+                <select id="country" name="country">
+                    <option value="all">All Countries</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Brunei">Brunei</option>
+                    <option value="Cambodia">Cambodia</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Laos">Laos</option>
+                    <option value="Myanmar">Myanmar</option>
+                    <option value="Philippines">Philippines</option>
+                    <option value="Vietnam">Vietnam</option>
+                    <option value="Thailand">Thailand</option>
+                </select>
+            </div>
+        
+            <button id="submitSearch" type="submit">Search</button>
+        </form>
+        
+        <div id="searchResults"></div>
+    </content>
 
     <!-- Include Bootstrap JavaScript and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

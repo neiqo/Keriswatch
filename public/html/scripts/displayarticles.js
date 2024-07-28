@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       filterAndDisplayArticles(defaultCountry, articles, bookmarkedArticleIds, token, userId, userRole);
 
       // Display the most recent articles
-      displayRecentArticles(articles, 'latest-news', 4, bookmarkedArticleIds, token, userId, userRole);
+      displayRecentArticles(articles, 'latest-news', 7, bookmarkedArticleIds, token, userId, userRole);
 
   } catch (error) {
       console.error('Error fetching articles:', error);
@@ -59,9 +59,9 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 function filterAndDisplayArticles(country, articles, bookmarkedArticleIds, token, userId, userRole) {
   // Filter articles based on the selected country
-  const agricultureArticles = articles.filter(article => article.Country === country && article.Sector === 'Agriculture');
-  const servicesArticles = articles.filter(article => article.Country === country && article.Sector === 'Services');
-  const manufactureArticles = articles.filter(article => article.Country === country && article.Sector === 'Manufacture');
+  const agricultureArticles = articles.filter(article => article.Country === country && article.Sector === 'Agriculture').slice(0, 3);
+  const servicesArticles = articles.filter(article => article.Country === country && article.Sector === 'Services').slice(0, 3);
+  const manufactureArticles = articles.filter(article => article.Country === country && article.Sector === 'Manufacture').slice(0, 3);
 
   // Update the title and display articles for each sector
   updateTitle(country);
