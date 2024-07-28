@@ -1,7 +1,14 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     async function checkTokenExpiry() {
-        const token = localStorage.getItem('token');
+        let tokenObj = localStorage.getItem('token') || null;  // This will store the user's JWT after login
+        if (!tokenObj) {
+            // No token found, user is already logged out
+            return;
+        }   
+        tokenObj = JSON.parse(tokenObj);
+        const token = tokenObj.token;
+
         if (!token) {
             // No token found, user is already logged out
             return;
