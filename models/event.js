@@ -350,7 +350,8 @@ class Event {
 
             const query = `
             SELECT * FROM events 
-            ORDER BY id 
+            WHERE startDate >= GETDATE()
+            ORDER BY startDate ASC 
             OFFSET ${offset} ROWS 
             FETCH NEXT ${perPage} ROWS ONLY;
             `;
