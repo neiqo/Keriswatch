@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keriswatch</title>
-    <!-- Include Bootstrap CSS -->
+    <title>User</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,17 +15,41 @@
     <link rel="stylesheet" id="roboto-subset.css-css" 
     href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/mdb5/fonts/roboto-subset.css?ver=3.9.0-update.5"
     type="text/css" media="all">
-    <link rel="stylesheet" href="./styles/styles.css">
     <link rel="stylesheet" type="text/css" href="./styles/navbar.css"/>
     <link rel="stylesheet" href="./styles/footer.css">
+    <link rel="stylesheet" href="./styles/userProfile.css">
 </head>
 <body>
     <div id="content">
-        <div id="left-column">
-            <div id="country-container">
-                <div id="country-selector-container">
-                    <label for="country-selector"><b>Select Country:</b></label>
-                    <select id="country-selector">
+        <div id="name_profile">
+            <div>
+                <!-- TODO: ensure user can see personal profile pictures, not just preset ones-->
+                <img id="account-profile-picture" alt="Profile Picture" />
+            </div>
+            <div id="name_editprofile">
+                <p class="headerTitle" id="profile_username"></p>
+                <button class="purple-btn" id="edit-profile-btn">Edit Account Details</button>
+                <button class="purple-btn" id="edit-pic-btn">Edit Account Picture</button>
+            </div>
+        </div>
+
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Account Details</h2>
+                <p>Please enter the details you wish to update</p>
+                <div class="form-group">
+                    <label for="username">Username (cannot be changed)</label>
+                    <input type="text" id="username" name="username" disabled value="Bob">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="bob@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label for="country-selector">Country</label>
+                    <select id="country-selector" name="country">
                         <option value="Singapore">Singapore</option>
                         <option value="Malaysia">Malaysia</option>
                         <option value="Brunei">Brunei</option>
@@ -39,52 +62,42 @@
                         <option value="Thailand">Thailand</option>
                     </select>
                 </div>
-
-                <img src="./images/statistics/asean-map.png" usemap="#asean-map" alt="ASEAN Map" id="asean-map-img">
-            
-                <p class="headerTitle">Country Sector Readiness (value of Industry added, % of GDP)</p>
-                <p>Showing the value of the various industries added as a % of their country's GDP, we hope this helps in fostering a better understanding of how different industries contribute to each country's economy!</p>
-                
-                <div id="selectedCountry"></div> <!--for displaying selected country-->
-                <div id="statisticsContainer"></div> <!--for displaying country statistics-->
-            </div>
-            <p id="sector-country-news-title" class="headerTitle">Latest Sector News In</p>
-            <div id="sector-country-news">
-                <div id="agriculture-container">
-                    <p class="paraTitle">AGRICULTURE</p>
-                    <div id="agriculture-news">
-
-                    </div>
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" name="password">
                 </div>
-                <div id="services-container">
-                    <p class="paraTitle">SERVICES</p>
-                    <div id="services-news">
-
-                    </div>
-                </div>
-                <div id="manufacture-container">
-                    <p class="paraTitle">MANUFACTURE</p>
-                    <div id="manufacture-news">
-
-                    </div>
-                </div>
+                <button class="purple-btn" id="update-btn">Update</button>
             </div>
         </div>
-        <div id="right-column">
-            <div id="latest-news-container">
-                <p class="paraTitle">Latest News</p>
-                <div id="latest-news">
 
+        <div id="profilePicModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-profile-pic">&times;</span>
+                <h2>Edit Account Picture</h2>
+                <p>Please upload a new profile picture</p>
+                <div class="form-group">
+                    <label for="profile-pic">Upload New Profile Picture</label>
+                    <input type="file" id="profile-pic" name="profile-pic" accept="image/*">
                 </div>
+                <button class="purple-btn" id="upload-pic-btn">Upload Picture</button>
             </div>
-            <div id="latest-news-container">
-                <p class="paraTitle">Upcoming Events</p>
-                <div id="upcoming-events"> <!-- add event tings here -->
-                
+        </div>
+    
+        <div id="bottom">
+            <div>
+                <p class="headerTitle">Your Bookmarks</p>
+                <div id="articles-list"></div> <!--displays all bookmarked articles, might need to change the style abit-->
+            </div>
+
+            <div>
+                <p class="headerTitle">Your Comments</p>
+                <div id="comments"> <!-- insert comments here-->
+                    Comments
                 </div>
             </div>
         </div>
     </div>
+
 
     <footer>
         <div id="column-footer">
@@ -120,18 +133,11 @@
         </div>
     </footer>
 
-    <!-- The navbar will be inserted here by the JavaScript -->
-    
-    <!-- Include Bootstrap JavaScript and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <!-- Include your custom JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script type="module" src="./scripts/checkToken.js"></script>
-    <script type="module" src="./scripts/navbar.js"></script>
-    <script src="./scripts/displayarticles.js"></script> <!-- display articles script -->
-    <script src="./scripts/countryStatistics.js"></script> <!-- country statistics script -->
+    <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/userprofile.js"></script>
+    <script src="./scripts/bookmarkedarticle.js"></script>
 </body>
 </html>

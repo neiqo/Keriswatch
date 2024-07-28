@@ -5,18 +5,10 @@ require('dotenv').config(); // Load environment variables from a .env file
 const { User, NormalUser, Admin, Organisation } = require('../models/user');
 const Token = require('../models/token');
 
-// const fs = require('fs');
-// const upload = require('../middlewares/multerConfig');
-// const { profile } = require('console');
-// const { fileFrom } = require('node-fetch');
-
 const registerUser = async (req, res) => {
   const user = { ...req.body };
-  // const profilePicture = req.file;  
 
   try {
-    // console.log("Profile Picture in userController: " + (profilePicture ? profilePicture.originalname : 'No profile picture'));
-
     // Validation code for user registration
     if (!['NormalUser', 'Organisation'].includes(user.role)) {
       return res.status(400).json({ message: 'Invalid role' });
@@ -51,37 +43,12 @@ const registerUser = async (req, res) => {
     }
     const userId = userRecord.userId;
 
-    // Decode the base64 string to get the binary data
-    const profilePictureImageBuffer = Buffer.from(req.body.profilePicture.split(',')[1], 'base64');
+    if (user.profilePicture) {
+        // Decode the base64 string to get the binary data
+        const profilePictureImageBuffer = Buffer.from(req.body.profilePicture.split(',')[1], 'base64');
 
-    await User.uploadProfilePicture(userId, profilePictureImageBuffer);
-    
-    // let finalDestination;
-    // let finalPath;
-    // let profilePicturePath = null;
-    // if (profilePicture) {
-    //   // Define the final destination for profile picture
-    //   finalDestination = path.join(__dirname, '..', 'public', 'html', 'images', 'profile-pictures');
-      
-    //   // Ensure the directory exists
-    //   if (!fs.existsSync(finalDestination)) {
-    //     fs.mkdirSync(finalDestination, { recursive: true });
-    //   }
-
-    //   // Generate a new filename based on user ID
-    //   const fileExtension = path.extname(profilePicture.originalname);
-    //   profilePicturePath = `${userId}${fileExtension}`;
-    //   finalPath = path.join(finalDestination, profilePicturePath);
-
-    //   // Move the file directly to the final destination
-    //   fs.writeFileSync(finalPath, fs.readFileSync(profilePicture.path));
-      
-    //   // Update the user's profile picture in the database
-    //   const updateResult = await User.uploadProfilePicture(userId, profilePicturePath);
-    //   if (!updateResult.success) {
-    //     console.error('Failed to update profile picture in database:', updateResult.message);
-    //   }
-    // }
+        await User.uploadProfilePicture(userId, profilePictureImageBuffer);
+    }
 
     const payload = {
         userId: userId,
@@ -131,8 +98,6 @@ const userLogin = async (req,res) => {
       return res.status(401).json({message: "Wrong password!"});
     }
 
-    // const profilePicture = path.join(__dirname, '..', 'public', 'images', 'profile-pictures', user.profilePicture);
-
     // generate JWT(JSON Web Token) token
     // user information that is pulled from the database
     const payload = {
@@ -169,7 +134,7 @@ const userLogin = async (req,res) => {
 
 const userLogout = async (req, res) => {
     try {
-        const decoded = req.user;
+        const decoded = req.decodedUser;
         console.log("Decoded token in userLogout: " + decoded); // Debugging
         await Token.deleteToken(decoded.userId);
         res.status(200).send('User logged out successfully');
@@ -193,38 +158,38 @@ const getUserByUsername =  async (req, res) => {
     }
 }
 
-const updateNormalUser =  async (req, res) => {
+const updateNormalUser = async (req, res) => {
     try {
-        // default null if no changes made
-        const { oldUsername, username = null, password = null, email = null, country = null } = req.body;
-        const user = { oldUsername, username, password, email, country };
+        const { oldUsername, email, password, country } = req.body;
 
-        // if username does not exist, throw error
-        let oldUserDetails = null;
-
-        console.log(user.oldUsername);
-
-        if ((oldUserDetails = await this.getUserByUsername(user.oldUsername)) == null) {
-            res.status(404).send('User does not exist');
-            throw new Error('User does not exist');
+        // Get the user details based on the username
+        const user = await User.getUserByUsername(oldUsername);
+        if (!user) {
+            return res.status(404).send('User not found');
         }
 
-        console.log(oldUserDetails);
+        // Update the user details
+        if (email) user.email = email;
+        if (password) {
+            const salt = await bcrypt.genSalt(10); 
+            user.password = await bcrypt.hash(password, salt);
+        }
+        if (country) user.country = country;
 
-        oldUserDetails['country'] = (await this.getNormalUserByUsername(user.oldUsername)).country;  // get country of user
+        // Save the updated user details
+        await NormalUser.updateAccountDetails(user);
 
-        const updatedUser = await NormalUser.updateAccountDetails(user, oldUserDetails);
-
+        // Generate a new token
         const payload = {
-            userId: updatedUser.userId,
-            role: oldUserDetails.role,
-            username: updatedUser.username,
+            userId: user.userId,
+            role: user.role,
+            username: user.username,
         };
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "3600s" });
 
         // Send status 200 OK with JSON response
-        res.status(200).json(token);
+        res.status(200).json({ token });
     } catch (error) {
         res.status(400).send('Error updating user: ' + error.message);
     }
@@ -301,7 +266,7 @@ const getProfilePicture = async (req, res) => {
 
         const profilePicture = await User.getProfilePicture(user.userId);
         if (!profilePicture) {
-            return res.status(404).send('Profile picture not found');
+            return res.status(200).json(null);
         }
 
         // res.set('Content-Type', 'image/png');

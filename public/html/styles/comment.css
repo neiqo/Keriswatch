@@ -1,90 +1,99 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    width: 80%;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#comment-section {
+#comments-container {
     margin-top: 20px;
 }
 
-#comment-form {
-    display: flex;
-    margin-bottom: 20px;
-}
-
-#comment-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#comment-submit {
-    padding: 10px 20px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
 .comment {
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
-.comment .meta {
+.meta {
     display: flex;
     align-items: center;
+    margin-bottom: 5px;
 }
 
-.comment .meta img {
+.meta img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     margin-right: 10px;
 }
 
-.comment .meta .username {
+.username {
     font-weight: bold;
+    margin-right: 10px;
 }
 
-.comment .meta .timestamp {
-    margin-left: auto;
-    font-size: 0.9em;
+.timestamp {
     color: #888;
+    font-size: 0.9em;
 }
 
-.comment .content {
+.content {
     margin: 10px 0;
 }
 
-.comment .actions {
+.actions {
     display: flex;
-    align-items: center;
+    gap: 10px;
+    font-size: 0.9em;
+    color: #555;
 }
 
-.comment .actions .vote {
-    margin-right: 10px;
+.actions .vote {
     cursor: pointer;
 }
 
-.comment .actions .delete {
-    margin-left: auto;
+.actions .delete, .actions .reply {
     cursor: pointer;
-    color: red;
+    color: #007bff;
 }
 
 .reply {
-    margin-left: 40px;
+    margin-left: 20px;
+    border-left: 2px solid #ddd;
+    padding-left: 10px;
+}
+
+.reply-container {
+    margin-top: 10px;
+}
+#comments-container h2,
+#comments-container textarea,
+#comments-container button {
+    margin-left: 72px;
+    margin-right: 72px;
+    display: block; /* Ensure they are block-level elements */
+    width: calc(100% - 144px); /* Adjust width to account for margin */
+}
+
+.reply-input {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.reply-submit {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block; /* Ensure button is a block-level element */
+    width: auto; /* Adjust width as needed */
+}
+.reply-submit:hover {
+    background-color: #0056b3;
+}
+.comment meta img {
+    max-width: 30%;
+    height: auto;
 }

@@ -19,6 +19,8 @@
     <link rel="stylesheet" type="text/css" href="./styles/navbar.css"/>
     <link rel="stylesheet" href="./styles/footer.css">
     <link rel="stylesheet" href="./styles/articlePage.css">
+    <link rel="stylesheet" href="./styles/comment.css">
+    <script src="https://cdn.jsdelivr.net/npm/date-fns-tz@1.1.4/dist/date-fns-tz.min.js"></script>
 
 </head>
 <body>
@@ -44,9 +46,14 @@
 
     <div id="article-container"></div>
     
-    <div id="comments"> <!-- insert comments here-->
-        Comments
+    <div id="comments-container">
+        <h2>Comments</h2>
+        <textarea id="comment-input" placeholder="Write a comment..."></textarea>
+        <button id="comment-submit">Submit Comment</button>
+        <div id="comments"></div>
+
     </div>
+
 
     <div id="related-news-container">
         <h2 id="related-news-title">Related News</h2>
@@ -98,9 +105,13 @@
 
     <!-- Include your custom JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.23.0/dist/date-fns.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns-tz@1.1.4/dist/date-fns-tz.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="./scripts/navbar.js"></script>
     <script type="module" src="./scripts/checkToken.js"></script>
     <script src="./scripts/article.js"></script>
+    <script src="./scripts/comment.js"></script>
     
 </body>
 </html>

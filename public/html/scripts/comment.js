@@ -1,70 +1,180 @@
+let tokenObj = localStorage.getItem('token') || null;  // This will store the user's JWT after login
+let userToken;
 
-let userToken = localStorage.getItem('token') || null;  // This will store the user's JWT after login
+if (tokenObj) {
+    tokenObj = JSON.parse(tokenObj);
+    userToken = tokenObj.token;
+}   
+const urlParams = new URLSearchParams(window.location.search);
+const articleID = urlParams.get('id');
+console.log('Token:', userToken);
+        
+let payload = null;
+
+if (userToken) {
+    payload = jwt_decode(userToken);
+    console.log(payload);
+}
+
+// Function to check if the user is logged in
+function isLoggedIn() {
+    return !!payload; 
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadComments();
 
     document.getElementById('comment-submit').addEventListener('click', () => {
-        const commentInput = document.getElementById('comment-input');
-        const content = commentInput.value.trim();
-        if (content) {
-            postComment(content);
-            commentInput.value = '';
+        if (isLoggedIn()) {
+            const commentInput = document.getElementById('comment-input');
+            const content = commentInput.value.trim();
+            if (content) {
+                postComment(content);
+                commentInput.value = '';
+            }
+        } else {
+            alert('You are not logged in, so you cannot submit a comment.');
         }
     });
 });
 
+// Function to extract numeric ID
+const extractId = (id) => String(id).replace('comment-', '');
+
 async function loadComments() {
-    const articleId = 1; // Replace with the actual article ID
-    const response = await fetch(`api/${articleId}/comments`);
+    const response = await fetch(`api/${articleID}/comments`);
+    if (!response.ok) {
+        alert('Error occurred while fetching comments.');
+        return;
+    }
     const comments = await response.json();
     displayComments(comments);
 }
 
-function displayComments(comments, parentElement = document.getElementById('comments')) {
+function displayComments(comments, parentElement = document.getElementById('comments'), level = 0) {
     parentElement.innerHTML = '';
     comments.forEach(comment => {
-        const commentElement = createCommentElement(comment);
+        const commentElement = createCommentElement(comment, level);
         parentElement.appendChild(commentElement);
-        if (comment.replies) {
+        if (comment.replies && level < 2) {
             const replyContainer = document.createElement('div');
             replyContainer.classList.add('reply');
-            displayComments(comment.replies, replyContainer);
+            displayComments(comment.replies, replyContainer, level + 1);
             parentElement.appendChild(replyContainer);
         }
     });
 }
 
-function createCommentElement(comment) {
+function createCommentElement(comment, level) {
     const commentElement = document.createElement('div');
     commentElement.classList.add('comment');
+    commentElement.id = `comment-${comment.commentId}`;
+    commentElement.style.marginLeft = `${level * 20}px`;
+
+    let profilePictureUrl = '';
+
+
+    console.log("Comment: " + comment);
+    console.log("Comment ID: " + comment.commentId);
+    console.log("timestamp: " + comment.createdAt); 
+
+    let canDelete = false;
+
+    // if admin or user who created the comment
+    if (payload && (payload.role === 'Admin' || payload.userId === comment.userId)) {
+        canDelete = true;
+    }
+
+    profilePictureUrl = `data:image/png;base64,${comment.profilePicture}`;
+
+    if (!comment.profilePicture) {
+        profilePictureUrl = `./images/profile-pictures/defaultProfile-black.png`;
+    }
+
     commentElement.innerHTML = `
         <div class="meta">
-            <img src="${comment.profilePicture}" alt="${comment.username}">
+            <img src="${profilePictureUrl}" alt="${comment.username}">
             <span class="username">${comment.username} ${comment.role === 'Admin' ? '(ADMIN)' : ''}</span>
-            <span class="timestamp">${timeSince(new Date(comment.timestamp))}</span>
+            <span class="timestamp">${timeSince(new Date(comment.createdAt))}</span>
         </div>
         <div class="content">${comment.content}</div>
         <div class="actions">
             <span class="vote upvote">▲ ${comment.upvotes}</span>
             <span class="vote downvote">▼ ${comment.downvotes}</span>
-            ${comment.canDelete ? '<span class="delete">Delete</span>' : ''}
-            <span class="reply">Reply</span>
+            ${canDelete ? '<span class="delete">Delete</span>' : ''}
+            ${level < 2 ? '<span class="reply">Reply</span>' : ''}
         </div>
     `;
 
-    commentElement.querySelector('.upvote').addEventListener('click', () => upvoteComment(comment.id));
-    commentElement.querySelector('.downvote').addEventListener('click', () => downvoteComment(comment.id));
-    if (comment.canDelete) {
-        commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.id));
+    commentElement.querySelector('.upvote').addEventListener('click', () => {
+        if (isLoggedIn()) {
+            upvoteComment(comment.commentId);
+        } else {
+            alert('You are not logged in, so you cannot upvote.');
+        }
+    });
+
+    commentElement.querySelector('.downvote').addEventListener('click', () => {
+        if (isLoggedIn()) {
+            downvoteComment(comment.commentId);
+        } else {
+            alert('You are not logged in, so you cannot downvote.');
+        }
+    });
+
+    // if logged in
+    if (payload) {
+        if (payload.userId) {
+            commentElement.querySelector('.upvote').classList.add('clickable');
+            commentElement.querySelector('.downvote').classList.add('clickable');
+        }
     }
-    commentElement.querySelector('.reply').addEventListener('click', () => replyToComment(comment.id));
+
+    if (canDelete) {
+        commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.commentId));
+    }
+
+    commentElement.querySelector('.reply').addEventListener('click', () => {
+        if (level < 2 && isLoggedIn()) {
+            replyToComment(comment.commentId);
+        } else {
+            alert('You are not logged in, so you cannot reply.');
+        }
+    });
+
+    // // if logged in
+    // if (payload) {
+    //     if (payload.userId) {
+    //         commentElement.querySelector('.upvote').classList.add('clickable');
+    //         commentElement.querySelector('.upvote').addEventListener('click', () => upvoteComment(comment.commentId));
+    //         commentElement.querySelector('.downvote').classList.add('clickable');
+    //         commentElement.querySelector('.downvote').addEventListener('click', () => downvoteComment(comment.commentId));   
+    // }}
+
+    // if (canDelete) {
+    //     commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.commentId));
+    // }
+    // // Function to check if the user is logged in
+    // function isLoggedIn() {
+    //     // Replace this with your actual logic to check if the user is logged in
+    //     return !!payload; // Assuming payload is defined if the user is logged in
+    // }
+
+    // if (level < 2 && payload) {
+    //     commentElement.querySelector('.reply').addEventListener('click', () => {
+    //         if (isLoggedIn()) {
+    //             replyToComment(comment.commentId);
+    //         } else {
+    //             alert('You are not logged in, so you cannot reply.');
+    //         }
+    //     });
+    // }
 
     return commentElement;
 }
 
 async function postComment(content, parentId = null) {
-    const articleId = 1; // Replace with the actual article ID
+    const articleId = articleID;
     const response = await fetch(`api/comments`, {
         method: 'POST',
         headers: {
@@ -76,43 +186,91 @@ async function postComment(content, parentId = null) {
     if (response.ok) {
         loadComments();
     }
+    if (!response.ok) {
+        alert('Error occurred while posting comment.');
+    }
 }
 
 async function upvoteComment(commentId) {
-    const response = await fetch(`${API_URL}/comments/${commentId}/upvote`, {
+    const response = await fetch(`api/comments/${commentId}/upvote`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${userToken}` }
+        headers: { 'Authorization': `Bearer ${userToken}` },
     });
     if (response.ok) {
         loadComments();
+    }
+    if (!response.ok) {
+        alert('Error occurred while upvoting comment.');
     }
 }
 
 async function downvoteComment(commentId) {
-    const response = await fetch(`${API_URL}/comments/${commentId}/downvote`, {
+    const response = await fetch(`api/comments/${commentId}/downvote`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${userToken}` }
+        headers: { 'Authorization': `Bearer ${userToken}` },
     });
     if (response.ok) {
         loadComments();
     }
+    if (!response.ok) {
+        alert('Error occurred while downvoting comment.');
+    }
 }
 
 async function deleteComment(commentId) {
-    const response = await fetch(`${API_URL}/comments/${commentId}`, {
+    const response = await fetch(`api/comments/${commentId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${userToken}` }
     });
     if (response.ok) {
         loadComments();
     }
+    if (!response.ok) {
+        alert('Error occurred while deleting comment.');
+    }
 }
 
 function replyToComment(parentId) {
-    const replyContent = prompt('Enter your reply:');
-    if (replyContent) {
-        postComment(replyContent, parentId);
+    // Find the parent comment element
+    const parentComment = document.getElementById(`comment-${parentId}`);
+
+    // Check if a reply container already exists
+    if (parentComment.querySelector('.reply-container')) {
+        return; // Exit the function if a reply container already exists
     }
+        
+    // Create a container for the reply input and button
+    const replyContainer = document.createElement('div');
+    replyContainer.className = 'reply-container';
+    
+    // Create the reply input textbox
+    const replyInput = document.createElement('textarea');
+    replyInput.className = 'reply-input';
+    replyInput.placeholder = 'Enter your reply...';
+    
+    // Create the submit button
+    const submitButton = document.createElement('button');
+    submitButton.className = 'reply-submit';
+    submitButton.innerText = 'Submit';
+    
+    // Append the input and button to the reply container
+    replyContainer.appendChild(replyInput);
+    replyContainer.appendChild(submitButton);
+    
+    // Append the reply container to the parent comment
+    parentComment.appendChild(replyContainer);
+    
+    // Handle the submit button click event
+    submitButton.addEventListener('click', () => {
+        const replyContent = replyInput.value;
+        if (replyContent) {
+            postComment(replyContent, parentId);
+            // Remove the reply container after submitting
+            parentComment.removeChild(replyContainer);
+        } else {
+            alert('Reply cannot be empty.');
+        }
+    });
 }
 
 function timeSince(date) {
@@ -130,114 +288,30 @@ function timeSince(date) {
     return Math.floor(seconds) + ' seconds ago';
 }
 
+// function timeSince(date) {
+    
+//     const now = new Date();
+//     const past = new Date(date);
+//     // Convert past date to Singapore time
+//     const singaporeTime = past.toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
+//     const singaporeDate = new Date(singaporeTime);
 
-// document.addEventListener('DOMContentLoaded', () => {
-//     const articleId = 1; // Assuming this is the article ID
-//     const userId = 1; // Replace with the logged-in user's ID
-//     const role = 'Admin'; // Replace with the logged-in user's role
+//     const seconds = Math.floor((now - singaporeDate) / 1000);
+//     // Log the input date
+//     console.log("Input date:", date);
+//     console.log("Now:" + now);
+//     console.log("Past:" + past);
+//     console.log(seconds);
 
-//     const commentsContainer = document.getElementById('comments-container');
-//     const commentContent = document.getElementById('comment-content');
-//     const submitComment = document.getElementById('submit-comment');
-
-//     async function fetchComments() {
-//         const response = await fetch(`/api/${articleId}/comments`);
-//         const comments = await response.json();
-//         displayComments(comments);
-//     }
-
-//     function displayComments(comments, parentElement = commentsContainer, parentId = null) {
-//         comments.forEach(comment => {
-//             if (comment.parentId === parentId) {
-//                 const commentElement = createCommentElement(comment);
-//                 parentElement.appendChild(commentElement);
-//                 displayComments(comments, commentElement.querySelector('.replies'), comment.commentId);
-//             }
-//         });
-//     }
-
-//     function createCommentElement(comment) {
-//         const commentElement = document.createElement('div');
-//         commentElement.classList.add('comment');
-//         commentElement.innerHTML = `
-//             <img src="${comment.profilePicture}" alt="${comment.username}'s profile picture" width="50" height="50">
-//             <div class="comment-content">
-//                 <strong>${comment.username}</strong>
-//                 <p>${comment.content}</p>
-//                 <div class="comment-actions">
-//                     <span class="upvote">Upvote (${comment.upvotes})</span>
-//                     <span class="downvote">Downvote (${comment.downvotes})</span>
-//                     ${comment.userId === userId || role === 'Admin' ? '<span class="delete">Delete</span>' : ''}
-//                     <span class="reply">Reply</span>
-//                 </div>
-//                 <div class="replies"></div>
-//             </div>
-//         `;
-
-//         commentElement.querySelector('.upvote').addEventListener('click', () => upvoteComment(comment.commentId));
-//         commentElement.querySelector('.downvote').addEventListener('click', () => downvoteComment(comment.commentId));
-//         if (commentElement.querySelector('.delete')) {
-//             commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.commentId));
-//         }
-//         commentElement.querySelector('.reply').addEventListener('click', () => showReplyForm(commentElement, comment.commentId));
-
-//         return commentElement;
-//     }
-
-//     function showReplyForm(commentElement, parentId) {
-//         const replyForm = document.createElement('div');
-//         replyForm.classList.add('reply');
-//         replyForm.innerHTML = `
-//             <textarea placeholder="Write a reply..."></textarea>
-//             <button>Submit</button>
-//         `;
-//         replyForm.querySelector('button').addEventListener('click', () => {
-//             const replyContent = replyForm.querySelector('textarea').value;
-//             submitCommentOrReply(replyContent, parentId);
-//             replyForm.remove();
-//         });
-
-//         commentElement.querySelector('.replies').appendChild(replyForm);
-//     }
-
-//     async function submitCommentOrReply(content, parentId = null) {
-//         const response = await fetch(`/api/comments`, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({
-//                 userId,
-//                 articleId,
-//                 content,
-//                 parentId
-//             })
-//         });
-//         const result = await response.json();
-//         if (result.commentId) {
-//             fetchComments();
-//         }
-//     }
-
-//     async function upvoteComment(commentId) {
-//         // Implement upvote functionality
-//     }
-
-//     async function downvoteComment(commentId) {
-//         // Implement downvote functionality
-//     }
-
-//     async function deleteComment(commentId) {
-//         // Implement delete functionality
-//     }
-
-//     submitComment.addEventListener('click', () => {
-//         const content = commentContent.value;
-//         if (content) {
-//             submitCommentOrReply(content);
-//             commentContent.value = '';
-//         }
-//     });
-
-//     fetchComments();
-// });
+//     let interval = seconds / 31536000;
+//     if (interval > 1) return Math.floor(interval) + ' years ago';
+//     interval = seconds / 2592000;
+//     if (interval > 1) return Math.floor(interval) + ' months ago';
+//     interval = seconds / 86400;
+//     if (interval > 1) return Math.floor(interval) + ' days ago';
+//     interval = seconds / 3600;
+//     if (interval > 1) return Math.floor(interval) + ' hours ago';
+//     interval = seconds / 60;
+//     if (interval > 1) return Math.floor(interval) + ' minutes ago';
+//     return Math.floor(seconds) + ' seconds ago';
+// }

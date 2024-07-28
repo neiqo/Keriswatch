@@ -16,7 +16,6 @@ const port = process.env.PORT || 3000; // Use environment variable or default po
 // SERVE STATIC FILES
 const staticMiddleware = express.static("public/html");
 
-
 // MIDDLEWARE CONFIGURATION
 // Increase payload size limit
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -37,7 +36,7 @@ const articlesController = require("./controllers/articlesController"); // ARTIC
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
 const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
-const CommentController = require('./controllers/commentController');
+const commentController = require('./controllers/commentController');
 const statisticsController = require("./controllers/statisticsController");
 const tokenController = require('./controllers/tokenController');
 
@@ -50,7 +49,6 @@ app.get('/login', (req, res) => {
 
 app.post('/api/login', authUser.validateLogin, userController.userLogin);
 app.post('/api/logout', verifyJWT, userController.userLogout);
-app.delete('/api/token', tokenController.deleteToken);
 
 // Specific-user routes
 app.get('/api/users/:username', userController.getUserByUsername);
@@ -70,12 +68,20 @@ app.get('/api/users', userController.getAllUsers);
 // Get specific user profile picture
 app.get('/api/users/:username/profilePicture', userController.getProfilePicture);
 
+app.get('/users/:username', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/html/userProfile.html'));
+  console.log(path.join(__dirname + '/public/html/userProfile.html'));
+});
+
+// TOKEN ROUTES
+app.delete('/api/token', tokenController.deleteToken);
+
 // COMMENT ROUTES
-app.get('/api/:articleId/comments', CommentController.getArticleComments);
-app.post('/api/comments', verifyJWT, CommentController.createComment);
-app.delete('/api/comments/:commentId', verifyJWT, CommentController.deleteComment);
-app.post('/api/comments/:commentId/upvote', verifyJWT, CommentController.upvoteComment);
-app.post('/api/comments/:commentId/downvote', verifyJWT, CommentController.downvoteComment);
+app.get('/api/:articleId/comments', commentController.getArticleComments);
+app.post('/api/comments', verifyJWT, commentController.createComment);
+app.delete('/api/comments/:commentId', verifyJWT, commentController.deleteComment);
+app.post('/api/comments/:commentId/upvote', verifyJWT, commentController.upvoteComment);
+app.post('/api/comments/:commentId/downvote', verifyJWT, commentController.downvoteComment);
 
 // EVENT ROUTES
 app.get('/events/joined/:userId', (req, res) => { //not done yet
@@ -95,8 +101,6 @@ app.get('/events/:id/update', (req, res) => {
   console.log(path.join(__dirname, 'public/html', 'eventUpdate.html'));
   res.sendFile(path.join(__dirname, 'public/html', 'eventUpdate.html'));
 });
-
-
 
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);

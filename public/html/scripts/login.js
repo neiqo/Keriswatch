@@ -32,9 +32,10 @@ async function loginUser() {
         }
         )
         .then(token => {
-            console.log(token);
             token = JSON.stringify(token);
-            localStorage.setItem('token', token);   
+            localStorage.setItem('token', token);
+            console.log("token in loginUser: " + token);
+
             // After storing the token in localStorage, clear the input fields
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
@@ -43,6 +44,7 @@ async function loginUser() {
         })
         .catch(error => {
             console.error(error);
+            alert('Error logging in:', error);
         });
 }
 
@@ -189,7 +191,7 @@ async function signupUser() {
             const responseData = await response.json();
             console.log(responseData.message);
             const token = JSON.stringify(responseData['token']);
-            console.log(token);
+            console.log("Token when signing up: " + token);
             localStorage.setItem('token', token);
 
             await alert('User created successfully!');
@@ -203,21 +205,33 @@ async function signupUser() {
     if (profilePicture) {
         reader.readAsDataURL(profilePicture);
     }
-    else {        
-        const defaultProfilePicturePath = './images/profile-pictures/defaultProfile.png';
+    else {                    
+        try {
+            const response = await fetch(`/api/signup/${rolePath}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user)
+            });
 
-        fetch(defaultProfilePicturePath)
-            .then(response => response.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const defaultProfilePicture = reader.result;
+            if (!response.ok) {
+                throw new Error('Error signing up:', response.status);
+            }
 
-                    console.log(defaultProfilePicture); // This will be the base64 encoded image
-                };
-                reader.readAsDataURL(blob);
-            })
-            .catch(error => console.error('Error fetching the default profile picture:', error));
+            const responseData = await response.json();
+            console.log(responseData.message);
+            const token = JSON.stringify(responseData['token']);
+            console.log("Token when signing up: " + token);
+            localStorage.setItem('token', token);
+
+            await alert('User created successfully!');
+            // window.location.reload();
+            window.location.href = '/index.html';
+        } catch (error) {
+            alert('Unable to sign up:', error);
+        }
+        console.log("Default profile picture used."); // This will be the base64 encoded image
     }
 
     // await fetch(`/api/signup/${rolePath}`, {
