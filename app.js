@@ -34,7 +34,7 @@ const articlesController = require("./controllers/articlesController"); // ARTIC
 const bookmarkController = require("./controllers/bookmarksController"); // BOOKMARK CONTROLLER
 const userController = require('./controllers/userController');
 const eventsController = require("./controllers/eventsController");
-const CommentController = require('./controllers/commentController');
+const commentController = require('./controllers/commentController');
 const statisticsController = require("./controllers/statisticsController");
 const tokenController = require('./controllers/tokenController');
 
@@ -70,11 +70,11 @@ app.get('/api/users/:username/profilePicture', userController.getProfilePicture)
 app.delete('/api/token', tokenController.deleteToken);
 
 // COMMENT ROUTES
-app.get('/api/:articleId/comments', CommentController.getArticleComments);
-app.post('/api/comments', verifyJWT, CommentController.createComment);
-app.delete('/api/comments/:commentId', verifyJWT, CommentController.deleteComment);
-app.post('/api/comments/:commentId/upvote', verifyJWT, CommentController.upvoteComment);
-app.post('/api/comments/:commentId/downvote', verifyJWT, CommentController.downvoteComment);
+app.get('/api/:articleId/comments', commentController.getArticleComments);
+app.post('/api/comments', verifyJWT, commentController.createComment);
+app.delete('/api/comments/:commentId', verifyJWT, commentController.deleteComment);
+app.post('/api/comments/:commentId/upvote', verifyJWT, commentController.upvoteComment);
+app.post('/api/comments/:commentId/downvote', verifyJWT, commentController.downvoteComment);
 
 // EVENT ROUTES
 app.get('/events', (req, res) => {
