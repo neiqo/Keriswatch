@@ -278,7 +278,7 @@ INSERT INTO Users (username, password, email, role) VALUES
 ('user8', 'pass8', 'user8@example.com', 'NormalUser'),
 ('user9', 'pass9', 'user9@example.com', 'NormalUser'),
 ('user10', 'pass10', 'user10@example.com', 'NormalUser'),
-('abcdef', '$2a$10$6D4EkNNK2AoqwOmbcoqop.EHaATdTaaWLVfh55F8PMuJhankhwy.y', 'abcdef@gmail.com', 'Organisation');
+('abcdef', '$2a$10$6D4EkNNK2AoqwOmbcoqop.EHaATdTaaWLVfh55F8PMuJhankhwy.y', 'abcdef@gmail.com', 'NormalUser');
 -- Insert into NormalUser table
 INSERT INTO NormalUser (userId, country) VALUES 
 ((SELECT userId FROM Users WHERE username = 'user1'), 'Singapore'),

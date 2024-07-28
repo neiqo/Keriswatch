@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     if (tokenObj) {
         tokenObj = JSON.parse(tokenObj);
         token = tokenObj.token;
+        if (!token) {
+            token = tokenObj; //tokenObj is a string
+        }
     }   
     if (!token) {
         console.error('No token found');
@@ -14,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const decoded = jwt_decode(token);
     const username = decoded.username;
 
+    console.log("Decoded username in userprofile: " + decoded.username);
     // Function to fetch user profile picture
     async function fetchProfilePicture(username) {
         try {
@@ -128,9 +132,22 @@ document.addEventListener("DOMContentLoaded", async function() {
                     // Check if the response is JSON
                     const contentType = response.headers.get('content-type');
                     if (contentType && contentType.includes('application/json')) {
-                        const data = await response.json();
-                        console.log('Success:', data);
+                        const responseData = await response.json();
+                        console.log('Successfully updated user.');
+                        console.log('Response Data:', responseData); // Log the entire response data
+
+                        const token = responseData.token; // Access the token directly
+                        console.log("Token when updating account details: " + token);
+
+                        if (token) {
+                            localStorage.setItem('token', token);
+                        } else {
+                            console.warn('Token is undefined in the response data.');
+                        }
+            
+                        await alert('User updated successfully!');
                         modal.style.display = "none";
+                        window.location.reload();
                     } else {
                         // Handle unexpected response
                         const text = await response.text();
@@ -172,10 +189,46 @@ document.addEventListener("DOMContentLoaded", async function() {
         var fileInput = document.getElementById("profile-pic");
         var file = fileInput.files[0];
 
+        console.log("File: " + file);
         if (file) {
             // Upload logic here!
-
-            alert("Profile picture uploaded successfully!");
+            let userDetails = {
+                oldUsername: username
+            };
+            const reader = new FileReader();
+            reader.onloadend = async function() {
+                const profilePictureImageBase64 = reader.result;
+        
+                userDetails['profilePicture'] = profilePictureImageBase64;
+        
+                try {
+                    const rolePath = decoded.role === 'NormalUser' ? 'normal' : 'organisation';
+                    const response = await fetch(`/api/update/normal`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify(userDetails)
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error('Error signing up:', response.status);
+                    }
+        
+                    const responseData = await response.json();
+                    console.log(responseData.message);
+                    const token = JSON.stringify(responseData['token']);
+                    console.log("Token when uploading new profile picture: " + token);
+                    localStorage.setItem('token', token);
+        
+                    alert("Profile picture uploaded successfully!");
+                    window.location.reload();
+                } catch (error) {
+                    alert('Unable to update profile picture: ', error);
+                }
+            };
+            reader.readAsDataURL(file);
         } else {
             alert("Please select a picture to upload.");
         }

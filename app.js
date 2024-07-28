@@ -56,7 +56,6 @@ app.delete('/api/users/:username', verifyJWT, userController.deleteUser);
 
 // User creation and update routes
 app.post('/api/signup/normal', authUser.validateNormalUser, userController.registerUser);
-// profilePictureUpload.single('profilePicture')
 app.post('/api/signup/organisation', authUser.validateOrganisation, userController.registerUser);
 
 app.put('/api/update/normal', verifyJWT, authUser.validateUpdateNormalUser, userController.updateNormalUser);

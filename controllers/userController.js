@@ -145,9 +145,8 @@ const userLogout = async (req, res) => {
 }
 
 const getUserByUsername =  async (req, res) => {
+    const { username } = req.params;
     try {
-        const { username } = req.params;
-
         const user = await User.getUserByUsername(username);
         if (!user) {
             return res.status(404).send('User not found');
@@ -159,22 +158,30 @@ const getUserByUsername =  async (req, res) => {
 }
 
 const updateNormalUser = async (req, res) => {
+    const { oldUsername, username = null, password = null, email = null, country = null, profilePicture = null} = req.body;
     try {
-        const { oldUsername, email, password, country } = req.body;
 
         // Get the user details based on the username
         const user = await User.getUserByUsername(oldUsername);
+        const oldCountry = await NormalUser.getNormalUserByUserId(user.userId);
+        user['country'] = oldCountry.country; // get country of user
         if (!user) {
             return res.status(404).send('User not found');
         }
 
         // Update the user details
+        user.oldUsername = oldUsername;
         if (email) user.email = email;
+        if (username) user.username = username;
         if (password) {
             const salt = await bcrypt.genSalt(10); 
             user.password = await bcrypt.hash(password, salt);
         }
         if (country) user.country = country;
+        if (profilePicture) {
+            const profilePictureImageBuffer = Buffer.from(profilePicture.split(',')[1], 'base64');
+            await User.uploadProfilePicture(user.userId, profilePictureImageBuffer);
+        }
 
         // Save the updated user details
         await NormalUser.updateAccountDetails(user);
@@ -196,29 +203,40 @@ const updateNormalUser = async (req, res) => {
 }
 
 const updateOrganisation =  async (req, res) => {
+    const { oldUsername, username = null, password = null, email = null, orgNumber = null, profilePicture = null } = req.body;
+    let user;
     try {
-        const { oldUsername, username = null, password = null, email = null, orgNumber = null } = req.body;
-        const user = { oldUsername,username, password, email, orgNumber };
+        console.log("Old Username: " + user.oldUsername);
 
         // if username does not exist, throw error
-        let oldUserDetails = null;
-
-        console.log(user.oldUsername);
-
-        // if username does not exist, throw error
-        if ((oldUserDetails = await this.getOrganisationByUsername(user.oldUsername)) == null) {
+        if (user = await User.getUserByUsername(oldUsername) == null) {
             throw new Error('Organisation does not exist');
         }
-
-        console.log(oldUserDetails);
         
-        oldUserDetails['orgNumber'] = (await this.getOrganisationByUsername(user.oldUsername)).orgNumber; // get country of user
+        const orgNumber = await Organisation.getOrganisationByUserId(user.userId);
+        user['orgNumber'] = orgNumber.orgNumber; // get organisation number of user
 
-        const updatedUser = await Organisation.updateAccountDetails(user, oldUserDetails);
+        console.log("User: " + user);
+        
+        // Update the user details
+        user.oldUsername = oldUsername;
+        if (email) user.email = email;
+        if (username) user.username = username;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+        if (orgNumber) user.orgNumber = orgNumber;
+        if (profilePicture) {
+            const profilePictureImageBuffer = Buffer.from(profilePicture.split(',')[1], 'base64');
+            await User.uploadProfilePicture(user.userId, profilePictureImageBuffer);
+        }
+
+        const updatedUser = await Organisation.updateAccountDetails(user);
 
         const payload = {
             userId: updatedUser.userId,
-            role: oldUserDetails.role,
+            role: user.role,
             username: updatedUser.username,
         };
 
@@ -232,9 +250,8 @@ const updateOrganisation =  async (req, res) => {
 }
 
 const deleteUser =  async (req, res) => {
+    const { username } = req.params;
     try {
-        const { username } = req.params;
-
         const result = await Admin.deleteUser(username);
         if (result) {
             res.send('User deleted successfully');
@@ -256,8 +273,8 @@ const getAllUsers =  async (req, res) => {
 }
 
 const getProfilePicture = async (req, res) => {
+    const { username } = req.params;
     try {
-        const { username } = req.params;
         console.log("Username :" + username);
         const user = await User.getUserByUsername(username);
         if (!user) {
