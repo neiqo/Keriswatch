@@ -147,30 +147,13 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     // For updating user profile picture
-    // Get the modals
-    var accountDetailsModal = document.getElementById("accountDetailsModal");
     var profilePicModal = document.getElementById("profilePicModal");
-
-    // Get the buttons that open the modals
-    var editProfileBtn = document.getElementById("edit-profile-btn");
     var editPicBtn = document.getElementById("edit-pic-btn");
-
-    // Get the <span> elements that close the modals
-    var closeAccountDetails = document.getElementById("close-account-details");
     var closeProfilePic = document.getElementById("close-profile-pic");
 
     // When the user clicks on the button, open the respective modal
-    editProfileBtn.onclick = function() {
-        accountDetailsModal.style.display = "block";
-    }
-
     editPicBtn.onclick = function() {
         profilePicModal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the respective modal
-    closeAccountDetails.onclick = function() {
-        accountDetailsModal.style.display = "none";
     }
 
     closeProfilePic.onclick = function() {
@@ -179,9 +162,6 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // When the user clicks anywhere outside of the modals, close them
     window.onclick = function(event) {
-        if (event.target == accountDetailsModal) {
-            accountDetailsModal.style.display = "none";
-        }
         if (event.target == profilePicModal) {
             profilePicModal.style.display = "none";
         }
