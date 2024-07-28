@@ -7,6 +7,8 @@ const bodyParser = require("body-parser"); // Import body-parser
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json"); // Import generated spec
 
 // APPLICATION SETUP
 const app = express();
@@ -82,45 +84,83 @@ app.post('/api/comments/:commentId/upvote', verifyJWT, commentController.upvoteC
 app.post('/api/comments/:commentId/downvote', verifyJWT, commentController.downvoteComment);
 
 // EVENT ROUTES
+app.get('/events/joined/:userId', (req, res) => { //not done yet
+  res.sendFile(path.join(__dirname, 'public/html', 'eventsJoined.html'));
+});
+
 app.get('/events', (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/html/events.html'));
-  console.log(path.join(__dirname + '/public/html/events.html'));
+  res.sendFile(path.join(__dirname, 'public/html', 'events.html'));
+  // console.log(path.join(__dirname, 'public/html', 'events.html'));
 });
 
 app.get("/events/:id", (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/html/eventDetails.html'));
+  res.sendFile(path.join(__dirname, 'public/html', 'eventDetails.html'));
 });
 
 app.get('/events/:id/update', (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/html/eventUpdate.html'));
-  console.log(path.join(__dirname + '/public/html/eventUpdate.html'));
+  console.log(path.join(__dirname, 'public/html', 'eventUpdate.html'));
+  res.sendFile(path.join(__dirname, 'public/html', 'eventUpdate.html'));
 });
 
 app.get("/api/events", eventsController.getEvents);
 app.get("/api/events/all", eventsController.getAllEvents);
+app.get("/api/events/category/:categoryId", eventsController.getEventCategory);
+app.get("/api/events/:eventId/related/category/:categoryId", eventsController.getRelatedEvent);
 //app.get("/api/events/search", eventsController.searchEvents);
 app.get("/api/events/with-users", eventsController.getEventswithUsers);
-app.post("/api/events/with-users", eventsController.addUsertoEvent);
-app.delete("/api/events/with-users", eventsController.deleteUserfromEvent);
-
-
-app.get("/api/events/:id", eventsController.getEventById);
-app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
-app.post("/api/events", uploadEventImage.single("image"), validateEvent, eventsController.createEvent, (req, res) => {
-  // Handle the form data here
-  console.log(req.body);
-  res.status(200).send('Event created successfully');
-}); // POST for creating books (can handle JSON data)
-app.put('/api/events/:id', uploadEventImage.single("image"), (req, res, next) => {
+// app.post("/api/events/with-users", verifyJWT, eventsController.addUsertoEvent);
+app.delete("/api/events/with-users", verifyJWT, eventsController.deleteEventandUser);
+app.get("/api/events/:id/joined", eventsController.checkIfUserJoinedEvent);
+app.get("/api/events/:id/users", eventsController.getNumberofUsersJoined);
+app.post("/api/events/:id/users", verifyJWT, eventsController.addUsertoEvent);
+app.delete("/api/events/:id/users", verifyJWT, eventsController.deleteUserfromEvent);
+app.get("/api/event/:id", eventsController.getEventById);
+app.post(
+  "/api/events/create",
+  (req, res, next) => {
+    console.log("Before verifyJWT");
+    next();
+  },
+  verifyJWT,
+  (req, res, next) => {
+    console.log("After verifyJWT, Before uploadEventImage");
+    next();
+  },
+  uploadEventImage.single("image"),
+  (req, res, next) => {
+    console.log("After uploadEventImage, Before validateEvent");
+    next();
+  },
+  validateEvent,
+  (req, res, next) => {
+    console.log("After validateEvent, Before eventsController.createEvent");
+    next();
+  },
+  eventsController.createEvent,
+  (req, res) => {
+    console.log("After eventsController.createEvent");
+    // Handle the form data here
+    console.log(req.body);
+    res.status(200).send("Event created successfully");
+  }
+);
+app.put('/api/events/:id', verifyJWT, uploadEventImage.single("image"), (req, res, next) => {
 console.log('Passed multer middleware');
 next();
 }, validateUpdateEvent, (req, res, next) => {
 console.log('Passed validateUpdateEvent middleware');
 next();
-}, eventsController.updateEvent);// app.delete("/api/events/:id", eventsController.deleteEvent);
-app.delete("/api/events/:id/with-users", eventsController.deleteEventandUser);  
+}, eventsController.updateEvent);
+// app.delete("/api/events/:id", eventsController.deleteEvent);
+app.delete("/api/events/:id/with-users", verifyJWT, eventsController.deleteEventandUser); 
+// app.get("/api/events/with-users/:userId", eventsController.getSpecificUserwithEvents); 
+app.get("/api/events/with-users/:eventId", eventsController.getSpecificEventwithUsers);
+
 //app.delete("/api/events/with-users/:id", eventsController.deleteUserandEvent);
 
+const mapController = require("./controllers/mapController");
+// MAP ROUTES
+app.get('/getLocationData', mapController.getLocationData);
 
 // ARTICLE ROUTES
 app.get("/search", articlesController.searchArticles); // route for searching articles
@@ -138,6 +178,9 @@ app.delete("/bookmarks/:articleId", bookmarkController.deleteBookmark); // route
 
 // STATISTICS ROUTES
 app.get("/statistics/:country", statisticsController.getStatisticsByCountry);
+
+// Swagger documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // For database connection
 app.listen(port, async () => {

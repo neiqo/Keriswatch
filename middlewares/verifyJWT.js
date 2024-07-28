@@ -11,15 +11,16 @@ const verifyJWT = (req, res, next) => {
 
     // Parse the JSON object to extract the token
     let token = tokenString;
-    // try {
-    //     console.log("Token object: " + tokenObject);
-    //     const tokenObject = JSON.parse(tokenString);
-    //     token = tokenObject.token || tokenObject;
-    // } catch (error) {
-    //     return res.status(400).json({ message: "Invalid token format" });
-    // }
+    try {
+      // Attempt to parse the token as JSON
+      const tokenObject = JSON.parse(tokenString);
+      token = tokenObject.token;
+    } catch (error) {
+        // If parsing fails, assume the token is a plain string
+        token = tokenString;
+    }
 
-    console.log("Token in verifyJWT: " + token);
+    console.log(token);
   // If no token is provided, return an Unauthorised error response
   if (!token) {
     return res.status(401).json({ message: "Unauthorised" });
@@ -49,6 +50,12 @@ const verifyJWT = (req, res, next) => {
       "/api/comments/[0-9]+/upvote": ["NormalUser", "Organisation", "Admin"],
       "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
       "/api/logout": ["NormalUser", "Organisation", "Admin"],
+      "/api/events": ["NormalUser", "Organisation", "Admin"],
+      // "/api/events/[0-9]+": ["NormalUser", "Organisation", "Admin"],
+      "/api/events/create": ["Organisation", "Admin"],
+      "/api/events/[0-9]+": ["Organisation", "Admin"],
+      "/api/events/with-users": ["Organisation", "Admin"],
+      "/api/events/[0-9]+/users": ["NormalUser", "Organisation"],
     };
 
     // Get the requested endpoint and the user's role from the decoded token

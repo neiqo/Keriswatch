@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../../../favicon.ico">
 
-    <title>Checkout example for Bootstrap</title>
+        <title>Checkout example for Bootstrap</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="./styles/eventCreationBootstrap.css" rel="stylesheet">
-    <link href="./styles/eventCreation.css" rel="stylesheet">
+        <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navbar.css"/>
+    <link href="/styles/eventCreationBootstrap.css" rel="stylesheet">
+    <link href="/styles/eventCreation.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="./styles/form-validation.css" rel="stylesheet">
-</head>
+    <link href="/styles/form-validation.css" rel="stylesheet">
+    </head>
   
     <body class="bg-light">
 
@@ -69,19 +72,111 @@
 
                 <div class="row">
                     <div class="col-md-5 mb-3">
-                        <label for="type">Event Type</label>
-                        <select id="type" class="custom-select d-block w-100" required="">
+                        <label for="category">Event Category</label>
+                        <select class="custom-select d-block w-100" id="category" required="">
                         <option value="">Choose...</option>
-                        <option>Trade</option>
-                        <option>Show</option>
-                        <option>Exhibition</option>
+                        <option value="1">Tech Conference</option>
+                        <option value="2">Workshop</option>
+                        <option value="3">Networking Event</option>
+                        <option value="4">Webinar</option>
+                        <option value="5">Product Launch</option>
+
                         </select>
                         <div class="invalid-feedback">
-                        Please select a valid event type.
+                        Please select a valid event category.
                         </div>
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <!-- <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                        <input type="email" class="form-control" id="email" placeholder="you@example.com"> -->
+                        <label for="locationName">Location Name</label>
+                        <input type="text" class="form-control" id="locationName" name="locationName" placeholder="Location Name" required="">
+                        <div class="invalid-feedback" style="width: 100%;">
+                            Location Name is required.
+                            </div>
+                        <!-- <div class="invalid-feedback">
+                            Please enter a valid email address for shipping updates.
+                        </div> -->
+                    </div>
+    
+                    <div class="col-md-5 mb-3">
+                        <!-- <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                        <input type="email" class="form-control" id="email" placeholder="you@example.com"> -->
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" placeholder="Address" required="">
+                        <div class="invalid-feedback" style="width: 100%;">
+                            Address is required.
+                            </div>
+                        <!-- <div class="invalid-feedback">
+                            Please enter a valid email address for shipping updates.
+                        </div> -->
+                    </div>
+                </div>
+
+                <div class="row">
+    
+                    <div class="col-md-5 mb-3">
+                        <!-- <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                        <input type="email" class="form-control" id="email" placeholder="you@example.com"> -->
+                        <label for="postalCode">Postal Code</label>
+                        <input type="text" class="form-control" id="postalCode" name="postalCode" placeholder="Postal Code" required="">
+                        <div class="invalid-feedback" style="width: 100%;">
+                            Postal Code is required.
+                            </div>
+                        <!-- <div class="invalid-feedback">
+                            Please enter a valid email address for shipping updates.
+                        </div> -->
+                    </div>
+    
+                    <div class="col-md-5 mb-3">
+                        <label for="country">Country</label>
+                        <select class="custom-select d-block w-100" id="country" required="">
+                        <option value="">Choose...</option>
+                        <option>Singapore</option>
+                        <option>Malaysia</option>
+                        <option>Brunei</option>
+                        <option>Cambodia</option>
+                        <option>Indonesia</option>
+                        <option>Laos</option>
+                        <option>Myanmar</option>
+                        <option>Philippines</option>
+                        <option>Vietnam</option>
+                        <option>Thailand</option>
+                        </select>
+                        <div class="invalid-feedback">
+                        Please select a country.
+                        </div>
+                    </div>
+
+                <!-- <div class="col-md-3 mb-3">
+                    <label for="zip">Zip</label>
+                    <input type="text" class="form-control" id="zip" placeholder="" required="">
+                    <div class="invalid-feedback">
+                    Zip code required.
+                    </div>
+                </div> -->
+
+                </div>
+
+                <div class="row">
+    
+                    <div class="col-md-5 mb-3">
+                        <!-- <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                        <input type="email" class="form-control" id="email" placeholder="you@example.com"> -->
+                        <label for="totalCapacity">Total Capacity</label>
+                        <input type="text" class="form-control" id="totalCapacity" name="totalCapacity" placeholder="Total Capacity" required="">
+                        <div class="invalid-feedback" style="width: 100%;">
+                            Total capacity is required.
+                            </div>
+                        <!-- <div class="invalid-feedback">
+                            Please enter a valid email address for shipping updates.
+                        </div> -->
+                    </div>
+                </div>
+                
                 <div class="row">
                     <div id="imageContainer" class="col-md-5 mb-4">
                         <label for="eventImage">Event Image</label>
@@ -119,8 +214,9 @@
         <!-- <script src="../../../../assets/js/vendor/popper.min.js"></script>
         <script src="../../../../dist/js/bootstrap.min.js"></script>
         <script src="../../../../assets/js/vendor/holder.min.js"></script> -->
-        
-        <script src="./scripts/eventUpdate.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+        <script type="module" src="/scripts/navbar.js"></script>
+        <script src="/scripts/eventUpdate.js"></script>
 
 
     </body>
