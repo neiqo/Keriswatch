@@ -107,62 +107,6 @@ class User {
         }
     }
 
-    static async getAllEvents() {
-        let connection;
-
-        try {
-            connection = await sql.connect(dbConfig);
-            const sqlQuery = `
-                SELECT 
-                    e.eventId, 
-                    e.eventName, 
-                    e.eventDesc, 
-                    e.eventOverview, 
-                    e.eventCategory, 
-                    e.eventReports, 
-                    e.eventTime, 
-                    e.creatorId, 
-                    u.name AS creatorName,
-                    e.cost,
-                    e.eventImage
-                FROM Events e
-                JOIN Users u ON e.creatorId = u.userId
-            `;
-            const request = connection.request(); 
-            const result = await request.query(sqlQuery);
-
-            const events = result.recordset.map(record => {
-                const eventImageBase64 = record.eventImage ? record.eventImage.toString('base64') : null;
-                return new EventModel(
-                    record.eventId,
-                    record.eventName,
-                    record.eventDesc,
-                    record.eventOverview,
-                    record.eventCategory,
-                    record.eventReports,
-                    record.eventTime,
-                    record.creatorId,
-                    record.creatorName,
-                    record.cost,
-                    eventImageBase64
-                );
-            });
-            
-            return events;
-        } catch (error) {
-            console.error('Error getting events:', error);
-            throw new Error("Error getting events");
-        } finally {
-            if (connection) {
-                try {
-                    await connection.close();
-                } catch (closeError) {
-                    console.error('Error closing the connection:', closeError);
-                }
-            }
-        }
-    }
-
     static async uploadProfilePicture(userId, profilePicture) { 
         try {
             const connection = await sql.connect(dbConfig);
@@ -259,7 +203,7 @@ class NormalUser extends User {
             const connection = await sql.connect(dbConfig);
             const sqlQuery = `SELECT * FROM User WHERE username = @Username`;
     
-            console.log(username);
+            console.log("Username: " + username);
     
             const request = connection.request();
             request.input('Username', sql.VarChar, username); // specify data type varchar to avoid system misinterpretation
@@ -454,7 +398,7 @@ class Organisation extends User {
             request.input('OrgNumber', sql.Int, user.orgNumber);
             request.input('Role', sql.VarChar, user.role);
 
-            console.log(user.role);
+            console.log("Role: "+ user.role);
 
             // Insert into Users table and get the new userId
             const insertUserQuery = `INSERT INTO Users (username, password, email, role)

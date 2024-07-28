@@ -58,3 +58,42 @@
     border-left: 2px solid #ddd;
     padding-left: 10px;
 }
+
+.reply-container {
+    margin-top: 10px;
+}
+#comments-container h2,
+#comments-container textarea,
+#comments-container button {
+    margin-left: 72px;
+    margin-right: 72px;
+    display: block; /* Ensure they are block-level elements */
+    width: calc(100% - 144px); /* Adjust width to account for margin */
+}
+
+.reply-input {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.reply-submit {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block; /* Ensure button is a block-level element */
+    width: auto; /* Adjust width as needed */
+}
+.reply-submit:hover {
+    background-color: #0056b3;
+}
+.comment meta img {
+    max-width: 30%;
+    height: auto;
+}

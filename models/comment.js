@@ -6,8 +6,12 @@ class Comment {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-            const sqlQuery = `SELECT * FROM Comments WHERE articleId = @ArticleId ORDER BY createdAt ASC`;
     
+            const sqlQuery = `SELECT c.*, u.profilePicture, u.username 
+                            FROM Comments c INNER JOIN Users u ON c.userId = u.userId 
+                            WHERE c.articleId = @ArticleId 
+                            ORDER BY c.createdAt ASC`;
+
             const request = connection.request();
             request.input('ArticleId', sql.Int, articleId); // specify data type to avoid system misinterpretation
     
@@ -16,6 +20,7 @@ class Comment {
 
             // no comments found
             if (result.recordset.length === 0) {
+                console.log("No comments found.");
                 return null;
             }
 
@@ -36,11 +41,10 @@ class Comment {
                               SELECT SCOPE_IDENTITY() AS commentId;`;
     
             const request = connection.request();
-            request.input('ArticleId', sql.Int, articleId); // specify data type to avoid system misinterpretation
             request.input('UserId', sql.Int, comment.userId);
             request.input('ArticleId', sql.Int, comment.articleId);
             request.input('Content', sql.Text, comment.content);
-            request.input('ParentId', sql.Int, comment.parentId);
+            request.input('ParentId', sql.Int, comment.parentId || null);
 
             const result = await request.query(sqlQuery);            
             connection.close();
@@ -58,12 +62,14 @@ class Comment {
             connection = await sql.connect(dbConfig);
 
             let sqlQuery = `DELETE FROM Comments WHERE commentId = @CommentId AND userId = @UserId`;
+
+            // admin can delete any comment
             if (role === 'Admin') {
                 sqlQuery = `DELETE FROM Comments WHERE commentId = @CommentId`;
             }
 
             const request = connection.request();
-            request.input('CommentId', sql.Int, commentId)
+            request.input('CommentId', sql.Int, commentId);
             request.input('UserId', sql.Int, userId); // specify data type to avoid system misinterpretation
     
             const result = await request.query(sqlQuery);            
