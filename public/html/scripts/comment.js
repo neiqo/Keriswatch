@@ -1,9 +1,9 @@
-let tokenObj = localStorage.getItem('token') || null;  // This will store the user's JWT after login
+let tokenObject = localStorage.getItem('token') || null;  // This will store the user's JWT after login
 let userToken;
 
-if (tokenObj) {
-    tokenObj = JSON.parse(tokenObj);
-    userToken = tokenObj.token;
+if (tokenObject) {
+    tokenObject = JSON.parse(tokenObject);
+    userToken = tokenObject.token;
 }   
 const urlParams = new URLSearchParams(window.location.search);
 const articleID = urlParams.get('id');
