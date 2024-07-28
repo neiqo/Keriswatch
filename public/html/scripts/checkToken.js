@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Authorization': `Bearer ${token}` }}); // Send a request to delete the token from the server
             localStorage.removeItem('token');
             alert('Your session has expired. You will be logged out.');
-            window.location.reload(); // Refresh the page
+            window.location.href = "./index.html"; // Refresh the page
         }
     }
 

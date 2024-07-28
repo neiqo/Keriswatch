@@ -27,10 +27,11 @@ const validateNormalUser = (req, res, next) => {
 // Middleware for validating updating NormalUser account details
 const validateUpdateNormalUser = (req, res, next) => {
     const schema = Joi.object({
-        oldUsername: Joi.string().min(3).max(30).required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).max(50).required(),
-        country: Joi.string().min(2).max(50).required()
+        oldUsername: Joi.string().min(3).max(30),
+        email: Joi.string().email(),
+        password: Joi.string().min(6).max(50),
+        country: Joi.string().min(2).max(50),
+        profilePicture: Joi.any()
     });
 
     const validation = schema.validate(req.body, { abortEarly: false });
@@ -71,11 +72,11 @@ const validateOrganisation = (req, res, next) => {
 const validateUpdateOrganisation = (req, res, next) => {
     console.log(req.body.username);
     const schema = Joi.object({
-        oldUsername: Joi.string().min(3).max(30).required(),
-        username: Joi.string().min(3).max(30).required(),
-        password: Joi.string().min(6).max(50).required(),
-        email: Joi.string().email().required(),
-        orgNumber: Joi.number().integer().required(),
+        oldUsername: Joi.string().min(3).max(30),
+        username: Joi.string().min(3).max(30),
+        password: Joi.string().min(6).max(50),
+        email: Joi.string().email(),
+        orgNumber: Joi.number().integer(),
         profilePicture: Joi.any()
     });
 
