@@ -16,15 +16,24 @@ if (userToken) {
     console.log(payload);
 }
 
+// Function to check if the user is logged in
+function isLoggedIn() {
+    return !!payload; 
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadComments();
 
     document.getElementById('comment-submit').addEventListener('click', () => {
-        const commentInput = document.getElementById('comment-input');
-        const content = commentInput.value.trim();
-        if (content) {
-            postComment(content);
-            commentInput.value = '';
+        if (isLoggedIn()) {
+            const commentInput = document.getElementById('comment-input');
+            const content = commentInput.value.trim();
+            if (content) {
+                postComment(content);
+                commentInput.value = '';
+            }
+        } else {
+            alert('You are not logged in, so you cannot submit a comment.');
         }
     });
 });
@@ -97,20 +106,69 @@ function createCommentElement(comment, level) {
         </div>
     `;
 
+    commentElement.querySelector('.upvote').addEventListener('click', () => {
+        if (isLoggedIn()) {
+            upvoteComment(comment.commentId);
+        } else {
+            alert('You are not logged in, so you cannot upvote.');
+        }
+    });
+
+    commentElement.querySelector('.downvote').addEventListener('click', () => {
+        if (isLoggedIn()) {
+            downvoteComment(comment.commentId);
+        } else {
+            alert('You are not logged in, so you cannot downvote.');
+        }
+    });
+
     // if logged in
-    if (payload.userId) {
-        commentElement.querySelector('.upvote').classList.add('clickable');
-        commentElement.querySelector('.upvote').addEventListener('click', () => upvoteComment(comment.commentId));
-        commentElement.querySelector('.downvote').classList.add('clickable');
-        commentElement.querySelector('.downvote').addEventListener('click', () => downvoteComment(comment.commentId));   
+    if (payload) {
+        if (payload.userId) {
+            commentElement.querySelector('.upvote').classList.add('clickable');
+            commentElement.querySelector('.downvote').classList.add('clickable');
+        }
     }
 
     if (canDelete) {
         commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.commentId));
     }
-    if (level < 2) {
-        commentElement.querySelector('.reply').addEventListener('click', () => replyToComment(comment.commentId));
-    }
+
+    commentElement.querySelector('.reply').addEventListener('click', () => {
+        if (level < 2 && isLoggedIn()) {
+            replyToComment(comment.commentId);
+        } else {
+            alert('You are not logged in, so you cannot reply.');
+        }
+    });
+
+    // // if logged in
+    // if (payload) {
+    //     if (payload.userId) {
+    //         commentElement.querySelector('.upvote').classList.add('clickable');
+    //         commentElement.querySelector('.upvote').addEventListener('click', () => upvoteComment(comment.commentId));
+    //         commentElement.querySelector('.downvote').classList.add('clickable');
+    //         commentElement.querySelector('.downvote').addEventListener('click', () => downvoteComment(comment.commentId));   
+    // }}
+
+    // if (canDelete) {
+    //     commentElement.querySelector('.delete').addEventListener('click', () => deleteComment(comment.commentId));
+    // }
+    // // Function to check if the user is logged in
+    // function isLoggedIn() {
+    //     // Replace this with your actual logic to check if the user is logged in
+    //     return !!payload; // Assuming payload is defined if the user is logged in
+    // }
+
+    // if (level < 2 && payload) {
+    //     commentElement.querySelector('.reply').addEventListener('click', () => {
+    //         if (isLoggedIn()) {
+    //             replyToComment(comment.commentId);
+    //         } else {
+    //             alert('You are not logged in, so you cannot reply.');
+    //         }
+    //     });
+    // }
 
     return commentElement;
 }
@@ -215,24 +273,8 @@ function replyToComment(parentId) {
     });
 }
 
-
 function timeSince(date) {
-    const now = new Date();
-    const past = new Date(date);
-
-    console.log("Before: " + past);
-    // Convert past date to Singapore time
-    const singaporeTimeZone = 'Asia/Singapore';
-    const singaporeDate = dateFnsTz.utcToZonedTime(past, singaporeTimeZone);
-
-    console.log("After: " + singaporeDate);
-    const seconds = Math.floor((now - singaporeDate) / 1000);
-    // Log the input date
-    console.log("Input date:", date);
-    console.log("Now:" + now);
-    console.log("Past:" + singaporeDate);
-    console.log(seconds);
-
+    const seconds = Math.floor((new Date() - date) / 1000);
     let interval = seconds / 31536000;
     if (interval > 1) return Math.floor(interval) + ' years ago';
     interval = seconds / 2592000;
@@ -245,3 +287,31 @@ function timeSince(date) {
     if (interval > 1) return Math.floor(interval) + ' minutes ago';
     return Math.floor(seconds) + ' seconds ago';
 }
+
+// function timeSince(date) {
+    
+//     const now = new Date();
+//     const past = new Date(date);
+//     // Convert past date to Singapore time
+//     const singaporeTime = past.toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
+//     const singaporeDate = new Date(singaporeTime);
+
+//     const seconds = Math.floor((now - singaporeDate) / 1000);
+//     // Log the input date
+//     console.log("Input date:", date);
+//     console.log("Now:" + now);
+//     console.log("Past:" + past);
+//     console.log(seconds);
+
+//     let interval = seconds / 31536000;
+//     if (interval > 1) return Math.floor(interval) + ' years ago';
+//     interval = seconds / 2592000;
+//     if (interval > 1) return Math.floor(interval) + ' months ago';
+//     interval = seconds / 86400;
+//     if (interval > 1) return Math.floor(interval) + ' days ago';
+//     interval = seconds / 3600;
+//     if (interval > 1) return Math.floor(interval) + ' hours ago';
+//     interval = seconds / 60;
+//     if (interval > 1) return Math.floor(interval) + ' minutes ago';
+//     return Math.floor(seconds) + ' seconds ago';
+// }
