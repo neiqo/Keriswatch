@@ -9,37 +9,23 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.error('No token found');
         return;
     }
-
     try {
         const response = await fetch('/articles');
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const articles = await response.json();
-  
-        // Initialize the dropdown and attach event listener
-        const countrySelector = document.getElementById('country-selector');
-        countrySelector.addEventListener('change', (event) => {
-            const selectedCountry = event.target.value;
-            filterAndDisplayArticles(selectedCountry, articles, bookmarkedArticleIds, token);
-        });
-  
-        // Initial load
-        const defaultCountry = countrySelector.value;
-        filterAndDisplayArticles(defaultCountry, articles, bookmarkedArticleIds, token);
-  
+
         // Display the most recent articles
-        displayRecentArticles(articles, 'latest-news', 4, bookmarkedArticleIds, token);
-  
+        displayRecentArticles(articles, 'latest-news', 4);
+
     } catch (error) {
         console.error('Error fetching articles:', error);
         alert('Error fetching articles. Please try again later.');
     }
-
     // Decode JWT
     const decoded = jwt_decode(token);
     const username = decoded.username;
-
     // Function to fetch user profile picture
     async function fetchProfilePicture(username) {
         try {
@@ -56,7 +42,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             return null;
         }
     }
-
     // Function to fetch user details with proper headers
     async function fetchUserDetails(username) {
         try {
@@ -77,18 +62,13 @@ document.addEventListener("DOMContentLoaded", async function() {
             return null;
         }
     }
-
     // Display user details and profile picture
     const user1 = await fetchUserDetails(username);
     if (user1) {
         document.getElementById('profile_username').textContent = 'Hello, ' + user1.username + '!';
-
         console.log("username @ user1: " + username);
-
         const profilePicture = await fetchProfilePicture(username);
-
         console.log("Profile picture: " + profilePicture);
-
         const profilePictureElement = document.getElementById('account-profile-picture');
         if (profilePictureElement) {
             if (profilePicture) {
@@ -101,21 +81,18 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     }
 });
-
 document.getElementById('view-users-btn').addEventListener('click', function() {
     window.location.href = '/viewallusers.html';
 });
 
-function displayArticles(articles, elementId, bookmarkedArticleIds, token) {
+function displayArticles(articles, elementId) {
     const articlesList = document.getElementById(elementId);
-    
+
     if (!articlesList) {
         console.error(`Element with ID ${elementId} not found`);
         return;
     }
-
     articlesList.innerHTML = '';
-
     articles.forEach(article => {
         const articleElement = document.createElement('div');
         articleElement.classList.add('article-container');
@@ -123,12 +100,12 @@ function displayArticles(articles, elementId, bookmarkedArticleIds, token) {
 
         // Format the publishDateTime
         const publishDate = new Date(article.publishDateTime);
-        const formattedDate = publishDate.toLocaleDateString('en-US', {
+        const formattedDate = publishDate.toLocaleDateString('en-UK', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric'
         });
-        const formattedTime = publishDate.toLocaleTimeString('en-US', {
+        const formattedTime = publishDate.toLocaleTimeString('en-UK', {
             hour: '2-digit',
             minute: '2-digit'
         });
@@ -192,16 +169,14 @@ function displayArticles(articles, elementId, bookmarkedArticleIds, token) {
         articlesList.appendChild(articleElement);
     });
   }
-  
-  function displayRecentArticles(articles, elementId, numArticles, bookmarkedArticleIds, token) {
+
+  function displayRecentArticles(articles, elementId, numArticles) {
     // Sort articles by date in descending order
-    const sortedArticles = articles.sort((a, b) => new Date(b.PublishedDate) - new Date(a.PublishedDate));
-  
+    const sortedArticles = articles.sort((a, b) => new Date(b.publishDateTime) - new Date(a.publishDateTime));
+
     // Select the top 'numArticles' recent articles
     const recentArticles = sortedArticles.slice(0, numArticles);
-  
-    // Display the recent articles
-    displayArticles(recentArticles, elementId, bookmarkedArticleIds, token);
-  }
 
-  
+    // Display the recent articles
+    displayArticles(recentArticles, elementId);
+}
