@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User</title>
+    <title>View All Users</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,33 +17,24 @@
     type="text/css" media="all">
     <link rel="stylesheet" type="text/css" href="/styles/navbar.css"/>
     <link rel="stylesheet" href="/styles/footer.css">
-    <link rel="stylesheet" href="/styles/userProfile.css">
+    <link rel="stylesheet" href="/styles/allusers.css">
 </head>
 <body>
     <div id="content">
-        <div id="name_profile">
-            <div>
-                <!-- TODO: ensure user can see personal profile pictures, not just preset ones-->
-                <img id="account-profile-picture" alt="Profile Picture" />
-            </div>
-            <div id="name_editprofile">
-                <p class="headerTitle" id="profile_username"></p>
-                <button class="purple-btn" id="view-users-btn">View All Users</button>
-            </div>
-        </div>
-    
-        <div id="bottom">
-            <div>
-                <p class="headerTitle">Pending Tags for Articles</p>
-                <div id="articles-list"></div>
-            </div>
-            <div>
-                <p class="headerTitle">Latest Comments</p>
-                <div id="comments"> <!-- insert comments here-->
-                    Comments
-                </div>
-            </div>
-        </div>
+        <p class="headerTitle">All Users</p>
+        <p>To note: Org accounts are not assigned to a country.</p>
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <th class="paraTitle">Username</th>
+                    <th class="paraTitle">Email</th>
+                    <th class="paraTitle">Country</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Users will be appended here -->
+            </tbody>
+        </table>
     </div>
 
 
@@ -85,7 +76,6 @@
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script type="module" src="/scripts/checkToken.js"></script>
     <script src="/scripts/navbar.js"></script>
-    <script src="/scripts/adminprofile.js"></script>
-    <script src="/scripts/bookmarkedarticle.js"></script>
+    <script src="/scripts/viewallusers.js"></script>
 </body>
 </html>
