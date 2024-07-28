@@ -400,7 +400,7 @@ async function deleteEvent(eventId) {
                 //window.location.href = '/login'; // Redirect to login page
             } else if (response.status === 403) {
                 // Forbidden access
-                alert("You have permission to perform this action.");
+                alert("You do not have permission to perform this action.");
             } else {
                 // Other errors
                 const errorMessage = await response.text(); // Or response.json() if the error response is in JSON format
