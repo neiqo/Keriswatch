@@ -87,8 +87,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     const navItems = [
         { text: 'News', href: '/articleSearchPage.html', active: false },
         { text: 'Events', href: '/events.html', active: false },
-        { text: 'News', href: '/articleSearchPage.html', active: false },
-        { text: 'Events', href: '/events.html', active: false },
     ];
 
     navItems.forEach(item => {
@@ -206,7 +204,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             );
         }
     } else {
-        accountItems.push({ text: 'Log In', href: '/login.html' });
         accountItems.push({ text: 'Log In', href: '/login.html' });
     }
     
