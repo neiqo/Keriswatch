@@ -323,6 +323,8 @@ async function getRelatedEvent(eventId, categoryId) {
         // relatedEvents.textContent = data;
 
         data.forEach(event => {
+            let relatedEventId = event.id;
+            
             const relatedEvent = document.createElement("div");
             relatedEvent.classList.add("related-event-item");
 
@@ -345,7 +347,7 @@ async function getRelatedEvent(eventId, categoryId) {
             relatedEvent.appendChild(location);
 
             relatedEvent.addEventListener("click", () => {
-                window.location.href = `/events/${eventId}`;
+                window.location.href = `/events/${relatedEventId}`;
             });
             relatedEvents.appendChild(relatedEvent);
         });
