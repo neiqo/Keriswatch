@@ -39,24 +39,34 @@ const verifyJWT = (req, res, next) => {
 
     console.log("Decoded in verifyJWT: " + decoded);
 
-    // Define the roles authorised to access specific endpoints
-    const authorisedRoles = {
-      "/api/update/normal": ["NormalUser"],
-      "/api/update/organisation": ["Organisation"],
-      "/api/users/[0-9]+": ["Admin"],
-      "/api/users" : ["NormalUser", "Organisation", "Admin"],
-      "/api/comments": ["NormalUser", "Organisation", "Admin"],
-      "/api/comments/[0-9]+": ["NormalUser", "Organisation", "Admin"],
-      "/api/comments/[0-9]+/upvote": ["NormalUser", "Organisation", "Admin"],
-      "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
-      "/api/logout": ["NormalUser", "Organisation", "Admin"],
-      "/api/events": ["NormalUser", "Organisation", "Admin"],
-      // "/api/events/[0-9]+": ["NormalUser", "Organisation", "Admin"],
-      "/api/events/create": ["Organisation", "Admin"],
-      "/api/events/[0-9]+": ["Organisation", "Admin"],
-      "/api/events/with-users": ["Organisation", "Admin"],
-      "/api/events/[0-9]+/users": ["NormalUser", "Organisation"],
-    };
+  // Define the roles authorised to access specific endpoints
+  const authorisedRoles = {
+    "/api/update/normal": ["NormalUser"],
+    "/api/update/organisation": ["Organisation"],
+    "/api/users/[0-9]+": ["Admin"],
+    "/api/users": ["NormalUser", "Organisation", "Admin"],
+    "/api/comments": ["NormalUser", "Organisation", "Admin"],
+    "/api/comments/[0-9]+": ["NormalUser", "Organisation", "Admin"],
+    "/api/comments/[0-9]+/upvote": ["NormalUser", "Organisation", "Admin"],
+    "/api/comments/[0-9]+/downvote": ["NormalUser", "Organisation", "Admin"],
+    "/api/logout": ["NormalUser", "Organisation", "Admin"],
+    "/api/events": ["NormalUser", "Organisation", "Admin"],
+    // "/api/events/[0-9]+": ["NormalUser", "Organisation", "Admin"],
+    "/api/events/create": ["Organisation", "Admin"],
+    "/api/events/[0-9]+": ["Organisation", "Admin"],
+    "/api/events/with-users": ["Organisation", "Admin"],
+    "/api/events/[0-9]+/users": ["NormalUser", "Organisation"],
+    
+    //neil
+    "/search": ["NormalUser", "Organisation", "Admin"], // search articles
+    "/articles/[0-9]+": ["NormalUser", "Organisation", "Admin"], // get article by id
+    "/articles/[0-9]+/editTags": ["Organisation", "Admin"], // update tags
+    "/articles/[0-9]+": ["Organisation", "Admin"], // editing article body
+    "/articles/[0-9]+/delete": ["Organisation", "Admin"], // delete article
+    "/articles": ["NormalUser", "Organisation", "Admin"], // get all articles
+    "/addArticle": ["Organisation", "Admin"], // upload article
+  };
+
 
     // Get the requested endpoint and the user's role from the decoded token
     const requestedEndpoint = req.url;
