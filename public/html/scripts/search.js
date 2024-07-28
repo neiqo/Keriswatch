@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     const searchParams = new URLSearchParams(window.location.search);
     const query = searchParams.get('query') || ''; // Get the search query parameter or default to an empty string
     const sectorFilter = searchParams.get('sector') || 'all'; // Get the sector filter parameter or default to 'all'
@@ -23,6 +23,37 @@ document.addEventListener("DOMContentLoaded", function() {
     // Debugging: Check constructed URL
     console.log('Fetch URL:', fetchUrl);
 
+    let token = localStorage.getItem('token') || null;
+    let userId;
+    let userRole;
+    let bookmarkedArticleIds = [];
+
+    if (token) {
+        const decodedToken = jwt_decode(token);
+        userId = decodedToken.userId;
+        userRole = decodedToken.role; // Assuming the role is stored in the token
+
+        try {
+            // Fetch bookmarked articles for the user
+            const bookmarkedResponse = await fetch(`/bookmarks?userId=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!bookmarkedResponse.ok) {
+                throw new Error(`HTTP error! Status: ${bookmarkedResponse.status}`);
+            }
+            const bookmarkedArticles = await bookmarkedResponse.json();
+            bookmarkedArticleIds = bookmarkedArticles.map(bookmark => bookmark.articleId);
+        } catch (error) {
+            console.error('Error fetching bookmarked articles:', error);
+            alert('Error fetching bookmarked articles. Please try again later.');
+        }
+    }
+
     // Fetch articles
     fetch(fetchUrl)
         .then(response => {
@@ -40,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 fetch('/articles')
                     .then(response => response.json())
                     .then(allArticles => {
-                        filterAndDisplayResults(allArticles, sectorFilter, countryFilter);
+                        filterAndDisplayResults(allArticles, sectorFilter, countryFilter, bookmarkedArticleIds, token, userId, userRole);
                     })
                     .catch(error => {
                         console.error('Error fetching all articles:', error);
@@ -49,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     });
             } else {
                 // Filter and display articles based on query, sectorFilter, and countryFilter
-                filterAndDisplayResults(data, sectorFilter, countryFilter);
+                filterAndDisplayResults(data, sectorFilter, countryFilter, bookmarkedArticleIds, token, userId, userRole);
             }
         })
         .catch(error => {
@@ -59,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 });
 
-function filterAndDisplayResults(articles, sectorFilter, countryFilter) {
+function filterAndDisplayResults(articles, sectorFilter, countryFilter, bookmarkedArticleIds, token, userId, userRole) {
     let filteredData = articles;
 
     if (sectorFilter !== 'all') {
@@ -69,10 +100,10 @@ function filterAndDisplayResults(articles, sectorFilter, countryFilter) {
         filteredData = filteredData.filter(article => article.Country === countryFilter);
     }
 
-    displayResults(filteredData);
+    displayResults(filteredData, bookmarkedArticleIds, token, userId, userRole);
 }
 
-function displayResults(articles) {
+function displayResults(articles, bookmarkedArticleIds, token, userId, userRole) {
     const resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = ''; // Clear previous results
 
@@ -94,21 +125,63 @@ function displayResults(articles) {
                 hour: '2-digit',
                 minute: '2-digit'
             });
+
             articleDiv.innerHTML = `
             <a href="./article.html?id=${article.articleID}" class="article-link">
                 <div class="article-content">
                     <p class="article-sector">${article.Sector}</p>
                     <h3 class="article-title">${article.Title}</h3>
                     <div id="row1">
-                    <p class="article-publisher">${article.Publisher}</p>
-                    <div id="column1">
-                        <p class="article-publishDate">${formattedDate}</p>
-                        <p class="article-publishTime">${formattedTime}</p>
-                    </div>
+                        <p class="article-publisher">${article.Publisher}</p>
+                        <div id="column1">
+                            <p class="article-publishDate">${formattedDate}</p>
+                            <p class="article-publishTime">${formattedTime}</p>
+                        </div>
                     </div>
                 </div>
             </a>
             `;
+
+            if (token && userRole !== 'Organisation') {
+                // Create bookmark button with event listener if user is logged in and not an Organisation
+                const bookmarkButton = document.createElement('button');
+                bookmarkButton.className = 'bookmark-button';
+                bookmarkButton.dataset.articleId = article.articleID;
+                bookmarkButton.textContent = bookmarkedArticleIds.includes(article.articleID) ? 'Unbookmark' : 'Bookmark';
+
+                bookmarkButton.addEventListener('click', function() {
+                    const articleId = this.dataset.articleId;
+                    const action = this.textContent === 'Bookmark' ? 'add' : 'delete';
+
+                    fetch(`/bookmarks/${articleId}`, {
+                        method: action === 'add' ? 'POST' : 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ userId: userId }) // Send userId in the request body
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            this.textContent = action === 'add' ? 'Unbookmark' : 'Bookmark';
+                            if (action === 'add') {
+                                bookmarkedArticleIds.push(articleId);
+                            } else {
+                                const index = bookmarkedArticleIds.indexOf(articleId);
+                                if (index > -1) {
+                                    bookmarkedArticleIds.splice(index, 1);
+                                }
+                            }
+                        } else {
+                            console.error('Error:', response.statusText);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+
+                articleDiv.appendChild(bookmarkButton);
+            }
+
             resultsDiv.appendChild(articleDiv);
         });
     }

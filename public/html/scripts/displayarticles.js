@@ -1,11 +1,13 @@
 document.addEventListener("DOMContentLoaded", async function() {
   let token = localStorage.getItem('token') || null;
   let userId;
+  let userRole;
   let bookmarkedArticleIds = [];
 
   if (token) {
       const decodedToken = jwt_decode(token);
       userId = decodedToken.userId;
+      userRole = decodedToken.role; // Assuming the role is stored in the token
 
       try {
           // Fetch bookmarked articles for the user
@@ -39,15 +41,15 @@ document.addEventListener("DOMContentLoaded", async function() {
       const countrySelector = document.getElementById('country-selector');
       countrySelector.addEventListener('change', (event) => {
           const selectedCountry = event.target.value;
-          filterAndDisplayArticles(selectedCountry, articles, bookmarkedArticleIds, token);
+          filterAndDisplayArticles(selectedCountry, articles, bookmarkedArticleIds, token, userId, userRole);
       });
 
       // Initial load
       const defaultCountry = countrySelector.value;
-      filterAndDisplayArticles(defaultCountry, articles, bookmarkedArticleIds, token);
+      filterAndDisplayArticles(defaultCountry, articles, bookmarkedArticleIds, token, userId, userRole);
 
       // Display the most recent articles
-      displayRecentArticles(articles, 'latest-news', 4, bookmarkedArticleIds, token);
+      displayRecentArticles(articles, 'latest-news', 4, bookmarkedArticleIds, token, userId, userRole);
 
   } catch (error) {
       console.error('Error fetching articles:', error);
@@ -55,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async function() {
   }
 });
 
-function filterAndDisplayArticles(country, articles, bookmarkedArticleIds, token) {
+function filterAndDisplayArticles(country, articles, bookmarkedArticleIds, token, userId, userRole) {
   // Filter articles based on the selected country
   const agricultureArticles = articles.filter(article => article.Country === country && article.Sector === 'Agriculture');
   const servicesArticles = articles.filter(article => article.Country === country && article.Sector === 'Services');
@@ -63,9 +65,9 @@ function filterAndDisplayArticles(country, articles, bookmarkedArticleIds, token
 
   // Update the title and display articles for each sector
   updateTitle(country);
-  displayArticles(agricultureArticles, 'agriculture-news', bookmarkedArticleIds, token);
-  displayArticles(servicesArticles, 'services-news', bookmarkedArticleIds, token);
-  displayArticles(manufactureArticles, 'manufacture-news', bookmarkedArticleIds, token);
+  displayArticles(agricultureArticles, 'agriculture-news', bookmarkedArticleIds, token, userId, userRole);
+  displayArticles(servicesArticles, 'services-news', bookmarkedArticleIds, token, userId, userRole);
+  displayArticles(manufactureArticles, 'manufacture-news', bookmarkedArticleIds, token, userId, userRole);
 }
 
 function updateTitle(country) {
@@ -73,7 +75,7 @@ function updateTitle(country) {
   titleElement.textContent = `Sector News in ${country}`;
 }
 
-function displayArticles(articles, elementId, bookmarkedArticleIds, token) {
+function displayArticles(articles, elementId, bookmarkedArticleIds, token, userId, userRole) {
   const articlesList = document.getElementById(elementId);
   articlesList.innerHTML = '';
 
@@ -110,8 +112,8 @@ function displayArticles(articles, elementId, bookmarkedArticleIds, token) {
           </a>
       `;
 
-      if (token) {
-          // Create bookmark button with event listener if user is logged in
+      if (token && userRole !== 'Organisation') {
+          // Create bookmark button with event listener if user is logged in and not an Organisation
           const bookmarkButton = document.createElement('button');
           bookmarkButton.className = 'bookmark-button';
           bookmarkButton.dataset.articleId = article.articleID;
@@ -154,7 +156,7 @@ function displayArticles(articles, elementId, bookmarkedArticleIds, token) {
   });
 }
 
-function displayRecentArticles(articles, elementId, numArticles, bookmarkedArticleIds, token) {
+function displayRecentArticles(articles, elementId, numArticles, bookmarkedArticleIds, token, userId, userRole) {
   // Sort articles by date in descending order
   const sortedArticles = articles.sort((a, b) => new Date(b.PublishedDate) - new Date(a.PublishedDate));
 
@@ -162,5 +164,5 @@ function displayRecentArticles(articles, elementId, numArticles, bookmarkedArtic
   const recentArticles = sortedArticles.slice(0, numArticles);
 
   // Display the recent articles
-  displayArticles(recentArticles, elementId, bookmarkedArticleIds, token);
+  displayArticles(recentArticles, elementId, bookmarkedArticleIds, token, userId, userRole);
 }
