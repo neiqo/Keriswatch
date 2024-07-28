@@ -14,9 +14,8 @@ const getAllArticles = async (req, res) => {
   }
 };
 
-
 async function searchArticles(req, res) {
-  const { query, sector, country, publisher } = req.query;
+  const { query, sector, country } = req.query;
 
   try {
     const connection = await sql.connect(dbConfig);
@@ -41,6 +40,7 @@ async function searchArticles(req, res) {
       sqlQuery += `
         AND (
           a.Author LIKE '%' + @query + '%' OR
+          a.Publisher LIKE '%' + @query + '%' OR
           a.Country LIKE '%' + @query + '%' OR
           a.Sector LIKE '%' + @query + '%' OR
           a.Title LIKE '%' + @query + '%' OR
@@ -48,10 +48,6 @@ async function searchArticles(req, res) {
           a.Tags LIKE '%' + @query + '%'
         )
       `;
-    }
-
-    if (publisher) {
-      sqlQuery += " AND a.Publisher = @publisher";
     }
 
     if (sector) {
@@ -64,7 +60,6 @@ async function searchArticles(req, res) {
 
     const request = connection.request();
     if (query) request.input('query', sql.VarChar, query);
-    if (publisher) request.input('publisher', sql.VarChar, publisher);
     if (sector) request.input('sector', sql.VarChar, sector);
     if (country) request.input('country', sql.VarChar, country);
 
@@ -99,11 +94,6 @@ async function searchArticles(req, res) {
     res.status(500).json({ error: "Error searching articles" });
   }
 }
-
-
-
-
-
 const addArticle = async (req, res) => {
   const transaction = new sql.Transaction();
   try {
@@ -229,5 +219,5 @@ module.exports = {
   removeArticle,
   getArticleByID,
   editTags,
-  updateArticleBody // Add this line
+  updateArticleBody
 };
