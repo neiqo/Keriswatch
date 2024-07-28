@@ -1,3 +1,7 @@
+const token = localStorage.getItem('token');
+const decodedToken = jwt_decode(token);
+const userId = decodedToken.userId;
+
 document.addEventListener("DOMContentLoaded", async function() {
   try {
     const response = await fetch('/articles');
@@ -6,19 +10,34 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
     const articles = await response.json();
 
+    // Fetch bookmarked articles for the user
+    const bookmarkedResponse = await fetch(`/bookmarks?userId=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (!bookmarkedResponse.ok) {
+      throw new Error(`HTTP error! Status: ${bookmarkedResponse.status}`);
+    }
+    const bookmarkedArticles = await bookmarkedResponse.json();
+    const bookmarkedArticleIds = bookmarkedArticles.map(bookmark => bookmark.articleId);
+
     // Initialize the dropdown and attach event listener
     const countrySelector = document.getElementById('country-selector');
     countrySelector.addEventListener('change', (event) => {
       const selectedCountry = event.target.value;
-      filterAndDisplayArticles(selectedCountry, articles);
+      filterAndDisplayArticles(selectedCountry, articles, bookmarkedArticleIds);
     });
 
     // Initial load
     const defaultCountry = countrySelector.value;
-    filterAndDisplayArticles(defaultCountry, articles);
+    filterAndDisplayArticles(defaultCountry, articles, bookmarkedArticleIds);
 
     // Display the most recent articles
-    displayRecentArticles(articles, 'latest-news', 4);
+    displayRecentArticles(articles, 'latest-news', 4, bookmarkedArticleIds);
 
   } catch (error) {
     console.error('Error fetching articles:', error);
@@ -26,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function() {
   }
 });
 
-function filterAndDisplayArticles(country, articles) {
+function filterAndDisplayArticles(country, articles, bookmarkedArticleIds) {
   // Filter articles based on the selected country
   const agricultureArticles = articles.filter(article => article.Country === country && article.Sector === 'Agriculture');
   const servicesArticles = articles.filter(article => article.Country === country && article.Sector === 'Services');
@@ -34,9 +53,9 @@ function filterAndDisplayArticles(country, articles) {
 
   // Update the title and display articles for each sector
   updateTitle(country);
-  displayArticles(agricultureArticles, 'agriculture-news');
-  displayArticles(servicesArticles, 'services-news');
-  displayArticles(manufactureArticles, 'manufacture-news');
+  displayArticles(agricultureArticles, 'agriculture-news', bookmarkedArticleIds);
+  displayArticles(servicesArticles, 'services-news', bookmarkedArticleIds);
+  displayArticles(manufactureArticles, 'manufacture-news', bookmarkedArticleIds);
 }
 
 function updateTitle(country) {
@@ -44,7 +63,7 @@ function updateTitle(country) {
   titleElement.textContent = `Sector News in ${country}`;
 }
 
-function displayArticles(articles, elementId) {
+function displayArticles(articles, elementId, bookmarkedArticleIds) {
   const articlesList = document.getElementById(elementId);
   articlesList.innerHTML = '';
 
@@ -56,36 +75,74 @@ function displayArticles(articles, elementId) {
     // Format the publishDateTime
     const publishDate = new Date(article.publishDateTime);
     const formattedDate = publishDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric'
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
     });
     const formattedTime = publishDate.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
+      hour: '2-digit',
+      minute: '2-digit'
     });
-    
+
+    // Create bookmark button with event listener
+    const bookmarkButton = document.createElement('button');
+    bookmarkButton.className = 'bookmark-button';
+    bookmarkButton.dataset.articleId = article.articleID;
+    bookmarkButton.textContent = bookmarkedArticleIds.includes(article.articleID) ? 'Unbookmark' : 'Bookmark';
+
+    bookmarkButton.addEventListener('click', function() {
+      const articleId = this.dataset.articleId;
+      const action = this.textContent === 'Bookmark' ? 'add' : 'delete';
+
+      fetch(`/bookmarks/${articleId}`, {
+        method: action === 'add' ? 'POST' : 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ userId: userId }) // Send userId in the request body
+      })
+      .then(response => {
+        if (response.ok) {
+          this.textContent = action === 'add' ? 'Unbookmark' : 'Bookmark';
+          if (action === 'add') {
+            bookmarkedArticleIds.push(articleId);
+          } else {
+            const index = bookmarkedArticleIds.indexOf(articleId);
+            if (index > -1) {
+              bookmarkedArticleIds.splice(index, 1);
+            }
+          }
+        } else {
+          console.error('Error:', response.statusText);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
     articleElement.innerHTML = `
-    <a href="./article.html?id=${article.articleID}" class="article-link">
+      <a href="./article.html?id=${article.articleID}" class="article-link">
         <div class="article-content">
-            <p class="article-sector">${article.Sector}</p>
-            <h3 class="article-title">${article.Title}</h3>
-            <div id="row1">
-              <p class="article-publisher">${article.Publisher}</p>
-              <div id="column1">
-                  <p class="article-publishDate">${formattedDate}</p>
-                  <p class="article-publishTime">${formattedTime}</p>
-              </div>
+          <p class="article-sector">${article.Sector}</p>
+          <h3 class="article-title">${article.Title}</h3>
+          <div id="row1">
+            <p class="article-publisher">${article.Publisher}</p>
+            <div id="column1">
+              <p class="article-publishDate">${formattedDate}</p>
+              <p class="article-publishTime">${formattedTime}</p>
             </div>
+          </div>
         </div>
-    </a>
+      </a>
     `;
 
+    // Append the bookmark button to the article element
+    articleElement.appendChild(bookmarkButton);
     articlesList.appendChild(articleElement);
   });
 }
 
-function displayRecentArticles(articles, elementId, numArticles) {
+function displayRecentArticles(articles, elementId, numArticles, bookmarkedArticleIds) {
   // Sort articles by date in descending order
   const sortedArticles = articles.sort((a, b) => new Date(b.PublishedDate) - new Date(a.PublishedDate));
 
@@ -93,5 +150,5 @@ function displayRecentArticles(articles, elementId, numArticles) {
   const recentArticles = sortedArticles.slice(0, numArticles);
 
   // Display the recent articles
-  displayArticles(recentArticles, elementId);
+  displayArticles(recentArticles, elementId, bookmarkedArticleIds);
 }
