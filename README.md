@@ -1,13 +1,13 @@
 
 # Keriswatch
 BED Assg
-Keriswatch is ---
+Keriswatch is an interactive web platform focused on providing industry-specific articles and insights across Southeast Asia. Users can explore articles by country and sector, view statistics on how industries contribute to each country's GDP, and engage with content by commenting, upvoting, or downvoting. The platform also includes a map to navigate regional news and articles, fostering a deeper understanding of industry trends and their economic impact.
 
 ## How to run it
 First, clone the repository. \
 Then, run this in your terminal ``` npm install ``` \
 Keriswatch uses Microsoft SQL Server (MSSQL). Ensure you have it installed and configured. Then, update the database configuration: \
-Edit the *dbConfig.js* file in the project directory: \
+Edit the *dbConfig.js* file in the project directory: 
 ```
 const config = {
     user: 'your_username',
