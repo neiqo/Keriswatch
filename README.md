@@ -3,7 +3,27 @@
 BED Assg
 Keriswatch is ---
 
-
+## How to run it
+First, clone the repository. \
+Then, run this in your terminal ``` npm install ``` \
+Keriswatch uses Microsoft SQL Server (MSSQL). Ensure you have it installed and configured. Then, update the database configuration: \
+Edit the *dbConfig.js* file in the project directory: \
+```
+const config = {
+    user: 'your_username',
+    password: 'your_password',
+    server: 'your_server',
+    database: 'your_database',
+    options: {
+        encrypt: true, // Use encryption
+        enableArithAbort: true
+    }
+};
+module.exports = config;
+```
+Then, run the *finalised_database_creation.sql* script.
+Lastly, run this in your terminal:
+```node app.js```
 ## Branches
 
 
